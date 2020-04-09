@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+docker build -t ClassKraken .
+docker stop ClassKraken
+docker run --rm -d -p 80:80 --name ClassKraken -v ~/ClassKraken/index.db:/usr/src/app/index.db ClassKraken 
