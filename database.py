@@ -297,12 +297,15 @@ class Database:
         Creates or overwrites token if one exists. If creation was successful, return token. If not, return False.
         """
 
-        user = {"email": str(email), "token": secrets.token_hex(16)}
+        token = secrets.token_hex(16)
+        user = {"email": str(email), "token": token }
         if validators.email(email):
             if self._transactional_upsert("auth", user, ["email"]):
                 return token
             else:
                 log_info("Error creating token for " + str(email))
+        else:
+            log_info("Invalid email " + str(email))
 
         return False
 

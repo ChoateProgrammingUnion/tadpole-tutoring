@@ -21,10 +21,13 @@ def check_login(request) -> str:
     email = request.cookies.get('email')
 
     authentication = database.Database()
+    authentication.init_db_connection()
     if authentication.check_auth_pair(token, email):
+        authentication.end_db_connection()
         log_info("Successfully checked cookie login for " + email)
         return email
     else:
+        authentication.end_db_connection()
         log_info("Unsuccessfully checked cookie login for " + str(email))
         return False
 
@@ -38,7 +41,9 @@ def deauth_token(request):
     if email:
         log_info("Deauthed cookie login for " + str(email))
         authentication = database.Database()
+        authentication.init_db_connection()
         authentication.create_token(email)
+        authentication.end_db_connection()
     else:
         log_info("Deauthed cookie login failed for " + str(email))
 
@@ -52,7 +57,9 @@ def set_login(response, user_info) -> str:
         response.set_cookie('email', email)
 
         authentication = database.Database()
+        authentication.init_db_connection()
         token = authentication.create_token(str(email))
+        authentication.end_db_connection()
         response.set_cookie('token', token)
 
         log_info("Set login for " + email)
