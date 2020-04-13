@@ -6,6 +6,8 @@ from flask_dance.contrib.google import make_google_blueprint, google
 
 import auth
 from config import *
+import cognito
+
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
@@ -54,6 +56,12 @@ def login():
                              "<a href=\"/logout\">Try again.</a>")
         return resp
 
+@app.route('/callback')
+def callback():
+    """
+    Processes callback from AWS Cognito
+    """
+    return cognito.check_callback(request)
 
 @app.route('/logout')
 def logout():
