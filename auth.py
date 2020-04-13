@@ -70,7 +70,6 @@ class Auth:
     def end_db_connection(self):
         self.db.close()
         # log_info("Disconnected From Database")
-        # del self.db
 
     def create_token(self, email: str) -> Any:
         """
