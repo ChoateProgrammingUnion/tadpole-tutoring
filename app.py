@@ -1,7 +1,7 @@
 import os
 import secrets
 
-from flask import Flask, redirect, url_for, request, make_response, session
+from flask import Flask, redirect, url_for, request, make_response, session, render_template
 from flask_dance.contrib.google import make_google_blueprint, google
 
 import auth
@@ -34,34 +34,28 @@ app.register_blueprint(google_bp, url_prefix="/login")
 
 @app.route('/')
 def index():
-    email, first_name, last_name = auth.check_login(request)
-
-    if not(email and first_name and last_name):
-        return redirect("/login")
-
-    response = make_response("Hello " + first_name + " " + last_name)
-
-    return auth.set_login(response, request)
-
+    email = auth.check_login(request) # do stuff with this
+    return render_template("index.html")
 
 @app.route('/login')
 def login():
     """
     Redirects to the proper login page (right now /google/login), but may change
     """
-    if (not google.authorized) or auth.get_token(request):
-        return redirect(url_for("google.login"))
+    if not auth.check_login(request):
+        return redirect(cognito.get_login_url())
     else:
-        resp = make_response("Invalid credentials! Make sure you're logging in with your Choate account. "
-                             "<a href=\"/logout\">Try again.</a>")
-        return resp
+        return "You are logged in!"
 
 @app.route('/callback')
 def callback():
     """
     Processes callback from AWS Cognito
     """
-    return cognito.check_callback(request)
+    user_info = cognito.check_callback(request)
+    response = make_response(render_template('index.html')) # maybe render other stuff
+
+    return auth.set_login(response, user_info)
 
 @app.route('/logout')
 def logout():

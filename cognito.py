@@ -1,9 +1,8 @@
 import json
 import config
+from config import AUTH_URL
 import requests
 import base64
-
-AUTH_URL = "https://auth.tadpoletutoring.org/oauth2/token"
 
 def check_callback(request) -> dict:
     """
@@ -24,24 +23,18 @@ def check_callback(request) -> dict:
 
 def exchange_code(code: str) -> dict:
     """
-    Exchanges a code for an access code as per:
+    Exchanges a code for an access token as per:
         https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html
     """
     authorization = "Basic " + base64.b64encode(str(config.APP_CLIENT_ID + ":" + config.APP_CLIENT_SECRET).encode()).decode()
+
     headers = {"Authorization": authorization,
                "Content-Type": "application/x-www-form-urlencoded"}
-    print(headers)
-
     params = {"grant_type": "authorization_code", 
               "client_id": config.APP_CLIENT_ID, 
               "code" : code, 
               "redirect_uri" : "http://localhost:5000/callback"} 
 
-    # params = {"grant_type": "authorization_code", 
-              # "client_id": config.APP_CLIENT_ID, 
-              # "code" : code, 
-             # }
-    print(params)
     response = requests.post(AUTH_URL, 
                              params=params,
                              headers=headers
@@ -69,9 +62,11 @@ def get_login_url():
     if "127.0.0.1" in config.SERVER_NAME:
         config.SERVER_NAME = config.SERVER_NAME.replace("127.0.0.1", "localhost")
     if "localhost" in config.SERVER_NAME:
-        url = "https://auth.tadpoletutoring.org/login?client_id=" + config.APP_CLIENT_ID + "&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=http://" + config.SERVER_NAME + "/callback"
+        url = "https://auth.tadpoletutoring.org/login?client_id=" + config.APP_CLIENT_ID + "&response_type=code&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=http://" + config.SERVER_NAME + "/callback"
+        print(url)
     else:
-        url = "https://auth.tadpoletutoring.org/login?client_id=" + config.APP_CLIENT_ID + "&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=https://" + config.SERVER_NAME + "/callback"
+        url = "https://auth.tadpoletutoring.org/login?client_id=" + config.APP_CLIENT_ID + "&response_type=code&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=https://" + config.SERVER_NAME + "/callback"
+        print(url)
     return url
 
 

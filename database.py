@@ -1,6 +1,8 @@
 import copy
 import dataset
 from datetime import datetime, timedelta
+import validators
+import secrets
 from typing import *
 
 from utils.log import *
@@ -25,6 +27,9 @@ class Database:
             - "``duration``": The duration of the tutoring session (in seconds)
             - "``claimed``": A boolean representing if the session has been claimed
             - "``student``": The email address of the student who claimed the session
+        4) "``auth`": A table used to store the email and auth, key-value pairs. Columns are as follows: 
+            - "``teacher_email``": The teacher's email address hosting the tutoring session.
+            - "``token``: The random 128-bit token hex string.
 
     Attributes:
         _db (dataset.Database): The sql database
@@ -284,5 +289,59 @@ class Database:
                 return self._transactional_insert(table, data, attempt=attempt + 1)
         else:
             log_info("Automatic re-trying failed with these args: " + str((table, data, attempt)))
+
+        return False
+
+    def create_token(self, email: str) -> Any:
+        """
+        Creates or overwrites token if one exists. If creation was successful, return token. If not, return False.
+        """
+
+        user = {"email": str(email), "token": secrets.token_hex(16)}
+        if validators.email(email):
+            if self._transactional_upsert("auth", user, ["email"]):
+                return token
+            else:
+                log_info("Error creating token for " + str(email))
+
+        return False
+
+    def check_auth_pair(self, token, email) -> Union[str, bool]:
+        """
+        Tries to fetch or make a token for a user. If not successful, return False
+        """
+        if token and email and self.possible_token(token):
+            if expected_token := self.find_token_by_email(str(email)):
+                if secrets.compare_digest(token, expected_token):
+                    return True
+        return False
+
+    def find_token_by_email(self, email: str) -> Any:
+        """
+        Finds token by email. If the token does not exist, return False.
+        """
+        entry = self.db['auth'].find_one(email=str(email))
+        token = entry.get('token')
+        if token and self.possible_token(token):
+            return token
+        return False
+
+    def possible_token(self, token: str) -> bool: 
+        """
+        Validates if the input is a valid 128-bit token (16 byte)
+
+        Args:
+            token: The possible 128-bit token
+
+        Returns:
+            True if it could be a token, otherwise False
+        """
+        try:
+            if isinstance(int(str(token), 16), int) and all(c in string.hexdigits for c in str(token)):
+                if len(str(token)) == 32:
+                    if "/" not in token:  # extra validation
+                        return True
+        except:
+            return False
 
         return False
