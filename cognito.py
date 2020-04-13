@@ -8,6 +8,11 @@ AUTH_URL = "https://auth.tadpoletutoring.org/oauth2/token"
 def check_callback(request) -> dict:
     """
     Returns user info object (dict)
+    Keys in dict:
+        email: str
+        email_verified: bool
+        sub: UUID?
+        username: str
     """
     code = str(request.args.get('code'))
     print("token", code, "request", request.args)
