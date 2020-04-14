@@ -3,6 +3,7 @@ import dataset
 from datetime import datetime, timedelta
 import validators
 import secrets
+import string
 from typing import *
 
 from utils.log import *
@@ -313,7 +314,7 @@ class Database:
         """
         Tries to fetch or make a token for a user. If not successful, return False
         """
-        if token and email:
+        if token and email and self.possible_token(token):
             log_info("Checking token and email pair, " + str(token) + " "+ str(email))
             if expected_token := self.find_token_by_email(str(email)):
                 if secrets.compare_digest(token, expected_token):
