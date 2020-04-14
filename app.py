@@ -1,5 +1,6 @@
 import os
 import secrets
+import views
 
 from flask import Flask, redirect, url_for, request, make_response, session, render_template, Markup
 from flask_dance.contrib.google import make_google_blueprint, google
@@ -38,7 +39,7 @@ def index():
     email = auth.check_login(request) # do stuff with this
     if email:
         state['logged_in'] = True
-    return render_template("index.html", navbar=Markup(render_template("navbar.html"), **state))
+    return render_template("index.html", navbar=views.render_navbar(state))
 
 @app.route('/login')
 def login():
@@ -56,7 +57,8 @@ def callback():
     Processes callback from AWS Cognito
     """
     user_info = cognito.check_callback(request)
-    response = make_response(render_template("index.html", navbar=Markup(render_template("navbar.html"))))
+    if user_info: # todo add more checks
+        response = make_response(render_template("index.html", navbar=views.render_navbar({})))
 
     return auth.set_login(response, user_info)
 
