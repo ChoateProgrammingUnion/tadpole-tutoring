@@ -34,10 +34,11 @@ app.register_blueprint(google_bp, url_prefix="/login")
 
 @app.route('/')
 def index():
+    state = {}
     email = auth.check_login(request) # do stuff with this
     if email:
-        print("logged in")
-    return render_template("index.html", navbar=Markup(render_template("navbar.html")))
+        state['logged_in'] = True
+    return render_template("index.html", navbar=Markup(render_template("navbar.html"), **state))
 
 @app.route('/login')
 def login():
