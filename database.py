@@ -313,9 +313,11 @@ class Database:
         """
         Tries to fetch or make a token for a user. If not successful, return False
         """
-        if token and email and self.possible_token(token):
+        if token and email:
+            log_info("Checking token and email pair, " + str(token) + " "+ str(email))
             if expected_token := self.find_token_by_email(str(email)):
                 if secrets.compare_digest(token, expected_token):
+                    log_info("Token check success: " + str(token))
                     return True
         return False
 
@@ -323,7 +325,7 @@ class Database:
         """
         Finds token by email. If the token does not exist, return False.
         """
-        entry = self.db['auth'].find_one(email=str(email))
+        entry = self._db['auth'].find_one(email=str(email))
         token = entry.get('token')
         if token and self.possible_token(token):
             return token
@@ -345,6 +347,8 @@ class Database:
                     if "/" not in token:  # extra validation
                         return True
         except:
+            log_info("Impossible token: " + str(token))
             return False
 
+        log_info("Impossible token: " + str(token))
         return False
