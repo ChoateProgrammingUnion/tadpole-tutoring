@@ -18,23 +18,63 @@ class Database:
             - "``email``": The teacher's email address
             - "``first_name``": The teacher's first name
             - "``last_name``": The teacher's last name
+            - "``subjects``": A pipe separated list of subjects that the teacher teachers
         2) "``students``": A table used to map a student's email address to their name. Columns are as follows:
             - "``email``": The student's email address
             - "``first_name``": The student's first name
             - "``last_name``": The student's last name
+            - "``notes``": Notes about the student by the teacher
         3) "``times``": A table used to store the times teachers have set for tutoring, and who, if anyone, has claimed them. Columns are as follows:
             - "``teacher_email``": The teacher's email address hosting the tutoring session
             - "``start_time``": A unix timestamp representing the start of the session
-            - "``duration``": The duration of the tutoring session (in seconds)
+            - "``duration_type``": A number representing the duration of the session (0 for 1hr, 1 for 1.5hr)
             - "``claimed``": A boolean representing if the session has been claimed
             - "``student``": The email address of the student who claimed the session
         4) "``auth`": A table used to store the email and auth, key-value pairs. Columns are as follows: 
             - "``teacher_email``": The teacher's email address hosting the tutoring session.
             - "``token``: The random 128-bit token hex string.
 
-    Attributes:
-        _db (dataset.Database): The sql database
+    Examples:
+        **Handle a teacher login (call this once you know the teacher's email address)**::
 
+            db.init_db_connection()
+            if not db.check_teacher("ateacher@choate.edu"):
+                # Teacher isn't in the database
+                # Get the teacher to specify their name and the subjects they teach, then call the following:
+                db.add_teacher("ateacher@choate.edu", "A", "Teacher", ["Math", "English"])
+            db.end_db_connection()
+
+        **Handle a student login**::
+
+            db.init_db_connection()
+            db.add_student("astudent@choate.edu", "A", "Student")
+            db.end_db_connection()
+
+        **Add a tutoring time (from teacher acct)**::
+
+            db.init_db_connection()
+            # 0 at the end means is is a 1hr session, 1 would be 1.5 hr
+            db.add_time_for_tutoring("ateacher@choate.edu", datetime.datetime(2020, 4, 14, 10, 00), 0)
+            db.end_db_connection()
+
+        **Claim an available math tutoring time (from student acct)**::
+
+            db.init_db_connection()
+            possible_times = db.search_times(subject="Math", min_start_time=datetime.datetime.now(), must_be_unclaimed=True)
+            db.claim_time("astudent@choate.edu", time_id=possible_times[0]['id'])
+            db.end_db_connection()
+
+        **Get student notes (from teacher acct)**::
+
+            db.init_db_connection()
+            notes = db.get_student_notes("astudent@choate.edu")
+            db.end_db_connection()
+
+        **Change student notes (from teacher acct)**::
+
+            db.init_db_connection()
+            db.set_student_notes("astudent@choate.edu", "A Student is a very good student...")
+            db.end_db_connection()
     """
 
     def __init__(self):
@@ -42,10 +82,22 @@ class Database:
         self.init_db_connection()
         self.end_db_connection()
 
-    def add_teacher(self, email: str, first_name: str, last_name: str) -> bool:
+    def check_teacher(self, email: str) -> bool:
+        """
+        Checks if a teacher is in the database
+        
+        Args:
+            email: The email of the teacher
+
+        Returns:
+            True if the teacher was added to the database or was already there, False if something went wrong
+        """
+        return bool(self._db['teachers'].find_one(email=email))
+
+    def add_teacher(self, email: str, first_name: str, last_name: str, subjects: List[str]) -> bool:
         """
         Adds a teacher to the database
-        
+
         Args:
             email: The email of the teacher
             first_name: The teacher's first name
@@ -54,7 +106,7 @@ class Database:
         Returns:
             True if the teacher was added to the database or was already there, False if something went wrong
         """
-        data = {"email": email, "first_name": first_name, "last_name": last_name}
+        data = {"email": email, "first_name": first_name, "last_name": last_name, "subjects": "|".join(subjects)}
         return self._transactional_upsert("teachers", data, ["email"])
 
     def add_student(self, email: str, first_name: str, last_name: str) -> bool:
@@ -69,36 +121,24 @@ class Database:
         data = {"email": email, "first_name": first_name, "last_name": last_name}
         return self._transactional_upsert("students", data, ["email"])
 
-    def add_time_for_tutoring(self, teacher_email: str, start_time: datetime, duration: timedelta):
+    def add_time_for_tutoring(self, teacher_email: str, start_time: datetime, duration_type: int = 0):
         """
         Adds a time for tutoring. Intended to be used by a teacher once they have logged in. It is assumed that they
         are already authorized.
 
         Args:
-            teacher_email:
-            start_time:
-            duration:
+            teacher_email: Teacher's email address
+            start_time: Start time of the session
+            is_hour_long: If the session is 1hr long (otherwise 1.5hr)
 
         Returns:
             False if there was already a session in that time or the insert failed, otherwise True
         """
         start_time_unix = start_time.timestamp()
-        duration_seconds = int(duration.total_seconds())
-
-        for time in self._db['times'].find(teacher_email=teacher_email):
-            try:
-                c_start = int(time['start_time'])
-                c_end = c_start + int(time['duration'])
-            except KeyError:
-                continue
-
-            if (c_start < start_time_unix < c_end) or (start_time_unix < c_start < start_time_unix + duration_seconds):
-                log_info("Attempted to add overlapping session", header=teacher_email)
-                return False
 
         data = {'teacher_email': teacher_email,
                 'start_time': start_time_unix,
-                'duration': duration_seconds,
+                'duration_type': duration_type,
                 'claimed': False,
                 'student': ''}
 
@@ -120,6 +160,7 @@ class Database:
 
         if time_to_claim:
             if time_to_claim.get('claimed'):
+                log_info("Time with id " + str(time_id) + " is already claimed", header=student_email)
                 return False
 
             time_to_claim['claimed'] = True
@@ -127,6 +168,7 @@ class Database:
 
             return self._transactional_upsert('times', time_to_claim, ["id"])
 
+        log_info("Unable to find time with id " + str(time_id), header=student_email)
         return False
 
     def unclaim_time(self, student_email: str, time_id: int):
@@ -145,25 +187,29 @@ class Database:
 
         if time_to_unclaim:
             if not time_to_unclaim.get('claimed'):
+                log_info("Attempted to unclaim an unclaimed time with id " + str(time_id), header=student_email)
                 return False
 
             c_student = time_to_unclaim.get("student")
 
             if c_student and c_student != student_email:
+                log_info("Attempted to unclaim time id " + str(time_id) + " that belongs to " + str(c_student), header=student_email)
                 return False
 
             time_to_unclaim['claimed'] = False
 
             return self._transactional_upsert('times', time_to_unclaim, ["id"])
 
+        log_info("Unable to find time with id " + str(time_id), header=student_email)
         return False
 
-    def search_times(self, teacher_email: str = None, min_start_time: datetime = None, max_start_time: datetime = None, must_be_unclaimed: bool = False) -> List[dict]:
+    def search_times(self, teacher_email: str = None, subject: str = None, min_start_time: datetime = None, max_start_time: datetime = None, must_be_unclaimed: bool = False) -> List[dict]:
         """
         Searches the database for tutoring sessions satisfying the search parameters
 
         Args:
             teacher_email: The teacher's email address (None for all teachers)
+            subject: The subject of the time (None for all subjects)
             min_start_time: The earliest start time for the session (None for all times)
             max_start_time: The latest start time for the session (None for all times)
             must_be_unclaimed: If the session has to be unclaimed
@@ -189,10 +235,16 @@ class Database:
         for t in possible_times:
             try:
                 c_start = t['start_time']
-                c_duration = t['duration']
                 c_claimed = t['claimed']
+                c_teacher_email = t['teacher_email']
             except KeyError:
+                log_error("Invalid time: " + str(t))
                 continue
+
+            if subject:
+                if c_teacher := self._db['teachers'].find_one(email=c_teacher_email):
+                    if subject not in c_teacher['subjects']:
+                        continue
 
             if must_be_unclaimed and c_claimed:
                 continue
@@ -204,11 +256,43 @@ class Database:
                 continue
 
             t['start_time'] = datetime.fromtimestamp(c_start)
-            t['end_time'] = datetime.fromtimestamp(c_start + c_duration)
-            t['duration'] = t['end_time'] - t['start_time']
             results.append(t)
 
         return results
+
+    def get_student_notes(self, student_email: str) -> str:
+        """
+        Gets the teacher notes for a given student
+
+        Args:
+            student_email: The email of the student
+
+        Returns:
+            The notes as a string. Returns an empty string if no student was found or if the student has no notes
+        """
+        if student := self._db['students'].find_one(email=student_email):
+            if notes := student.get('notes'):
+                return notes
+
+        return ''
+
+    def set_student_notes(self, student_email: str, notes: str) -> bool:
+        """
+        Sets the teacher notes for a given student
+
+        Args:
+            student_email: The email of the student
+            notes: The notes to set
+
+        Returns:
+            True if the student is in the database and the notes were set, otherwise False
+        """
+        if student := self._db['students'].find_one(email=student_email):
+            student['notes'] = notes
+
+            return self._transactional_upsert('students', student, ['id'])
+
+        return False
 
     def init_db_connection(self, attempt=0):
         """
