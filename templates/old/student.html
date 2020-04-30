@@ -1,0 +1,333 @@
+<html>
+<head>
+	 <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+      <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css" integrity="sha384-" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/tadpole.css">
+    <link rel="stylesheet" href="css/layouts/side-menu.css">
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@200&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@500&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Catamaran:wght@100&display=swap" rel="stylesheet"> 
+	<link href="https://fonts.googleapis.com/css2?family=Karla&display=swap" rel="stylesheet">
+
+</head>  
+<style>
+	/* Remove the navbar's default margin-bottom and rounded borders */
+.navbar {
+    margin-bottom: 0;
+    border-radius: 0;
+    font-family: 'Work Sans', sans-serif;
+}
+
+body {
+    background-color: white;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+}
+
+h1 {
+    margin-bottom: 30px;
+    margin-top: 30px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 50px;
+}
+
+h3 {
+    font-family: 'Work Sans', sans-serif;
+}
+
+/* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+.row.content {
+    height: 450px;
+    font-family: 'Work Sans', sans-serif;
+}
+
+/* Set gray background color and 100% height */
+.sidenav {
+    padding-top: 20px;
+    background-color: #e6eced;
+    height: 100%;
+    font-family: 'Work Sans', sans-serif;
+    padding-bottom: 3em;
+    border-radius: 15px;
+    float: right;
+}
+
+/* Set black background color, white text and some padding */
+footer {
+    background-color: #555;
+    color: #84a4b0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 15px;
+    font-family: 'Work Sans', sans-serif;
+}
+
+/* On small screens, set height to 'auto' for sidenav and grid */
+@media screen and (max-width: 767px) {
+    .sidenav {
+        height: auto;
+        padding: 15px;
+    }
+
+    .row.content {
+        height: auto;
+    }
+}
+
+.home-menu {
+    background: #bbe9fa;
+    padding: 0.5em;
+    text-align: right;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.10);
+    font-family: 'Work Sans', sans-serif;
+}
+
+.home-menu {
+
+}
+
+.well {
+    border-radius: 10px;
+}
+
+.pure-menu.pure-menu-fixed {
+    /* Fixed menus normally have a border at the bottom. */
+    border-bottom: none;
+    /* I need a higher z-index here because of the scroll-over effect. */
+    z-index: 1;
+}
+
+.home-menu .pure-menu-heading {
+    color: black;
+    font-weight: 400;
+    font-size: 120%;
+}
+
+.pure-menu-heading {
+    float: left;
+    font-size: 1em;
+}
+
+.home-menu .pure-menu-selected a {
+    color: black;
+}
+
+.home-menu a {
+    color: #327885;
+}
+
+.home-menu li a:hover,
+.home-menu li a:focus {
+    background: #d1d1d1;
+    border: none;
+    color: #327885;
+
+}
+
+p {
+    font-family: 'Mukta', sans-serif;
+}
+
+.inner {
+    font-size: 1em;
+    font-family: 'Catamaran', sans-serif;
+}
+
+.maine {
+    margin-left: 30%;
+    float: right;
+}
+
+ul {list-style-type: none;}
+.week {
+  font-family: 'Karla', sans-serif;
+  padding: 30px 25px;
+  width: 25%;
+  background: #41a6e0;
+  text-align: center;
+  font-size: 50px;
+}
+
+/* Month list */
+.week ul {
+  margin: 0;
+  padding: 0;
+}
+
+.week ul li {
+  color: white;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+
+/* Weekdays (Mon-Sun) */
+.weekdays {
+  margin: 0;
+  padding: 5px 0;
+  background-color:#ddd;
+  width: 25%;
+}
+
+.weekdays li {
+  display: inline-block;
+  width: 13%;
+  color: #666;
+  text-align: center;
+}
+
+.days {
+  padding: 10px 0;
+  background: #eee;
+  margin: 0;
+  width:25%;
+}
+
+.days li {
+  list-style-type: none;
+  display: inline-block;
+  width: 13%;
+  height: 5%;
+  text-align: center;
+  margin-bottom: 5px;
+  font-size:12px;
+  color: #777;
+}
+
+/* Highlight the "current" day */
+.days li .active {
+  padding: 12px;
+  background: #1abc9c;
+  color: white !important
+}
+
+.findtutor {
+    font-family: 'Work Sans', sans-serif;
+	width: 25%;
+	background: #c4e1f2;
+	margin-top:50px;
+	float: left;
+	text-align: center;
+}
+
+.lable{
+    font-family: 'Karla', sans-serif;
+	background: #4f849e;
+	color: white;
+	padding: 10px;
+	font-size: 20px;
+}
+
+.labl {
+    font-family: 'Karla', sans-serif;
+	background: #4f849e;
+	color: white;
+	padding: 10px;
+	font-size: 20px;
+}
+.findtime{
+    font-family: 'Work Sans', sans-serif;
+	width: 25%;
+	background: #c4e1f2;
+	margin-top:50px;
+	float: left;
+	text-align: center;
+}
+
+.oof {
+	float: right;
+	text-align: center;
+	margin-right: 1em;
+	font-family: 'Karla', sans-serif;
+	font-size: 2em;
+	background: #41a6e0;
+	padding: 30px;
+	color: white;
+}
+.tutorav, .tutort {
+	display: inline-block;
+	float: right;
+	text-align: center;
+
+}
+
+.h2 {
+    font-family: 'Work Sans', sans-serif;
+	font-size: 30px;
+	text-align: center;
+}
+
+</style>
+
+<div class="navbar">
+    <div class="header">
+        <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+            <a class="pure-menu-heading">Tadpole Tutoring</a>
+
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-selected"><a href="index.html" class="pure-menu-link">Home</a></li>
+                <li class="pure-menu-item"><a href="about.html" class="pure-menu-link">About Us</a></li>
+                <li class="pure-menu-item"><a href="mission.html" class="pure-menu-link">Our Mission</a></li>
+                {% if logged_in %}
+                <li class="pure-menu-item"><a href="/logout" class="pure-menu-link">Log Out</a></li>
+                {% else %}
+                <li class="pure-menu-item"><a href="/login" class="pure-menu-link">Log In</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<main>
+
+
+</div>
+<h1><center> Welcome, {{name}} </center></h1>
+<!-- <div class="nextsession">
+	<h2 class="oof"> Next Session </p></h2>
+</div> -->
+<body>
+	<h2>Weekly Info</h2>
+		<p style="width: 25%;"> Filler textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller textFiller text</p>
+</body>
+<p class = "oof" id="clickdetector" onclick="Click()">Next Session</p>
+<script type="text/javascript" src="main.js">
+
+</script>
+
+<div class="findtutor">
+  <p class="lable">Find a Tutor</p>
+  <form action="/action_page.php">
+  <label for="fname">First name:</label><br>
+  <input type="text" id="fname" name="fname" value="John"><br>
+  <label for="lname">Last name:</label><br>
+  <input type="text" id="lname" name="lname" value="Doe"><br><br>
+  <input type="submit" value="Submit">
+</form> 
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<div class="findtime">
+  <p class="labl">Find a Time</p>
+  <form action="/action_page.php">
+  <label for="fname">First Choice:</label><br>
+  <input type="text" id="fname" name="fname" value="Ex. 4:00PM EST"><br>
+  <label for="lname">Second Choice:</label><br>
+  <input type="text" id="lname" name="lname" value="Ex. 5:00 PM EST"><br><br>
+  <input type="submit" value="Submit">
+</form> 
+</div>
+
+
+</main>
+</html>
