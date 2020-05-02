@@ -82,6 +82,18 @@ class Database:
         self.init_db_connection()
         self.end_db_connection()
 
+    def check_student(self, email: str) -> bool:
+        """
+        Checks if a student is in the database
+        
+        Args:
+            email: The email of the student
+
+        Returns:
+            True if the student was added to the database or was already there, False if something went wrong
+        """
+        return bool(self._db['students'].find_one(email=email))
+
     def check_teacher(self, email: str) -> bool:
         """
         Checks if a teacher is in the database
@@ -109,7 +121,8 @@ class Database:
         data = {"email": email, "first_name": first_name, "last_name": last_name, "subjects": "|".join(subjects)}
         return self._transactional_upsert("teachers", data, ["email"])
 
-    def add_student(self, email: str, first_name: str, last_name: str) -> bool:
+    def add_student(self, email: str) -> bool:
+    # def add_student(self, email: str, first_name: str, last_name: str) -> bool:
         """
         Adds a student to the database
 
@@ -118,7 +131,7 @@ class Database:
             first_name: The student's first name
             last_name: The student's last name
         """
-        data = {"email": email, "first_name": first_name, "last_name": last_name}
+        data = {"email": email}
         return self._transactional_upsert("students", data, ["email"])
 
     def add_time_for_tutoring(self, teacher_email: str, start_time: datetime, duration_type: int = 0):
@@ -275,6 +288,20 @@ class Database:
                 return notes
 
         return ''
+
+    def get_student(self, student_email: str) -> dict:
+        """
+        Gets everything for a given student
+
+        Args:
+            student_email: The email of the student
+
+        Returns:
+            Everything about the student as a dict. Returns an empty dict if no student was found or if the student has no notes.
+        """
+        if student := self._db['students'].find_one(email=student_email):
+            return student
+        return {}
 
     def set_student_notes(self, student_email: str, notes: str) -> bool:
         """

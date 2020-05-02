@@ -68,4 +68,10 @@ def set_login(response, user_info) -> str:
     log_info("Set login failed for " + str(email))
     return response
 
+def check_teacher(request):
+    email = auth.check_login(request)
+    if email:
+        authentication = database.Database()
+        return authentication.check_teacher(email)
+    return False
 
