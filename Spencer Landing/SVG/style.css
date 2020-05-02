@@ -1,0 +1,17 @@
+/*
+** This CSS code is not done to the web.
+** The automatic HTML and CSS code are only a helper.
+*/
+
+body {
+  text-align: center;
+}
+
+#element-1 {
+  top: 146px;
+  height: 159px;
+  width: 716px;
+  background: url("Button.png") no-repeat;
+  position: absolute;
+  left: 38px;
+}
