@@ -13,6 +13,8 @@ def register_student(request):
         db.init_db_connection()
         db.add_student(email)
         db.end_db_connection()
+        return True
+    return False
 
 # @app.route('/api/person')
 def get_student(request, email: str):
@@ -46,7 +48,7 @@ def get_student(request, email: str):
 # @app.route('/api/teachers')
 def fetch_teachers(request):
     """
-    gets pending teachers
+    Gets all teachers
     Only for signed-in users
     """
     pass
@@ -60,4 +62,5 @@ def confirm_teacher(request):
 def claim_teacher(request):
     pass
 
-def claim_time
+def claim_time(request):
+    pass
