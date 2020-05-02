@@ -85,7 +85,7 @@ class Database:
     def check_student(self, email: str) -> bool:
         """
         Checks if a student is in the database
-        
+
         Args:
             email: The email of the student
 
@@ -133,6 +133,25 @@ class Database:
         """
         data = {"email": email}
         return self._transactional_upsert("students", data, ["email"])
+
+    def make_teacher(self, email: str, subjects: List[str]) -> bool:
+        """
+        Makes a student into a teacher
+
+        Args:
+            email: The email of the student
+
+        Returns:
+            True if the
+        """
+
+        if student := self.get_student(email):
+            if student_email := student.get("email"):
+                if self.add_teacher(student_email, student.get("first_name"), student.get("last_name"), subjects):
+                    self._db['students'].delete(email=student_email)
+                    return True
+
+        return False
 
     def add_time_for_tutoring(self, teacher_email: str, start_time: datetime, duration_type: int = 0):
         """
