@@ -1,19 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-{{ header }}
+<head>
+    {{ header }}
+    <script>
+        $( document ).ready(function() {
+            $( "#switch-tutor" ).click();
+        });
+    </script>
+</head>
 <body>
     <header>
     {{ navbar }}
     </header>
     <main>
-        <span style="margin-left:80%">
-            By Time
-            <label class="switch">
+        <div style="margin-left:80%">
+            <div style="display: inline-block">
+            <span style="white-space: nowrap;">By Time</span>
+            <label id="switch-tutor" class="switch">
                 <input type="checkbox">
                 <span class="slider round"></span> 
             </label> 
-            By Tutor
-        <span>
+            <span style="white-space: nowrap;">By Tutor</span>
+            </div>
+        </div>
         <section>
 
             <header>
