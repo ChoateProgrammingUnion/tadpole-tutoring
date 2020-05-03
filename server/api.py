@@ -40,7 +40,7 @@ def get_person(request):
             db.init_db_connection()
             student = db.get_student(email)
             db.end_db_connection()
-        return student
+        return dict(student)
 
     elif validators.email(email) and (email_requester := auth.check_login(request)):
         if email_requester and validators.email(email_requester) and email == email_requester:
@@ -52,7 +52,7 @@ def get_person(request):
             if 'notes' in student:
                 del student['notes']
 
-            return student
+            return dict(student)
 
     log_info("No person with email " + email + " found in database")
     return None
@@ -64,6 +64,9 @@ def fetch_teachers():
     db.init_db_connection()
     all_teachers = db.all_teachers()
     db.end_db_connection()
+
+    for i, t in enumerate(all_teachers):
+        all_teachers[i] = dict(t)
 
     return all_teachers
 
