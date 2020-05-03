@@ -63,7 +63,7 @@ def fetch_teachers():
     all_teachers = db.all_teachers()
     db.end_db_connection()
 
-    return {"teachers": list(all_teachers)}
+    return all_teachers
 
 def update_time(request):
     id = request.args.get("id", None, int)
