@@ -6,7 +6,7 @@ import flask
 import api
 import views
 
-from flask import Flask, redirect, url_for, request, make_response, session, render_template, Markup
+from flask import Flask, redirect, url_for, request, make_response, session, render_template, Markup, jsonify
 from flask_dance.contrib.google import make_google_blueprint, google
 
 import auth
@@ -89,6 +89,7 @@ def api_get_person():
 
 @app.route('/api/teachers')
 def api_fetch_teachers():
+    # return jsonify(api.fetch_teachers())
     return api.fetch_teachers()
 
 @app.route('/api/update-time')
