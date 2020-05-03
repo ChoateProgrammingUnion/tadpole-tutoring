@@ -1,0 +1,2 @@
+python3 compile.py
+aws s3 sync compiled/ s3://tadpoletutoring.org --exclude "*.git*" --exclude "Gem*" --exclude "*.gemspec" --exclude "deploy" --exclude "*.sh"
