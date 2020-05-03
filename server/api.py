@@ -1,6 +1,8 @@
 import database
 import validators
 import auth
+import codecs
+import pickle
 
 from utils.log import *
 
@@ -50,7 +52,7 @@ def get_person(request):
             if 'notes' in student:
                 del student['notes']
 
-            return studen
+            return student
 
     log_info("No person with email " + email + " found in database")
     return None
@@ -115,3 +117,6 @@ def claim_time(request):
 
     log_info("claim_time was called, student_email and time_id weren't specified")
     return False
+
+def pickle_str(obj):
+    return codecs.encode(pickle.dumps(obj), "base64").decode()
