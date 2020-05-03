@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-    <link rel="icon" href="https://via.placeholder.com/70x70">
+<head>
+        <link rel="icon" href="images/Tadpole_Tutoring_Logo_Favicon_32.png">
     <link rel="stylesheet" href="https://andybrewer.github.io/mvp/mvp.css">
 
     <meta charset="utf-8">
@@ -12,7 +13,18 @@
     <script type="text/javascript" src="brython/brython_stdlib.js"></script>
     <title>Tadpole Tutoring</title>
     <style>
-    /* From https://www.w3schools.com/howto/howto_css_switch.asp */
+    body {
+        padding-top: 0;
+    }
+
+    :root {
+        --color: #437947;
+        --color-accent: #4379470b;
+        --color-secondary: #6c6c6c;
+        --color-secondary-accent: #6c6c6c0b;
+    }
+
+        /* From https://www.w3schools.com/howto/howto_css_switch.asp */
      /* The switch - the box around the slider */
     .switch {
       position: relative;
@@ -88,9 +100,52 @@
     <!-- use the element -->
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
 
-<body>
-    <header>
-            <nav style="margin-bottom:1rem">
+    <script>
+        $( document ).ready(function() {
+            $( "#switch-tutor" ).click();
+        });
+    </script>
+</head>
+<body onload="brython()">
+    <script type="text/python">
+        from browser import document, alert
+        import browser
+        from browser.template import Template
+        # from browser import document, alert, Template
+        import urllib.request
+        import pickle
+        import base64
+
+        def echo(ev):
+            value = document['switch-tutor-value'].text
+            value = not bool(value)
+
+            if value:
+                document['switch-tutor-value'].text = "True"
+                search_by_tutor()
+            else:
+                document['switch-tutor-value'].text = ""
+
+        def fetch_template(vars):
+            # URL = str(browser.window.location.href).replace(str(browser.window.location.pathname), "/")
+            response = urllib.request.urlopen("/teacher_bio.html").read().rstrip()
+            for each_var in vars:
+                print(Template(response).render(**each_var))
+
+        def search_by_tutor():
+            # URL = "api.tadpoletutoring.org"
+            URL = "http://localhost:5000"
+            response = urllib.request.urlopen(URL + "/api/teachers").read().rstrip()
+            response_decode = base64.b64decode(response.encode())
+            response_dict = pickle.loads(response_decode)
+            print(response_dict)
+            fetch_template(response_dict)
+
+
+        document["clicky-slider"].bind("mouseup", echo)
+    </script>
+    <header style="padding-top: 0; padding-bottom: 0;">
+            <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
             <a href="/"><img alt="Logo" src="logo.png" height="70"></a>
             <div>
             <ul>
@@ -106,58 +161,26 @@
 
     </header>
     <main>
-        <hr>
+        <div style="margin-left:80%" id="clicky-slider">
+            <div style="display: inline-block">
+            <span style="white-space: nowrap;">By Time</span>
+            <label id="switch-tutor" class="switch">
+                <input type="checkbox">
+                <span class="slider round"></span> 
+            </label> 
+            <span style="white-space: nowrap;">By Tutor</span>
+            <span id="switch-tutor-value" style="visibility:hidden">True</span>
+            </div>
+        </div>
         <section>
             <header>
-                <h2>Section Heading</h2>
-                <p>Section Subheading</p>
+                <h2>Our Tutors</h2>
+                <p>Our team of tutors is small and tight-knit. Each tutor here is hand-picked to help ensure that you can learn well.</p>
             </header>
-            <aside>
-                <h3>Card heading</h3>
-                <p>Card content*</p>
-                <p><small>*with small content</small></p>
-            </aside>
-            <aside>
-                <h3>Card heading</h3>
-                <p>Card content <sup>with notification</sup></p>
-            </aside>
-            <aside>
-                <h3>Card heading</h3>
-                <p>Card content</p>
-            </aside>
+            <div id="results">
+            </div>
         </section>
-        <section>
-            <div id="paypal-button-container"></div>
-<script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD" data-sdk-integration-source="button-factory"></script>
-<script>
-  paypal.Buttons({
-      style: {
-          shape: 'pill',
-          color: 'white',
-          layout: 'vertical',
-          label: 'paypal',
-          
-      },
-      createOrder: function(data, actions) {
-          return actions.order.create({
-              purchase_units: [{
-                  amount: {
-                      value: '1'
-                  }
-              }]
-          });
-      },
-      onApprove: function(data, actions) {
-          return actions.order.capture().then(function(details) {
-              alert('Transaction completed by ' + details.payer.name.given_name + '!');
-          });
-      }
-  }).render('#paypal-button-container');
-</script>
-        </section>
-        <hr>
     </main>
-    <footer>
 <footer>
     <hr>
     <p>
@@ -167,7 +190,6 @@
     <p>Open source under the MIT license.</p>
 </footer>
 
-    </footer>
 </body>
 
 </html>

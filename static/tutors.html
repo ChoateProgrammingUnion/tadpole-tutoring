@@ -11,6 +11,9 @@
 <body onload="brython()">
     <script type="text/python">
         from browser import document, alert
+        import browser
+        from browser.template import Template
+        # from browser import document, alert, Template
         import urllib.request
         import pickle
         import base64
@@ -25,17 +28,21 @@
             else:
                 document['switch-tutor-value'].text = ""
 
+        def fetch_template(vars):
+            # URL = str(browser.window.location.href).replace(str(browser.window.location.pathname), "/")
+            response = urllib.request.urlopen("/teacher_bio.html").read().rstrip()
+            for each_var in vars:
+                print(Template(response).render(**each_var))
+
         def search_by_tutor():
-            alert("test")
             # URL = "api.tadpoletutoring.org"
             URL = "http://localhost:5000"
             response = urllib.request.urlopen(URL + "/api/teachers").read().rstrip()
-            print("response", response)
-            # response_dict = pickle.loads(codecs.decode(response.encode(), "base64"))
             response_decode = base64.b64decode(response.encode())
-            print("b64", response_decode)
             response_dict = pickle.loads(response_decode)
             print(response_dict)
+            fetch_template(response_dict)
+
 
         document["clicky-slider"].bind("mouseup", echo)
     </script>
@@ -55,19 +62,12 @@
             </div>
         </div>
         <section>
-
             <header>
                 <h2>Our Tutors</h2>
                 <p>Our team of tutors is small and tight-knit. Each tutor here is hand-picked to help ensure that you can learn well.</p>
             </header>
-            <aside>
-                <center>
-                    <img alt="Profile Picture" src="https://github.com/identicons/jasonlong.png" height="150">
-                    <h3>Andrew Shenouda</h3>
-                </center>
-                <p><b>Studies at:</b> Choate Rosemary Hall</p>
-                <p>Bio content</p>
-            </aside>
+            <div id="results">
+            </div>
         </section>
     </main>
 {{ footer }}
