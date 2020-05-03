@@ -238,7 +238,7 @@ class Database:
         if student is not None:
             updated_time.update({"student": student})
 
-        return self._transactional_upsert("teachers", updated_time, ['id'])
+        return self._transactional_upsert("times", updated_time, ['id'])
 
     def unclaim_time(self, student_email: str, time_id: int):
         """
