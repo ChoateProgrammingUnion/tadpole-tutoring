@@ -106,7 +106,7 @@ def api_make_teacher():
     return flask.abort(500)
 
 @app.route('/api/claim-time')
-def api_register_student():
+def api_claim_time():
     if api.claim_time(request):
         return {}
 
