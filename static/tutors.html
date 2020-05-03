@@ -11,6 +11,7 @@
 <body onload="brython()">
     <script type="text/python">
         from browser import document, alert
+        import urllib.request
 
         def echo(ev):
             value = document['switch-tutor-value'].text
@@ -23,7 +24,11 @@
                 document['switch-tutor-value'].text = ""
 
         def search_by_tutor():
-            pass
+            # URL = "api.tadpoletutoring.org"
+            URL = "http://localhost:5000"
+            response = urllib.request.urlopen(URL + "/api/teachers").read()
+            # response = requests.get()
+            print(response)
 
         document["clicky-slider"].bind("mouseup", echo)
     </script>

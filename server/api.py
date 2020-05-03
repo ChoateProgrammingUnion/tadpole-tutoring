@@ -49,12 +49,10 @@ def get_person(request):
             if 'notes' in student:
                 del student['notes']
 
-            return student
+            return studen
 
     log_info("No person with email " + email + " found in database")
     return None
-
-
 
 # @app.route('/api/teachers')
 def fetch_teachers():
@@ -64,7 +62,7 @@ def fetch_teachers():
     all_teachers = db.all_teachers()
     db.end_db_connection()
 
-    return all_teachers
+    return {"teachers": list(all_teachers)}
 
 def update_time(request):
     id = request.args.get("id", None, int)
