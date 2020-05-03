@@ -1,5 +1,3 @@
-from flask import globals
-
 import database
 import validators
 import auth
