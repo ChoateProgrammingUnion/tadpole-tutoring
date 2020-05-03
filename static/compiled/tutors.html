@@ -13,7 +13,11 @@
     <script type="text/javascript" src="brython/brython_stdlib.js"></script>
     <title>Tadpole Tutoring</title>
     <style>
-    /* From https://www.w3schools.com/howto/howto_css_switch.asp */
+    body {
+        padding-top: 0;
+    }
+
+        /* From https://www.w3schools.com/howto/howto_css_switch.asp */
      /* The switch - the box around the slider */
     .switch {
       position: relative;
@@ -120,7 +124,7 @@
         document["clicky-slider"].bind("mouseup", echo)
     </script>
     <header style="padding-top: 0; padding-bottom: 0;">
-            <nav id="navbar" style="margin-bottom:1rem; overflow: hidden; background-color: #ffffff; width: 100%;">
+            <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
             <a href="/"><img alt="Logo" src="logo.png" height="70"></a>
             <div>
             <ul>
