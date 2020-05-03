@@ -17,6 +17,7 @@
         import urllib.request
         import pickle
         import base64
+        import collections
 
         def echo(ev):
             value = document['switch-tutor-value'].text
@@ -31,8 +32,15 @@
         def fetch_template(vars):
             # URL = str(browser.window.location.href).replace(str(browser.window.location.pathname), "/")
             response = urllib.request.urlopen("/teacher_bio.html").read().rstrip()
+            html = ""
             for each_var in vars:
-                print(Template(response).render(**each_var))
+                each_dict = {x_var: y_var for _, (x_var, y_var) in each_var.items()}
+                # each_dict = dict(collections.OrderedDict(each_var))
+                # html += Template(response).render(**each_dict)
+                print(response, each_dict)
+                html += response.format(**each_dict)
+
+            return html
 
         def search_by_tutor():
             # URL = "api.tadpoletutoring.org"
@@ -40,11 +48,12 @@
             response = urllib.request.urlopen(URL + "/api/teachers").read().rstrip()
             response_decode = base64.b64decode(response.encode())
             response_dict = pickle.loads(response_decode)
-            print(response_dict)
-            fetch_template(response_dict)
-
+            html = fetch_template(response_dict)
+            print("HTML", html)
+            document['schedule-results'].html = html
 
         document["clicky-slider"].bind("mouseup", echo)
+        echo("None")
     </script>
     <header style="padding-top: 0; padding-bottom: 0;">
     {{ navbar }}
@@ -66,8 +75,7 @@
                 <h2>Our Tutors</h2>
                 <p>Our team of tutors is small and tight-knit. Each tutor here is hand-picked to help ensure that you can learn well.</p>
             </header>
-            <div id="results">
-            </div>
+            <span id="schedule-results"></span>
         </section>
     </main>
 {{ footer }}

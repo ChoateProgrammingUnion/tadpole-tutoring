@@ -25,6 +25,7 @@ for each_import in imports:
 # with open("footer.html") as f:
     # footer = f.read()
 # args["footer"] = footer
+print(imports, pages)
 
 for each_file in pages:
     with open(each_file) as f:
@@ -40,4 +41,4 @@ for each_file in imports:
         html = f.read().rstrip()
 
     with open("precompile/" + each_file, "w") as f:
-        f.write(rendered)
+        f.write(html)

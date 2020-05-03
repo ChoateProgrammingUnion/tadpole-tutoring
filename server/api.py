@@ -65,7 +65,7 @@ def fetch_teachers():
     all_teachers = db.all_teachers()
     db.end_db_connection()
 
-    all_teachers_dict = [{str(key): [str(each_value) for each_value in value] for (key, value) in enumerate(teachers.items())} for teachers in all_teachers]
+    all_teachers_dict = [{str(key): [str(each_value) for each_value in value] for (key, value) in enumerate(dict(teachers).items())} for teachers in all_teachers]
     # for index, value in enumerate(all_teachers): # todo: change to dictionary comprehension
         # teacher_dict = {}
         # for key, value in enumerate(value.items()):
