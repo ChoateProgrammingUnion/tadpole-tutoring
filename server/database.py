@@ -153,7 +153,7 @@ class Database:
 
         return False
 
-    def all_teachers(self) -> bool:
+    def all_teachers(self) -> List[OrderedDict]:
         """
         Gets all teachers in the database
 
@@ -161,7 +161,7 @@ class Database:
             List of teacher dicts
         """
 
-        return self._db['teachers'].all()
+        return list(self._db['teachers'].all())
 
     def add_time_for_tutoring(self, teacher_email: str, start_time: datetime, duration_type: int = 0):
         """

@@ -110,6 +110,8 @@
     <script type="text/python">
         from browser import document, alert
         import urllib.request
+        import pickle
+        import base64
 
         def echo(ev):
             value = document['switch-tutor-value'].text
@@ -125,8 +127,13 @@
             alert("test")
             # URL = "api.tadpoletutoring.org"
             URL = "http://localhost:5000"
-            response = urllib.request.urlopen(URL + "/api/teachers").read()
-            print(response)
+            response = urllib.request.urlopen(URL + "/api/teachers").read().rstrip()
+            print("response", response)
+            # response_dict = pickle.loads(codecs.decode(response.encode(), "base64"))
+            response_decode = base64.b64decode(response.encode())
+            print("b64", response_decode)
+            response_dict = pickle.loads(response_decode)
+            print(response_dict)
 
         document["clicky-slider"].bind("mouseup", echo)
     </script>
