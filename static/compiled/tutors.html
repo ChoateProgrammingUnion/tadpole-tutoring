@@ -17,6 +17,13 @@
         padding-top: 0;
     }
 
+    :root {
+        --color: #437947;
+        --color-accent: #4379470b;
+        --color-secondary: #6c6c6c;
+        --color-secondary-accent: #6c6c6c0b;
+    }
+
         /* From https://www.w3schools.com/howto/howto_css_switch.asp */
      /* The switch - the box around the slider */
     .switch {
@@ -115,9 +122,10 @@
                 document['switch-tutor-value'].text = ""
 
         def search_by_tutor():
+            alert("test")
             # URL = "api.tadpoletutoring.org"
             URL = "http://localhost:5000"
-            response = eval(urllib.request.urlopen(URL + "/api/teachers").read().rstrip())
+            response = urllib.request.urlopen(URL + "/api/teachers").read()
             print(response)
 
         document["clicky-slider"].bind("mouseup", echo)
