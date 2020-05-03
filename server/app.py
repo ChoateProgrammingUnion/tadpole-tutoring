@@ -1,9 +1,11 @@
 import os
 import secrets
+from datetime import datetime
 
 import flask
 
 import api
+import database
 import views
 
 from flask import Flask, redirect, url_for, request, make_response, session, render_template, Markup, jsonify
@@ -12,7 +14,7 @@ from flask_dance.contrib.google import make_google_blueprint, google
 import auth
 from config import *
 import cognito
-
+from utils.log import log_info
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
@@ -55,6 +57,27 @@ def login():
     else:
         return "You are logged in!"
 
+@app.route('/populate-index')
+def populate_index():
+    db = database.Database()
+
+    db.init_db_connection()
+
+    db.add_student('student1@email.com')
+    db.add_student('student2@email.com')
+    db.add_student('student3@email.com')
+    db.add_student('student4butactuallyteacher@email.com')
+    db.make_teacher('student4butactuallyteacher@email.com', [])
+    db.add_teacher("teacher1@email.com", "teacher1", "teacherOne", ["English"])
+    db.add_teacher("teacher2@email.com", "teacher2", "teacherTwo", ["English", "Math"])
+    db.add_teacher("teacher3@email.com", "teacher3", "teacherThree", ["Math"])
+    db.add_time_for_tutoring("teacher1@email.com", datetime.now().replace(minute=0, second=0, microsecond=0))
+    db.add_time_for_tutoring("teacher2@email.com", datetime.now().replace(minute=0, second=0, microsecond=0))
+
+    db.end_db_connection()
+
+    return "done"
+
 @app.route('/callback')
 def callback():
     """
@@ -82,15 +105,21 @@ def api_register_student():
 
 @app.route('/api/person')
 def api_get_person():
-    if user_data := api.get_person(request):
-        return user_data
+    user_data = api.get_person(request)
 
-    return flask.abort(500)
+    log_info(user_data)
+
+    return flask.jsonify(user_data)
+
+    # return flask.abort(500)
 
 @app.route('/api/teachers')
 def api_fetch_teachers():
-    # return jsonify(api.fetch_teachers())
-    return api.fetch_teachers()
+    teachers = list(api.fetch_teachers())
+
+    log_info(str(teachers))
+
+    return flask.jsonify(teachers)
 
 @app.route('/api/update-time')
 def api_update_time():

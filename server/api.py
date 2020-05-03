@@ -26,6 +26,7 @@ def get_person(request):
     """
 
     email = request.args.get("email", None, str)
+    # log_info("email is " + email)
 
     if not email:
         log_info("get_person was called, but no email was provided in request")
