@@ -21,7 +21,7 @@ def get_student(request, email: str):
     """
     Reserved for teachers, admins, or students searching themselves. Returns dict of the student's data
     """
-    if validators.email(email) and email_requestor := auth.check_teacher(request) :
+    if validators.email(email) and (email_requestor := auth.check_teacher(request)):
         if email_requestor and validators.email(email_requestor):
             db = database.Database()
             db.init_db_connection()
@@ -29,7 +29,7 @@ def get_student(request, email: str):
             db.end_db_connection()
         return student
 
-    elif validators.email(email) and email_requestor := auth.check_login(request):
+    elif validators.email(email) and (email_requestor := auth.check_login(request)):
         if email_requestor and validators.email(email_requestor) and email == email_requestor:
             db = database.Database()
             db.init_db_connection()

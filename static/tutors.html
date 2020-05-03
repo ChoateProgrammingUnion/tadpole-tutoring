@@ -3,12 +3,27 @@
 <head>
     {{ header }}
     <script>
+        slider = false;
+        $( "#switch-tutor" ).click(function(){
+            slider=true
+        );
         $( document ).ready(function() {
             $( "#switch-tutor" ).click();
         });
     </script>
 </head>
-<body>
+<body onload="brython()">
+    <script type="text/python">
+        from browser import document, alert
+
+        state = True
+
+        def log(ev):
+            state = ! state
+            alert(state)
+
+        document["#switch-tutor"].bind("click", log)
+    </script>
     <header>
     {{ navbar }}
     </header>
