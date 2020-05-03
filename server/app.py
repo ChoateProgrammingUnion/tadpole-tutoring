@@ -99,7 +99,7 @@ def logout():
 @app.route('/api/register')
 def api_register_student():
     if api.register_student(request):
-        return {}
+        return api.pickle_str({})
 
     return flask.abort(500)
 
@@ -109,7 +109,7 @@ def api_get_person():
 
     log_info(user_data)
 
-    return flask.jsonify(user_data)
+    return api.pickle_str(user_data)
 
     # return flask.abort(500)
 
@@ -119,26 +119,26 @@ def api_fetch_teachers():
 
     log_info(str(teachers))
 
-    return flask.jsonify(teachers)
+    return api.pickle_str(teachers)
 
 @app.route('/api/update-time')
 def api_update_time():
     if api.update_time(request):
-        return {}
+        return api.pickle_str({})
 
     return flask.abort(500)
 
 @app.route('/api/make-teacher')
 def api_make_teacher():
     if api.make_teacher(request):
-        return {}
+        return api.pickle_str({})
 
     return flask.abort(500)
 
 @app.route('/api/claim-time')
 def api_claim_time():
     if api.claim_time(request):
-        return {}
+        return api.pickle_str({})
 
     return flask.abort(500)
 
