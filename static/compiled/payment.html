@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+    <link rel="icon" href="https://via.placeholder.com/70x70">
+    <link rel="stylesheet" href="https://andybrewer.github.io/mvp/mvp.css">
+
+    <meta charset="utf-8">
+    <meta name="description" content="Tadpole Tutoring offers affordable, high quality tutoring to students all over the world. We have a profound commitment to charity, donating 100% of our profits to reputable, charitable organizations in need.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="brython/brython.js"></script>
+    <script type="text/javascript" src="brython/brython_stdlib.js"></script>
+    <title>Tadpole Tutoring</title>
+    <style>
+    /* From https://www.w3schools.com/howto/howto_css_switch.asp */
+     /* The switch - the box around the slider */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    /* The slider */
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+
+    .row {
+        display: flex;
+    }
+
+    .column {
+        flex: 50%;
+    }
+    </style>
+
+    <!-- use the element -->
+<!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
+
+<body>
+    <header>
+            <nav style="margin-bottom:1rem">
+            <a href="/"><img alt="Logo" src="logo.png" height="70"></a>
+            <div>
+            <ul>
+                <li><a href="index.html">Home</a>
+                <li><a href="tutors.html">Schedule</a>
+                <li><a href="pricing.html">Pricing</a>
+                <!--<li><a href="schedule.html">Schedule</a>-->
+                <li><a href="about.html">About</a></li>
+                <li><a href="login"><i>Login</i></a></li>
+            </ul>
+            </div>
+        </nav>
+
+    </header>
+    <main>
+        <hr>
+        <section>
+            <header>
+                <h2>Section Heading</h2>
+                <p>Section Subheading</p>
+            </header>
+            <aside>
+                <h3>Card heading</h3>
+                <p>Card content*</p>
+                <p><small>*with small content</small></p>
+            </aside>
+            <aside>
+                <h3>Card heading</h3>
+                <p>Card content <sup>with notification</sup></p>
+            </aside>
+            <aside>
+                <h3>Card heading</h3>
+                <p>Card content</p>
+            </aside>
+        </section>
+        <section>
+            <div id="paypal-button-container"></div>
+<script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD" data-sdk-integration-source="button-factory"></script>
+<script>
+  paypal.Buttons({
+      style: {
+          shape: 'pill',
+          color: 'white',
+          layout: 'vertical',
+          label: 'paypal',
+          
+      },
+      createOrder: function(data, actions) {
+          return actions.order.create({
+              purchase_units: [{
+                  amount: {
+                      value: '1'
+                  }
+              }]
+          });
+      },
+      onApprove: function(data, actions) {
+          return actions.order.capture().then(function(details) {
+              alert('Transaction completed by ' + details.payer.name.given_name + '!');
+          });
+      }
+  }).render('#paypal-button-container');
+</script>
+        </section>
+        <hr>
+    </main>
+    <footer>
+<footer>
+    <hr>
+    <p>
+        Email us at <a href="mailto:contact@tadpoletutoring.org">contact@tadpoletutoring.org</a> if you want to get in touch!
+    </p>
+
+    <p>Open source under the MIT license.</p>
+</footer>
+
+    </footer>
+</body>
+
+</html>
