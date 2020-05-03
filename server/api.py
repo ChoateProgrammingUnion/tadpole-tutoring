@@ -19,7 +19,7 @@ def register_student(request):
         return True
     return False
 
-@app.route('/api/person')
+# @app.route('/api/person')
 def get_student(request, email: str):
     """
     Reserved for teachers, admins, or students searching themselves. Returns dict of the student's data

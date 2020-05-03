@@ -104,11 +104,12 @@
 
             if value:
                 document['switch-tutor-value'].text = "True"
+                search_by_tutor()
             else:
                 document['switch-tutor-value'].text = ""
 
-            alert(value)
-
+        def search_by_tutor():
+            pass
 
         document["clicky-slider"].bind("mouseup", echo)
     </script>
