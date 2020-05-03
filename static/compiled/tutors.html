@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js" integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="brython/brython.js"></script>
     <title>Tadpole Tutoring</title>
     <style>
     /* From https://www.w3schools.com/howto/howto_css_switch.asp */
@@ -81,10 +81,6 @@
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
 
     <script>
-        slider = false;
-        $( "#switch-tutor" ).click(function(){
-            slider=true
-        );
         $( document ).ready(function() {
             $( "#switch-tutor" ).click();
         });
@@ -94,13 +90,19 @@
     <script type="text/python">
         from browser import document, alert
 
-        state = True
+        def echo(ev):
+            value = document['switch-tutor-value'].text
+            value = not bool(value)
 
-        def log(ev):
-            state = ! state
-            alert(state)
+            if value:
+                document['switch-tutor-value'].text = "True"
+            else:
+                document['switch-tutor-value'].text = ""
 
-        document["#switch-tutor"].bind("click", log)
+            alert(value)
+
+
+        document["clicky-slider"].bind("mouseup", echo)
     </script>
     <header>
             <nav style="margin-bottom:1rem">
@@ -119,7 +121,7 @@
 
     </header>
     <main>
-        <div style="margin-left:80%">
+        <div style="margin-left:80%" id="clicky-slider">
             <div style="display: inline-block">
             <span style="white-space: nowrap;">By Time</span>
             <label id="switch-tutor" class="switch">
@@ -127,6 +129,7 @@
                 <span class="slider round"></span> 
             </label> 
             <span style="white-space: nowrap;">By Tutor</span>
+            <span id="switch-tutor-value" style="visibility:hidden">True</span>
             </div>
         </div>
         <section>

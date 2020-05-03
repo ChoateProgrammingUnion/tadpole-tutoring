@@ -2,12 +2,16 @@ from jinja2 import Template, Markup
 import glob
 
 files = glob.glob("*.html")
+# python_files = glob.glob("*.py")
+# files.extend(python_files)
+
 pages = []
 imports = []
 for each_file in files:
     with open(each_file) as f:
         if "<!DOCTYPE html>" in next(f).rstrip():
             pages.append(each_file)
+        # elif not ".py" in each_file:
         else:
             imports.append(each_file)
 

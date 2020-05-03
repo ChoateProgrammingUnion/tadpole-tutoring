@@ -3,10 +3,6 @@
 <head>
     {{ header }}
     <script>
-        slider = false;
-        $( "#switch-tutor" ).click(function(){
-            slider=true
-        );
         $( document ).ready(function() {
             $( "#switch-tutor" ).click();
         });
@@ -16,19 +12,26 @@
     <script type="text/python">
         from browser import document, alert
 
-        state = True
+        def echo(ev):
+            value = document['switch-tutor-value'].text
+            value = not bool(value)
 
-        def log(ev):
-            state = ! state
-            alert(state)
+            if value:
+                document['switch-tutor-value'].text = "True"
+                search_by_tutor()
+            else:
+                document['switch-tutor-value'].text = ""
 
-        document["#switch-tutor"].bind("click", log)
+        def search_by_tutor():
+            pass
+
+        document["clicky-slider"].bind("mouseup", echo)
     </script>
     <header>
     {{ navbar }}
     </header>
     <main>
-        <div style="margin-left:80%">
+        <div style="margin-left:80%" id="clicky-slider">
             <div style="display: inline-block">
             <span style="white-space: nowrap;">By Time</span>
             <label id="switch-tutor" class="switch">
@@ -36,6 +39,7 @@
                 <span class="slider round"></span> 
             </label> 
             <span style="white-space: nowrap;">By Tutor</span>
+            <span id="switch-tutor-value" style="visibility:hidden">True</span>
             </div>
         </div>
         <section>
