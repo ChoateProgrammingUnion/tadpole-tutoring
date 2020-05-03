@@ -35,9 +35,10 @@ optimizers = {
     "js-minify": ['**/*.js', 'minify -o output input'],
     # "js-uglify": ['**/*.js', 'uglifyjs --compress input -o output'],
     "html": ['**/*.html', 'minify -o output input'],
+    "svgo": ['**/*.svg', 'svgo -i input -o output'],
     "webp": [
         '**/*.webp',
-        'cwebp input -o output -z 9 -m 6 -mt -pass 10 -metadata all -q' +
+        'cwebp input -o output -z 9 -m 6 -mt -pass 10 -metadata all -q ' +
         QUALITY
     ]
 }
@@ -102,6 +103,7 @@ for filetype, options in optimizers.items():
 
         command = cli_opt.replace(' output', ' ' + output_location).replace(
             'input', each_file)
+        print(command)
         subprocess.run(command, shell=True)
         cache[each_file] = sha_hash(each_file)
 
