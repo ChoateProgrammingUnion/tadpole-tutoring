@@ -14,6 +14,10 @@ with open("navbar.html") as f:
     navbar = f.read()
 args["navbar"] = navbar
 
+with open("footer.html") as f:
+    footer = f.read()
+args["footer"] = footer
+
 for each_file in pages:
     with open(each_file) as f:
         html = f.read().rstrip()
