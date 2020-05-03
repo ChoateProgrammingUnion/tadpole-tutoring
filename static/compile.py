@@ -32,5 +32,12 @@ for each_file in pages:
         template = Template(html)
         rendered = template.render(**args)
 
-    with open("compiled/" + each_file, "w") as f:
+    with open("precompile/" + each_file, "w") as f:
+        f.write(rendered)
+
+for each_file in imports:
+    with open(each_file) as f:
+        html = f.read().rstrip()
+
+    with open("precompile/" + each_file, "w") as f:
         f.write(rendered)
