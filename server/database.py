@@ -153,6 +153,16 @@ class Database:
 
         return False
 
+    def all_teachers(self) -> bool:
+        """
+        Gets all teachers in the database
+
+        Returns:
+            List of teacher dicts
+        """
+
+        return self._db['teachers'].all()
+
     def add_time_for_tutoring(self, teacher_email: str, start_time: datetime, duration_type: int = 0):
         """
         Adds a time for tutoring. Intended to be used by a teacher once they have logged in. It is assumed that they
@@ -202,6 +212,33 @@ class Database:
 
         log_info("Unable to find time with id " + str(time_id), header=student_email)
         return False
+
+    def edit_time(self, id: int, start_time: int = None, duration_type: int = None, claimed: bool = None, student: str = None) -> bool:
+        """
+        Edits an already existing time.
+
+        Args:
+            id: The id of the time to edit
+            start_time: The unix time the session starts
+            duration_type: The duration type of the session
+            claimed: Whether the session has been claimed
+            student: The student that has claimed the time
+
+        Returns:
+            True if the update succeeded, otherwise False
+        """
+        updated_time = {"id": id}
+
+        if start_time is not None:
+            updated_time.update({"start_time": start_time})
+        if duration_type is not None:
+            updated_time.update({"duration_type": duration_type})
+        if claimed is not None:
+            updated_time.update({"claimed": claimed})
+        if student is not None:
+            updated_time.update({"student": student})
+
+        return self._transactional_upsert("teachers", updated_time, ['id'])
 
     def unclaim_time(self, student_email: str, time_id: int):
         """
