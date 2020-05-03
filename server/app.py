@@ -1,5 +1,8 @@
 import os
 import secrets
+
+import flask
+
 import api
 import views
 
@@ -68,6 +71,46 @@ def logout():
     auth.deauth_token(request)
     session.clear()
     return redirect("/")
+
+
+@app.route('/api/register')
+def api_register_student():
+    if api.register_student(request):
+        return {}
+
+    return flask.abort(500)
+
+@app.route('/api/person')
+def api_get_person():
+    if user_data := api.get_person(request):
+        return user_data
+
+    return flask.abort(500)
+
+@app.route('/api/teachers')
+def api_fetch_teachers():
+    return api.fetch_teachers()
+
+@app.route('/api/update-time')
+def api_update_time():
+    if api.update_time(request):
+        return {}
+
+    return flask.abort(500)
+
+@app.route('/api/make-teacher')
+def api_make_teacher():
+    if api.make_teacher(request):
+        return {}
+
+    return flask.abort(500)
+
+@app.route('/api/claim-time')
+def api_register_student():
+    if api.claim_time(request):
+        return {}
+
+    return flask.abort(500)
 
 
 if __name__ == '__main__':

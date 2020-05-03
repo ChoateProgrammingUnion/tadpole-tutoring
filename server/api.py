@@ -19,11 +19,18 @@ def register_student(request):
         return True
     return False
 
-@app.route('/api/person')
-def get_student(request, email: str):
+# @app.route('/api/person')
+def get_person(request):
     """
     Reserved for teachers, admins, or students searching themselves. Returns dict of the student's data
     """
+
+    email = request.args.get("email", None, str)
+
+    if not email:
+        log_info("get_person was called, but no email was provided in request")
+        return None
+
     if validators.email(email) and (email_requester := auth.check_teacher(request)):
         if email_requester and validators.email(email_requester):
             db = database.Database()
@@ -44,12 +51,13 @@ def get_student(request, email: str):
 
             return student
 
-    return {}
+    log_info("No person with email " + email + " found in database")
+    return None
 
 
 
 # @app.route('/api/teachers')
-def fetch_teachers(request):
+def fetch_teachers():
     db = database.Database()
 
     db.init_db_connection()
@@ -59,11 +67,11 @@ def fetch_teachers(request):
     return all_teachers
 
 def update_time(request):
-    id = request.form.get("id", None, int)
-    start_time = request.form.get("start_time", None, int)
-    duration_type = request.form.get("duration_type", None, int)
-    claimed = request.form.get("claimed", None, bool)
-    student = request.form.get("student", None, str)
+    id = request.args.get("id", None, int)
+    start_time = request.args.get("start_time", None, int)
+    duration_type = request.args.get("duration_type", None, int)
+    claimed = request.args.get("claimed", None, bool)
+    student = request.args.get("student", None, str)
 
     if id:
         db = database.Database()
@@ -78,8 +86,8 @@ def update_time(request):
     return False
 
 
-def confirm_teacher(request):
-    student_email = request.form.get("student_email", None, str)
+def make_teacher(request):
+    student_email = request.args.get("student_email", None, str)
 
     if student_email:
         db = database.Database()
@@ -94,8 +102,8 @@ def confirm_teacher(request):
     return False
 
 def claim_time(request):
-    student_email = request.form.get("student_email", None, str)
-    time_id = request.form.get("time_id", None, int)
+    student_email = request.args.get("student_email", None, str)
+    time_id = request.args.get("time_id", None, int)
 
     if student_email and time_id:
         db = database.Database()
