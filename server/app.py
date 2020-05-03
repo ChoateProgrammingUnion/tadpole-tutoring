@@ -7,6 +7,7 @@ import flask
 import api
 import database
 import views
+from flask_cors import CORS
 
 from flask import Flask, redirect, url_for, request, make_response, session, render_template, Markup, jsonify
 from flask_dance.contrib.google import make_google_blueprint, google
@@ -19,6 +20,7 @@ from utils.log import log_info
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 app = Flask(__name__)
+CORS(app)
 
 random_secret_key = secrets.token_urlsafe(32)
 app.config.update(

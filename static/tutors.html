@@ -24,10 +24,10 @@
                 document['switch-tutor-value'].text = ""
 
         def search_by_tutor():
+            alert("test")
             # URL = "api.tadpoletutoring.org"
             URL = "http://localhost:5000"
             response = urllib.request.urlopen(URL + "/api/teachers").read()
-            # response = requests.get()
             print(response)
 
         document["clicky-slider"].bind("mouseup", echo)
