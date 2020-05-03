@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js" integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
     <title>Tadpole Tutoring</title>
     <style>
     /* From https://www.w3schools.com/howto/howto_css_switch.asp */
@@ -80,12 +81,27 @@
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
 
     <script>
+        slider = false;
+        $( "#switch-tutor" ).click(function(){
+            slider=true
+        );
         $( document ).ready(function() {
             $( "#switch-tutor" ).click();
         });
     </script>
 </head>
-<body>
+<body onload="brython()">
+    <script type="text/python">
+        from browser import document, alert
+
+        state = True
+
+        def log(ev):
+            state = ! state
+            alert(state)
+
+        document["#switch-tutor"].bind("click", log)
+    </script>
     <header>
             <nav style="margin-bottom:1rem">
             <a href="/"><img alt="Logo" src="logo.png" height="70"></a>
