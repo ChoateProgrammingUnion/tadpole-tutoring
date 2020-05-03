@@ -100,11 +100,11 @@
     <!-- use the element -->
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
 
-    <script>
-        $( document ).ready(function() {
-            $( "#switch-tutor" ).click();
-        });
-    </script>
+    <!--<script>-->
+        <!--$( document ).ready(function() {-->
+            <!--$( "#switch-tutor" ).click();-->
+        <!--});-->
+    <!--</script>-->
 </head>
 <body onload="brython()">
     <script type="text/python">
@@ -116,6 +116,7 @@
         import pickle
         import base64
         import collections
+
 
         def echo(ev):
             value = document['switch-tutor-value'].text
@@ -150,8 +151,10 @@
             print("HTML", html)
             document['schedule-results'].html = html
 
-        document["clicky-slider"].bind("mouseup", echo)
-        echo("None")
+        
+        document["switch-tutor"].bind("mouseup", echo)
+        jq = browser.window.jQuery
+        jq("#clicky-slider").click()
     </script>
     <header style="padding-top: 0; padding-bottom: 0;">
             <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
@@ -178,7 +181,7 @@
                 <span class="slider round"></span> 
             </label> 
             <span style="white-space: nowrap;">By Tutor</span>
-            <span id="switch-tutor-value" style="visibility:hidden">True</span>
+            <span id="switch-tutor-value" style="visibility:hidden"></span>
             </div>
         </div>
         <section>

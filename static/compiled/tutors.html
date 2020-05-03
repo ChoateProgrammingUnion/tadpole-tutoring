@@ -1,4 +1,4 @@
-<!doctype html><html lang=en><link rel=icon href=images/Tadpole_Tutoring_Logo_Favicon_32.png><link rel=stylesheet href=https://andybrewer.github.io/mvp/mvp.css><meta charset=utf-8><meta name=description content="Tadpole Tutoring offers affordable, high quality tutoring to students all over the world. We have a profound commitment to charity, donating 100% of our profits to reputable, charitable organizations in need."><meta name=viewport content="width=device-width,initial-scale=1"><script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin=anonymous></script><script src=brython/brython.js></script><script src=brython/brython_stdlib.js></script><title>Tadpole Tutoring</title><style>body{padding-top:0}:root{--color: #437947;--color-accent: #4379470b;--color-secondary: #6c6c6c;--color-secondary-accent: #6c6c6c0b}.switch{position:relative;display:inline-block;width:60px;height:34px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;-webkit-transition:.4s;transition:.4s}.slider:before{position:absolute;content:"";height:26px;width:26px;left:4px;bottom:4px;background-color:#fff;-webkit-transition:.4s;transition:.4s}input:checked+.slider{background-color:#2196f3}input:focus+.slider{box-shadow:0 0 1px #2196f3}input:checked+.slider:before{-webkit-transform:translateX(26px);-ms-transform:translateX(26px);transform:translateX(26px)}.slider.round{border-radius:34px}.slider.round:before{border-radius:50%}.row{display:flex}.column{flex:50%}</style><script>$(document).ready(function(){$("#switch-tutor").click();});</script><body onload=brython()><script type=text/python>
+<!doctype html><html lang=en><link rel=icon href=images/Tadpole_Tutoring_Logo_Favicon_32.png><link rel=stylesheet href=https://andybrewer.github.io/mvp/mvp.css><meta charset=utf-8><meta name=description content="Tadpole Tutoring offers affordable, high quality tutoring to students all over the world. We have a profound commitment to charity, donating 100% of our profits to reputable, charitable organizations in need."><meta name=viewport content="width=device-width,initial-scale=1"><script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin=anonymous></script><script src=brython/brython.js></script><script src=brython/brython_stdlib.js></script><title>Tadpole Tutoring</title><style>body{padding-top:0}:root{--color: #437947;--color-accent: #4379470b;--color-secondary: #6c6c6c;--color-secondary-accent: #6c6c6c0b}.switch{position:relative;display:inline-block;width:60px;height:34px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;-webkit-transition:.4s;transition:.4s}.slider:before{position:absolute;content:"";height:26px;width:26px;left:4px;bottom:4px;background-color:#fff;-webkit-transition:.4s;transition:.4s}input:checked+.slider{background-color:#2196f3}input:focus+.slider{box-shadow:0 0 1px #2196f3}input:checked+.slider:before{-webkit-transform:translateX(26px);-ms-transform:translateX(26px);transform:translateX(26px)}.slider.round{border-radius:34px}.slider.round:before{border-radius:50%}.row{display:flex}.column{flex:50%}</style><body onload=brython()><script type=text/python>
         from browser import document, alert
         import browser
         from browser.template import Template
@@ -7,6 +7,7 @@
         import pickle
         import base64
         import collections
+
 
         def echo(ev):
             value = document['switch-tutor-value'].text
@@ -41,9 +42,11 @@
             print("HTML", html)
             document['schedule-results'].html = html
 
-        document["clicky-slider"].bind("mouseup", echo)
-        echo("None")
+        
+        document["switch-tutor"].bind("mouseup", echo)
+        jq = browser.window.jQuery
+        jq("#clicky-slider").click()
     </script><header style=padding-top:0;padding-bottom:0><nav id=navbar style=margin-bottom:0;overflow:hidden;background-color:#fff;width:100%><a href=/><img alt=Logo src=logo.png height=70></a><div><ul><li><a href=index.html>Home</a><li><a href=tutors.html>Schedule</a><li><a href=pricing.html>Pricing</a><li><a href=about.html>About</a><li><a href=login><i>Login</i></a></ul></div></nav></header><main><div style=margin-left:80% id=clicky-slider><div style=display:inline-block><span style=white-space:nowrap>By Time</span>
 <label id=switch-tutor class=switch><input type=checkbox>
 <span class="slider round"></span></label><span style=white-space:nowrap>By Tutor</span>
-<span id=switch-tutor-value style=visibility:hidden>True</span></div></div><section><header><h2>Our Tutors</h2><p>Our team of tutors is small and tight-knit. Each tutor here is hand-picked to help ensure that you can learn well.</header><span id=schedule-results></span></section></main><footer><hr><p>Email us at <a href=mailto:contact@tadpoletutoring.org>contact@tadpoletutoring.org</a> if you want to get in touch!<p>Open source under the MIT license.</footer>
+<span id=switch-tutor-value style=visibility:hidden></span></div></div><section><header><h2>Our Tutors</h2><p>Our team of tutors is small and tight-knit. Each tutor here is hand-picked to help ensure that you can learn well.</header><span id=schedule-results></span></section></main><footer><hr><p>Email us at <a href=mailto:contact@tadpoletutoring.org>contact@tadpoletutoring.org</a> if you want to get in touch!<p>Open source under the MIT license.</footer>
