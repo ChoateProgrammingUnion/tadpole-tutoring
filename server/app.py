@@ -118,9 +118,6 @@ def api_get_person():
 @app.route('/api/teachers')
 def api_fetch_teachers():
     teachers = list(api.fetch_teachers())
-
-    log_info(str(teachers))
-
     return api.pickle_str(teachers)
 
 @app.route('/api/update-time')
