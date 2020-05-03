@@ -26,8 +26,7 @@
         def search_by_tutor():
             # URL = "api.tadpoletutoring.org"
             URL = "http://localhost:5000"
-            response = urllib.request.urlopen(URL + "/api/teachers").read()
-            # response = requests.get()
+            response = eval(urllib.request.urlopen(URL + "/api/teachers").read().rstrip())
             print(response)
 
         document["clicky-slider"].bind("mouseup", echo)
