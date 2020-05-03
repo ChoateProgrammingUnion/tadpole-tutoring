@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js" integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
     <title>Tadpole Tutoring</title>
     <style>
     /* From https://www.w3schools.com/howto/howto_css_switch.asp */
@@ -74,6 +75,14 @@
     .slider.round:before {
       border-radius: 50%;
     }
+
+    .row {
+        display: flex;
+    }
+
+    .column {
+        flex: 50%;
+    }
     </style>
 
     <!-- use the element -->
@@ -106,26 +115,35 @@
             <br>
         </div>
         <br>
-        <p><a href="#"><b>Schedule Now ↗</b></a></p>
     </div>
-    <main>
-        <hr>
-        <section>
-            <header>
-                <h2>At a Glance: About Us</h2>
-            </header>
-            <figure>
+    <div class="row">
+        <div class="column">
+            <figure style="margin: 3%; max-height: 94%; max-width: 94%; text-align: right; vertical-align: middle;">
                 <img src="images/student_2.jpg">
             </figure>
+        </div>
+        <div class="column">
+            <h1 style="margin: 3%;">Our Mission</h1>
             <blockquote>
                 "We seek to do things with teaching and stuff."
                 <footer><i>- About Us</i></footer>
             </blockquote>
-        </section>
-        <section>
-            <p><a href="#"><i>Read More ↗</i></a></p>
-        </section>
-    </main>
+            <p style="margin: 3%; margin-top: 0;"><a href="#"><i>Read More ↗</i></a></p>
+        </div>
+    </div>
+    <div class="row" style="background-image: linear-gradient(#dde4c3, #aabf9e);">
+        <div class="column" style="margin: 3%;">
+            <p>TADPOLE TUTORING</p>
+            <h1>Set a Meeting Today!</h1>
+            <p>Short Description</p>
+            <p style="margin-top: 0;"><a href="#"><b>Schedule Now ↗</b></a></p>
+        </div>
+        <div class="column">
+            <figure style="margin: 3%; max-height: 94%; max-width: 94%; text-align: left; vertical-align: middle;">
+                <img src="images/student_1.jpg">
+            </figure>
+        </div>
+    </div>
 </body>
 <footer>
     <hr>
