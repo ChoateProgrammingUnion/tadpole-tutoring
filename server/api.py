@@ -65,10 +65,15 @@ def fetch_teachers():
     all_teachers = db.all_teachers()
     db.end_db_connection()
 
-    for i, t in enumerate(all_teachers):
-        all_teachers[i] = dict(t)
+    all_teachers_dict = [{str(key): [str(each_value) for each_value in value] for (key, value) in enumerate(teachers.items())} for teachers in all_teachers]
+    # for index, value in enumerate(all_teachers): # todo: change to dictionary comprehension
+        # teacher_dict = {}
+        # for key, value in enumerate(value.items()):
+            # teacher_dict[str(key)] = [str(each_value) for each_value in value]
+        # all_teachers[index] = dict(teacher_dict)
 
-    return all_teachers
+    # return all_teachers
+    return all_teachers_dict
 
 def update_time(request):
     id = request.args.get("id", None, int)
