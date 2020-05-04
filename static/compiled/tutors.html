@@ -2,7 +2,6 @@
         from browser import document, alert
         import browser
         from browser.template import Template
-        # from browser import document, alert, Template
         import urllib.request
         import pickle
         import base64
@@ -14,12 +13,21 @@
             value = not bool(value)
 
             if value:
+                document['results'].html = ""
                 document['switch-tutor-value'].text = "True"
                 search_by_tutor()
             else:
+                document['results'].html = ""
                 document['switch-tutor-value'].text = ""
 
-        def fetch_template(vars):
+        def fetch_template(url):
+            """
+            Fetches and renders template
+            """
+            response = urllib.request.urlopen(url).read().rstrip()
+            return response
+
+        def fetch_template_tutor_bio(vars):
             """
             Fetches and renders template
             """
@@ -39,22 +47,31 @@
             """
             calls api
             """
+            tutor_html = fetch_template("tutor_template.html")
+            document['results'].html = tutor_html
+
             # URL = "api.tadpoletutoring.org"
             URL = "http://localhost:5000"
             response = urllib.request.urlopen(URL + "/api/teachers").read().rstrip()
             response_decode = base64.b64decode(response.encode())
             response_dict = pickle.loads(response_decode)
-            html = fetch_template(response_dict)
-            print("HTML", html)
+            tutor_bio_html = fetch_template_tutor_bio(response_dict)
+            print("Tutor HTML", tutor_bio_html)
 
             # set and save
-            document['schedule-results'].html = html
+            document['schedule-results'].html = tutor_bio_html
 
-        
+        def search_by_time(): 
+            """
+            searches by time
+            """
+            pass
+
+
         document["switch-tutor"].bind("mouseup", echo)
         jq = browser.window.jQuery
         jq("#clicky-slider").click()
     </script><header style=padding-top:0;padding-bottom:0><nav id=navbar style=margin-bottom:0;overflow:hidden;background-color:#fff;width:100%><a href=/><img alt=Logo src=logo.png height=70></a><div><ul><li><a href=index.html>Home</a><li><a href=tutors.html>Schedule</a><li><a href=pricing.html>Pricing</a><li><a href=about.html>About</a><li><a href=login><i>Login</i></a></ul></div></nav></header><main><div style=margin-left:80% id=clicky-slider><div style=display:inline-block><span style=white-space:nowrap>By Time</span>
 <label id=switch-tutor class=switch><input type=checkbox>
 <span class="slider round"></span></label><span style=white-space:nowrap>By Tutor</span>
-<span id=switch-tutor-value style=visibility:hidden></span></div></div><section><header><h2>Our Tutors</h2><p>Our team of tutors is small and tight-knit. Each tutor here is hand-picked to help ensure that you can learn well.</header><span id=schedule-results></span></section></main><footer><hr><p>Email us at <a href=mailto:contact@tadpoletutoring.org>contact@tadpoletutoring.org</a> if you want to get in touch!<p>Open source under the MIT license.</footer>
+<span id=switch-tutor-value style=visibility:hidden></span></div></div><div id=results></div></main><footer><hr><p>Email us at <a href=mailto:contact@tadpoletutoring.org>contact@tadpoletutoring.org</a> if you want to get in touch!<p>Open source under the MIT license.</footer>
