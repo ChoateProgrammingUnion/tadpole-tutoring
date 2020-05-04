@@ -9,17 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script async src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
-    <script async type="text/javascript" src="brython/brython.js"></script>
-    <script defer type="text/javascript" src="brython/brython_stdlib.js"></script>
-    <script>
-    function testWebP(callback) {
-        var webP = new Image();
-        webP.onload = webP.onerror = function () {
-            callback(webP.height == 2);
-        };
-        webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
-    };
-    </script>
     <title>Tadpole Tutoring</title>
     <style>
     body {
@@ -109,12 +98,42 @@
     <!-- use the element -->
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
 
-    <script>
-testWebP(function(support) {
-	support ? true : document.getElementById("banner-image-bg").style.cssText = 'background-image: url(images/banner_background_tall.webp); background-size: 100%;  height: 80vh; background-repeat: no-repeat; position: relative;'
-});
-    </script>
-    <head>
+    <!--<script>-->
+    <!--function testWebP(callback) {-->
+        <!--var webP = new Image();-->
+        <!--webP.onload = webP.onerror = function () {-->
+            <!--callback(webP.height == 2);-->
+        <!--};-->
+        <!--webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';-->
+    <!--};-->
+    <!--testWebP(function(support) {-->
+        <!--support ? true : document.getElementById("banner-image-bg").style.cssText = 'background-image: url(images/banner_background_tall.webp); background-size: 100%;  height: 80vh; background-repeat: no-repeat; position: relative;'-->
+    <!--});-->
+    <!--</script>-->
+<!--    <script>-->
+        <!--// Credit: https://davidwalsh.name/detect-webp-->
+        <!--async function supportsWebp() {-->
+  <!--if (!self.createImageBitmap) return false;-->
+
+  <!--const webpData = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';-->
+  <!--const blob = await fetch(webpData).then(r => r.blob());-->
+  <!--return createImageBitmap(blob).then(() => true, () => false);-->
+<!--}-->
+      <!--function bgChange(){-->
+          <!--document.getElementById("banner-image-bg").style.backgroundImage = "url(images/banner_background_tall.webp)"-->
+      <!--}-->
+
+<!--(async () => {-->
+  <!--if(await supportsWebp()) {-->
+    <!--console.log('does support');-->
+  <!--} else {-->
+    <!--//console.log('does not support');-->
+    <!--//$("#banner-image-bg").css("background-image", "url(images/banner_background_tall.webp)")-->
+      <!--bgChange().catch(err => console.log('Error:', err));-->
+  <!--}-->
+<!--})();-->
+    <!--</script>-->
+</head>
 <body>
     <header style="padding-top: 0; padding-bottom: 0;">
             <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
