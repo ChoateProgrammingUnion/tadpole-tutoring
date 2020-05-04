@@ -9,6 +9,16 @@ from typing import *
 from utils.log import *
 from config import DB
 
+import pickle
+import codecs
+
+def pickle_str(obj):
+    return codecs.encode(pickle.dumps(obj), "base64").decode()
+
+def pickle_decode(pickled_string):
+    return pickle.loads(codecs.decode(pickled_string.encode(), "base64"))
+
+
 class Database:
     """A class used to interface with the database storing teachers, students, tutoring times, and who claimed them
 
@@ -33,6 +43,10 @@ class Database:
         4) "``auth`": A table used to store the email and auth, key-value pairs. Columns are as follows: 
             - "``teacher_email``": The teacher's email address hosting the tutoring session.
             - "``token``: The random 128-bit token hex string.
+        4) "``carts`": A table used to store the cart of the users. Columns are as follows:
+            - "``email``": The account's email address with items in the cart.
+            - "``cart``: The cart (a base 64 pickled string).
+            - "``intent``: Intent id of the current card ("" if there isn't one).
 
     Examples:
         **Handle a teacher login (call this once you know the teacher's email address)**::
@@ -134,12 +148,14 @@ class Database:
         data = {"email": email}
         return self._transactional_upsert("students", data, ["email"])
 
-    def make_teacher(self, email: str, subjects: List[str]) -> bool:
+    def make_teacher(self, email: str, subjects: List[str], bio: str) -> bool:
         """
         Makes a student into a teacher
 
         Args:
             email: The email of the student
+            subjects:
+            bio:
 
         Returns:
             True if the
@@ -147,7 +163,7 @@ class Database:
 
         if student := self.get_student(email):
             if student_email := student.get("email"):
-                if self.add_teacher(student_email, student.get("first_name"), student.get("last_name"), subjects):
+                if self.add_teacher(student_email, student.get("first_name"), student.get("last_name"), subjects, bio):
                     self._db['students'].delete(email=student_email)
                     return True
 
@@ -376,6 +392,26 @@ class Database:
             return self._transactional_upsert('students', student, ['id'])
 
         return False
+
+    def get_cart(self, email: str) -> Tuple[Set[int], str]:
+        cart = self._db['carts'].find_one(email=email)
+
+        if cart is None:
+            return set(), ""
+
+        return pickle_decode(cart.get('cart')), cart.get('intent')
+
+    def set_cart(self, email: str, cart: Set[int]) -> bool:
+        return self._transactional_upsert('carts', {"email": email, "cart": pickle_str(cart), "intent": ""}, ['email'])
+
+    def set_intent(self, email: str, intent: str) -> bool:
+        cart, _ = self.get_cart(email)
+        return self._transactional_upsert('carts', {"email": email, "cart": pickle_str(cart), "intent": intent}, ['email'])
+
+    def append_cart(self, email: str, session_id: int) -> bool:
+        old_cart, _ = self.get_cart(email)
+        old_cart.add(session_id)
+        return self.set_cart(email, old_cart)
 
     def init_db_connection(self, attempt=0):
         """

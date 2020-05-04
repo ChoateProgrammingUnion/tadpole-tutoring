@@ -6,6 +6,9 @@ def check_login(request) -> str:
     """
     Returns email if logged in, if not return False.
     """
+
+    return 'student1@email.com'
+
     token = request.cookies.get('token')
     email = request.cookies.get('email')
 
@@ -58,7 +61,7 @@ def set_login(response, user_info) -> str:
     return response
 
 def check_teacher(request):
-    email = auth.check_login(request)
+    email = check_login(request)
     if email:
         authentication = database.Database()
         return authentication.check_teacher(email)

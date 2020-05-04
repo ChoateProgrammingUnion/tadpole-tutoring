@@ -73,12 +73,14 @@ def populate_index():
     db.add_student('student2@email.com')
     db.add_student('student3@email.com')
     db.add_student('student4butactuallyteacher@email.com')
-    db.make_teacher('student4butactuallyteacher@email.com', [])
-    db.add_teacher("teacher1@email.com", "teacher1", "teacherOne", ["English"])
-    db.add_teacher("teacher2@email.com", "teacher2", "teacherTwo", ["English", "Math"])
-    db.add_teacher("teacher3@email.com", "teacher3", "teacherThree", ["Math"])
+    db.make_teacher('student4butactuallyteacher@email.com', [], "")
+    db.add_teacher("teacher1@email.com", "teacher1", "teacherOne", ["English"], "")
+    db.add_teacher("teacher2@email.com", "teacher2", "teacherTwo", ["English", "Math"], "")
+    db.add_teacher("teacher3@email.com", "teacher3", "teacherThree", ["Math"], "")
     db.add_time_for_tutoring("teacher1@email.com", datetime.now().replace(minute=0, second=0, microsecond=0))
     db.add_time_for_tutoring("teacher2@email.com", datetime.now().replace(minute=0, second=0, microsecond=0))
+
+    db.append_cart('student1@email.com', 1)
 
     db.end_db_connection()
 
@@ -147,34 +149,83 @@ def api_claim_time():
 
 @app.route('/api/create-payment-intent', methods=['POST'])
 def create_payment():
-    # Create a PaymentIntent with the order amount and currency
-    intent = stripe.PaymentIntent.create(
-        amount=1099,
-        currency='usd'
-    )
+    if email := auth.check_login(request):
+        db = database.Database()
 
-    try:
-        # Send publishable key and PaymentIntent details to client
-        return jsonify({'publishableKey': STRIPE_PUBLISHABLE_KEY, 'clientSecret': intent.client_secret, 'intentId': intent.get('id')})
-    except Exception as e:
-        return jsonify(error=str(e)), 403
+        db.init_db_connection()
+        cart, intent = db.get_cart(email)
+        db.end_db_connection()
+
+        if intent != "":
+            log_info("Intent " + intent + " already created. Aborting.")
+            return flask.abort(500)
+
+        num_sessions = len(cart)
+
+        rate = 2100
+
+        if num_sessions == 2:
+            rate = 2300
+
+        if num_sessions == 1:
+            rate = 2500
+
+        if num_sessions <= 0:
+            log_info("Invalid number of sessions specified " + email + " " + str(cart))
+            return flask.abort(400)
+
+        intent = stripe.PaymentIntent.create(
+            amount=rate * num_sessions,
+            currency='usd'
+        )
+
+        db.init_db_connection()
+        db.set_intent(email, intent.get('id'))
+        db.end_db_connection()
+
+        try:
+            # Send publishable key and PaymentIntent details to client
+            return jsonify({'publishableKey': STRIPE_PUBLISHABLE_KEY, 'clientSecret': intent.client_secret, 'intentId': intent.get('id')})
+        except Exception as e:
+            return jsonify(error=str(e)), 403
+
+    log_info("Not logged in")
+    return ""
 
 
 @app.route('/api/handle-payment', methods=['POST'])
 def handle_payment():
-    intent_id = request.form.get("intentId")
+    if email := auth.check_login(request):
+        intent_id = request.form.get("intentId")
 
-    if not intent_id:
-        log_info("No intentId passed " + str(request.args) + " " + str(request.form))
+        if not intent_id:
+            log_info("No intentId passed " + str(request.args) + " " + str(request.form))
+            return ""
+
+        intent = stripe.PaymentIntent.retrieve(intent_id)
+
+        if intent['amount_received'] >= intent['amount']:
+            log_info("Amount Paid: " + str(intent['amount_received']) + " cents")
+
+            db = database.Database()
+
+            db.init_db_connection()
+            cart, intent = db.get_cart(email)
+            db.end_db_connection()
+
+            if intent_id == intent:
+                log_info("Server cart matches intent cart, claiming times...")
+                db.init_db_connection()
+                for t_id in cart:
+                    db.claim_time(email, t_id)
+
+                db.set_cart(email, set())
+                db.end_db_connection()
+                log_info("Times claimed")
+
         return ""
 
-    intent = stripe.PaymentIntent.retrieve(intent_id)
-
-    if intent['amount_received'] >= intent['amount']:
-        log_info("SUCCESS " + str(intent['amount_received']))
-        return ""
-
-    log_info("FAILED " + str(intent['amount_received']))
+    log_info("Not logged in")
     return ""
 
 

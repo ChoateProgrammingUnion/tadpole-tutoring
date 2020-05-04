@@ -128,3 +128,6 @@ def claim_time(request):
 
 def pickle_str(obj):
     return codecs.encode(pickle.dumps(obj), "base64").decode()
+
+def pickle_decode(pickled_string):
+    return pickle.loads(codecs.decode(pickled_string.encode(), "base64"))
