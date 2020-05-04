@@ -9,7 +9,6 @@ from typing import *
 from utils.log import *
 from config import DB
 
-
 class Database:
     """A class used to interface with the database storing teachers, students, tutoring times, and who claimed them
 
@@ -19,6 +18,7 @@ class Database:
             - "``first_name``": The teacher's first name
             - "``last_name``": The teacher's last name
             - "``subjects``": A pipe separated list of subjects that the teacher teachers
+            - "``bio``": The teacher's biography
         2) "``students``": A table used to map a student's email address to their name. Columns are as follows:
             - "``email``": The student's email address
             - "``first_name``": The student's first name
@@ -106,7 +106,7 @@ class Database:
         """
         return bool(self._db['teachers'].find_one(email=email))
 
-    def add_teacher(self, email: str, first_name: str, last_name: str, subjects: List[str]) -> bool:
+    def add_teacher(self, email: str, first_name: str, last_name: str, subjects: List[str], bio: str) -> bool:
         """
         Adds a teacher to the database
 
@@ -118,7 +118,7 @@ class Database:
         Returns:
             True if the teacher was added to the database or was already there, False if something went wrong
         """
-        data = {"email": email, "first_name": first_name, "last_name": last_name, "subjects": "|".join(subjects)}
+        data = {"email": email, "first_name": first_name, "last_name": last_name, "subjects": "|".join(subjects), "bio": bio}
         return self._transactional_upsert("teachers", data, ["email"])
 
     def add_student(self, email: str) -> bool:
