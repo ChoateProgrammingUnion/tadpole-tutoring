@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-    <link rel="icon" href="logo.png">
+<head>
+        <link rel="icon" href="logo.png">
     <link rel="stylesheet" href="/css/mvp.css">
 
     <meta charset="utf-8">
@@ -98,17 +98,110 @@
     <!-- use the element -->
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
 
+    <!--<script>-->
+        <!--$( document ).ready(function() {-->
+            <!--$( "#switch-tutor" ).click();-->
+        <!--});-->
+    <!--</script>-->
     <script type="text/javascript" src="brython/brython.js"></script>
-    <script type="text/javascript" src="brython/brython_stdlib.js"></script>
-    </head>
-<body>
-<header style="padding-top: 0; padding-bottom: 0;">
+    <script async type="text/javascript" src="brython/brython_stdlib.js"></script>
+    <!--<script async type="text/javascript" src="brython/brython.js"></script>-->
+    <!--<script async type="text/javascript" src="brython/brython_stdlib.js"></script>-->
+</head>
+<body onload="brython()">
+    <script type="text/python">
+        from browser import document, alert
+        import browser
+        from browser.template import Template
+        import urllib.request
+        import pickle
+        import base64
+        import collections
+
+
+        def echo(ev):
+            value = bool(document['switch-tutor-value'].text.rstrip())
+
+            if not value:
+                tutor_html = fetch_template("tutor_template.html")
+                document['results'].html = tutor_html
+                document['switch-tutor-value'].text = "True"
+
+                search_by_tutor()
+            else:
+                time_html = fetch_template("time_template.html")
+                document['results'].html = time_html
+                document['switch-tutor-value'].text = ""
+
+                search_by_time()
+
+        def fetch_template(url):
+            """
+            Fetches and renders template
+            """
+            response = urllib.request.urlopen(url).read().rstrip()
+            return response
+
+        def fetch_template_tutor_bio(vars):
+            """
+            Fetches and renders template
+            """
+            # URL = str(browser.window.location.href).replace(str(browser.window.location.pathname), "/")
+            response = urllib.request.urlopen("/teacher_bio.html").read().rstrip()
+            html = ""
+            for count, each_var in enumerate(vars):
+                each_dict = {x_var: y_var for _, (x_var, y_var) in each_var.items()}
+                each_dict["id"] = "tutor-bio-" + str(count)
+                # each_dict = dict(collections.OrderedDict(each_var))
+                # html += Template(response).render(**each_dict)
+                print(response, each_dict)
+                html += response.format(**each_dict)
+
+            return count, html
+
+        def search_by_tutor():
+            """
+            calls api
+            """
+
+            # URL = "api.tadpoletutoring.org"
+            URL = "http://localhost:5000"
+            response = urllib.request.urlopen(URL + "/api/teachers").read().rstrip()
+            response_decode = base64.b64decode(response.encode())
+            response_dict = pickle.loads(response_decode)
+            count, tutor_bio_html = fetch_template_tutor_bio(response_dict)
+            print("Tutor HTML", tutor_bio_html)
+
+            # set and save
+            document['schedule-results'].html = tutor_bio_html
+            for i in range(count):
+                document["tutor-bio-" + str(i)].bind("mouseup", render_cart)
+
+        def search_by_time(): 
+            """
+            searches by time
+            """
+            time_html = fetch_template("time_template.html")
+            document['results'].html = time_html
+
+        def render_cart(ev=""):
+            print(ev, dir(ev))
+            print(ev.target)
+            cart_html = fetch_template("tutor_template.html")
+            document['results'].html = cart_html
+
+
+        document["switch-tutor"].bind("mouseup", echo)
+        # jq = browser.window.jQuery
+        # jq("#clicky-slider").click()
+    </script>
+    <header style="padding-top: 0; padding-bottom: 0;">
             <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
             <a href="/"><img alt="Logo" src="logo.png" height="70"></a>
             <div>
             <ul>
                 <li><a href="index.html">Home</a>
-                <li><a href="tutors.html">Schedule</a>
+                <li><a href="schedule.html">Schedule</a>
                 <li><a href="pricing.html">Pricing</a>
                 <!--<li><a href="schedule.html">Schedule</a>-->
                 <li><a href="about.html">About</a></li>
@@ -117,118 +210,22 @@
             </div>
         </nav>
 
-        <h1>Tadpole Tutoring</h1>
-        <p>Page Subheading with <mark>highlighting</mark></p>
-        <br>
-        <p><a href="#"><i>Italic Link Button</i></a><a href="#"><b>Bold Link Button &rarr;</b></a></p>
     </header>
     <main>
-        <hr>
-        <section>
-            <header>
-                <h2>Section Heading</h2>
-                <p>Section Subheading</p>
-            </header>
-            <aside>
-                <h3>Card heading</h3>
-                <p>Card content*</p>
-                <p><small>*with small content</small></p>
-            </aside>
-            <aside>
-                <h3>Card heading</h3>
-                <p>Card content <sup>with notification</sup></p>
-            </aside>
-            <aside>
-                <h3>Card heading</h3>
-                <p>Card content</p>
-            </aside>
-        </section>
-        <hr>
-        <section>
-            <blockquote>
-                "Quote"
-                <footer><i>- Attribution</i></footer>
-            </blockquote>
-        </section>
-        <hr>
-        <section>
-            <table>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Col A</th>
-                        <th>Col B</th>
-                        <th>Col C</th>
-                    </tr>
-                </thead>
-                <tr>
-                    <td>Row 1</td>
-                    <td>Cell A1</td>
-                    <td>Cell B1</td>
-                    <td>Cell C1</td>
-                </tr>
-                <tr>
-                    <td>Row 2</td>
-                    <td>Cell A2</td>
-                    <td>Cell B2</td>
-                    <td>Cell C2</td>
-                </tr>
-            </table>
-        </section>
-        <hr>
-        <article>
-            <h2>Left-aligned header</h2>
-            <p>Left-aligned paragraph</p>
-            <aside>
-                <p>Article callout</p>
-            </aside>
-            <ul>
-                <li>List item 1</li>
-                <li>List item 2</li>
-            </ul>
-            <figure>
-                <img alt="Stock photo" src="https://via.placeholder.com/1080x500?text=Amazing+stock+photo">
-                <figcaption><i>Image caption</i></figcaption>
-            </figure>
-        </article>
-        <hr>
-        <div>
-            <details>
-                <summary>Expanable title</summary>
-                <p>Revealed content</p>
-            </details>
-            <details>
-                <summary>Another expanable title</summary>
-                <p>More revealed content</p>
-            </details>
-            <br>
-            <p>Inline <code>code</code> snippets</p>
-            <pre>
-                <code>
-// preformatted code block
-                </code>
-            </pre>
+        <div style="margin-left:80%" id="clicky-slider">
+            <div style="display: inline-block">
+            <span style="white-space: nowrap;">By Time</span>
+            <label id="switch-tutor" class="switch">
+                <input type="checkbox">
+                <span class="slider round"></span> 
+            </label> 
+            <span style="white-space: nowrap;">By Tutor</span>
+            <span id="switch-tutor-value" style="visibility:hidden"></span>
+            </div>
         </div>
-        <hr>
-        <section>
-            <form>
-                <header>
-                    <h2>Form title</h2>
-                </header>
-                <label for="input1">Input label:</label>
-                <input type="text" id="input1" name="input1" size="20" placeholder="Input1">
-                <label for="select1">Select label:</label>
-                <select id="select1">
-                    <option value="option1">option1</option>
-                    <option value="option2">option2</option>
-                </select>
-                <label for="textarea1">Textarea label:</label>
-                <textarea cols="40" rows="5" id="textarea1"></textarea>
-                <button type="submit">Submit</button>
-            </form>
-        </section>
+        <div id="results">
+        </div>
     </main>
-    <footer>
 <footer>
     <hr>
     <p>
@@ -238,7 +235,6 @@
     <p>Open source under the MIT license.</p>
 </footer>
 
-    </footer>
 </body>
 
 </html>
