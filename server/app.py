@@ -8,6 +8,7 @@ import stripe
 
 import api
 import database
+import notify
 import views
 from flask_cors import CORS
 
@@ -81,6 +82,7 @@ def populate_index():
     db.add_time_for_tutoring("teacher2@email.com", datetime.now().replace(minute=0, second=0, microsecond=0))
 
     db.append_cart('student1@email.com', 1)
+    db.append_cart('student1@email.com', 2)
 
     db.end_db_connection()
 
@@ -130,6 +132,26 @@ def api_update_time():
     if api.update_time(request):
         return api.pickle_str({})
 
+    return flask.abort(500)
+
+@app.route('/api/add-to-cart')
+def api_update_time():
+    if email := auth.check_login(request):
+        time_id = request.form.get('id', None, int)
+
+        if time_id is None:
+            return flask.abort(400)
+
+        db = database.Database()
+
+        db.init_db_connection()
+        db.append_cart(email, time_id)
+        cart = db.get_cart(email)
+        db.end_db_connection()
+
+        return api.pickle_str(cart)
+
+    log_info("Not logged in")
     return flask.abort(500)
 
 @app.route('/api/make-teacher')
@@ -221,6 +243,9 @@ def handle_payment():
                 db.set_cart(email, set())
                 db.end_db_connection()
                 log_info("Times claimed")
+
+                notify_email = notify.Email()
+                notify_email.send(email, "Order Confirmation", )
 
         return ""
 
