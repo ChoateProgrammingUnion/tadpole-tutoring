@@ -2,15 +2,24 @@
 <html lang="en">
     <head>
     <link rel="icon" href="logo.png">
-    <link rel="stylesheet" href="https://andybrewer.github.io/mvp/mvp.css">
+    <link rel="stylesheet" href="/css/mvp.css">
 
     <meta charset="utf-8">
     <meta name="description" content="Tadpole Tutoring offers affordable, high quality tutoring to students all over the world. We have a profound commitment to charity, donating 100% of our profits to reputable, charitable organizations in need.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="brython/brython.js"></script>
-    <script type="text/javascript" src="brython/brython_stdlib.js"></script>
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+    <script async type="text/javascript" src="brython/brython.js"></script>
+    <script defer type="text/javascript" src="brython/brython_stdlib.js"></script>
+    <script>
+    function testWebP(callback) {
+        var webP = new Image();
+        webP.onload = webP.onerror = function () {
+            callback(webP.height == 2);
+        };
+        webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+    };
+    </script>
     <title>Tadpole Tutoring</title>
     <style>
     body {
@@ -100,6 +109,11 @@
     <!-- use the element -->
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
 
+    <script>
+testWebP(function(support) {
+	support ? true : document.getElementById("banner-image-bg").style.cssText = 'background-image: url(images/banner_background_tall.webp); background-size: 100%;  height: 80vh; background-repeat: no-repeat; position: relative;'
+});
+    </script>
     <head>
 <body>
     <header style="padding-top: 0; padding-bottom: 0;">
@@ -120,10 +134,14 @@
     <!--<section style="background:#98fb98">-->
     </header>
     <div style="padding: 0; margin: 0; width: 100vw; text-align: center;">
-        <div style="background-image: url(images/banner_background_tall.jpg); background-size: 100%;  height: 80vh; background-repeat: no-repeat; position: relative;">
+        <div style="background-image: url(images/banner_background_tall.jpg); background-size: 100%;  height: 80vh; background-repeat: no-repeat; position: relative;" id="banner-image-bg">
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                 <br>
-                <img style="width: 30%; height: auto;" src="images/Tadpole_Tutoring_Logo_Side.png">
+                <picture>
+                    <source type="image/webp" srcset="images/Tadpole_Tutoring_Logo_Side.webp">
+                    <source type="image/jp2" srcset="images/Tadpole_Tutoring_Logo_Side.jp2">
+                    <img style="width: 30%; height: auto;" src="images/Tadpole_Tutoring_Logo_Side.png">
+                </picture>
                 <p><a href="#"><b>Schedule Now ↗</b></a></p>
                 <br>
             </div>
@@ -133,7 +151,11 @@
     <div class="row">
         <div class="column">
             <figure style="margin: 3%; max-height: 94%; max-width: 94%; text-align: right; vertical-align: middle;">
-                <img src="images/student_2.jpg">
+                <picture>
+                    <source type="image/webp" srcset="images/student_2.webp">
+                    <source type="image/jp2" srcset="images/student_2.jp2">
+                    <img src="images/student_2.jpg">
+                </picture>
             </figure>
         </div>
         <div class="column">
@@ -154,7 +176,11 @@
         </div>
         <div class="column">
             <figure style="margin: 3%; max-height: 94%; max-width: 94%; text-align: left; vertical-align: middle;">
-                <img src="images/student_1.jpg">
+                <picture>
+                    <source type="image/webp" srcset="images/student_1.webp">
+                    <source type="image/jp2" srcset="images/student_1.jp2">
+                    <img src="images/student_1.jpg">
+                </picture>
             </figure>
         </div>
     </div>

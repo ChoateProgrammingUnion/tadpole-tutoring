@@ -2,15 +2,24 @@
 <html lang="en">
 <head>
         <link rel="icon" href="logo.png">
-    <link rel="stylesheet" href="https://andybrewer.github.io/mvp/mvp.css">
+    <link rel="stylesheet" href="/css/mvp.css">
 
     <meta charset="utf-8">
     <meta name="description" content="Tadpole Tutoring offers affordable, high quality tutoring to students all over the world. We have a profound commitment to charity, donating 100% of our profits to reputable, charitable organizations in need.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="brython/brython.js"></script>
-    <script type="text/javascript" src="brython/brython_stdlib.js"></script>
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+    <script async type="text/javascript" src="brython/brython.js"></script>
+    <script defer type="text/javascript" src="brython/brython_stdlib.js"></script>
+    <script>
+    function testWebP(callback) {
+        var webP = new Image();
+        webP.onload = webP.onerror = function () {
+            callback(webP.height == 2);
+        };
+        webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+    };
+    </script>
     <title>Tadpole Tutoring</title>
     <style>
     body {
