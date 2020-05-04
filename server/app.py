@@ -4,6 +4,8 @@ from datetime import datetime
 
 import flask
 
+import stripe
+
 import api
 import database
 import views
@@ -40,6 +42,8 @@ google_bp = make_google_blueprint(scope=["https://www.googleapis.com/auth/userin
                                          "https://www.googleapis.com/auth/userinfo.email"], offline=True)
 
 app.register_blueprint(google_bp, url_prefix="/login")
+
+stripe.api_key = STRIPE_API_KEY
 
 @app.route('/')
 def index():
@@ -140,6 +144,38 @@ def api_claim_time():
         return api.pickle_str({})
 
     return flask.abort(500)
+
+@app.route('/api/create-payment-intent', methods=['POST'])
+def create_payment():
+    # Create a PaymentIntent with the order amount and currency
+    intent = stripe.PaymentIntent.create(
+        amount=1099,
+        currency='usd'
+    )
+
+    try:
+        # Send publishable key and PaymentIntent details to client
+        return jsonify({'publishableKey': STRIPE_PUBLISHABLE_KEY, 'clientSecret': intent.client_secret, 'intentId': intent.get('id')})
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+
+
+@app.route('/api/handle-payment', methods=['POST'])
+def handle_payment():
+    intent_id = request.form.get("intentId")
+
+    if not intent_id:
+        log_info("No intentId passed " + str(request.args) + " " + str(request.form))
+        return ""
+
+    intent = stripe.PaymentIntent.retrieve(intent_id)
+
+    if intent['amount_received'] >= intent['amount']:
+        log_info("SUCCESS " + str(intent['amount_received']))
+        return ""
+
+    log_info("FAILED " + str(intent['amount_received']))
+    return ""
 
 
 if __name__ == '__main__':
