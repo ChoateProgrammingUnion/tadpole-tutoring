@@ -7,6 +7,10 @@
             <!--$( "#switch-tutor" ).click();-->
         <!--});-->
     <!--</script>-->
+    <script type="text/javascript" src="brython/brython.js"></script>
+    <script async type="text/javascript" src="brython/brython_stdlib.js"></script>
+    <!--<script async type="text/javascript" src="brython/brython.js"></script>-->
+    <!--<script async type="text/javascript" src="brython/brython_stdlib.js"></script>-->
 </head>
 <body onload="brython()">
     <script type="text/python">
@@ -30,7 +34,7 @@
             else:
                 document['switch-tutor-value'].text = ""
 
-        def fetch_temnplate(vars):
+        def fetch_template(vars):
             """
             Fetches and renders template
             """
