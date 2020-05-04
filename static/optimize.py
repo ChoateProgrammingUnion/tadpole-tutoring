@@ -28,10 +28,10 @@ optimizers = {
     "pngs": ['**/*.png', '/usr/local/bin/pngcrush input output'],
     "css-minify": ['**/*.css', 'minify -o output input'],
     "css-csso": ['**/*.css', 'csso input --comments none -o output'],
-    "js-closure-compiler": [
-        '**/*.js',
-        'closure-compiler --js input --js_output_file output -O ADVANCED'
-    ],
+    # "js-closure-compiler": [
+        # '**/*.js',
+        # 'closure-compiler --js input --js_output_file output -O ADVANCED'
+    # ],
     "js-minify": ['**/*.js', 'minify -o output input'],
     # "js-uglify": ['**/*.js', 'uglifyjs --compress input -o output'],
     "html": ['**/*.html', 'minify -o output input'],
