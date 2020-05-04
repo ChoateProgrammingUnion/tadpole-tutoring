@@ -15,6 +15,7 @@ for each_file in files:
         else:
             imports.append(each_file)
 
+imports.append("schedule.py")
 args = {}
 for each_import in imports:
     name = each_import.split(".")[0]

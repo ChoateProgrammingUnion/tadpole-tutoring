@@ -103,7 +103,6 @@ def logout():
     session.clear()
     return redirect("/")
 
-
 @app.route('/api/register')
 def api_register_student():
     if api.register_student(request):
