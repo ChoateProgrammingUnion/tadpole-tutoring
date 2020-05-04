@@ -30,7 +30,10 @@
             else:
                 document['switch-tutor-value'].text = ""
 
-        def fetch_template(vars):
+        def fetch_temnplate(vars):
+            """
+            Fetches and renders template
+            """
             # URL = str(browser.window.location.href).replace(str(browser.window.location.pathname), "/")
             response = urllib.request.urlopen("/teacher_bio.html").read().rstrip()
             html = ""
@@ -44,6 +47,9 @@
             return html
 
         def search_by_tutor():
+            """
+            calls api
+            """
             # URL = "api.tadpoletutoring.org"
             URL = "http://localhost:5000"
             response = urllib.request.urlopen(URL + "/api/teachers").read().rstrip()
@@ -51,6 +57,8 @@
             response_dict = pickle.loads(response_decode)
             html = fetch_template(response_dict)
             print("HTML", html)
+
+            # set and save
             document['schedule-results'].html = html
 
         

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <link rel="icon" href="images/Tadpole_Tutoring_Logo_Favicon_32.png">
+        <link rel="icon" href="logo.jpg">
     <link rel="stylesheet" href="https://andybrewer.github.io/mvp/mvp.css">
 
     <meta charset="utf-8">
@@ -128,7 +128,10 @@
             else:
                 document['switch-tutor-value'].text = ""
 
-        def fetch_template(vars):
+        def fetch_temnplate(vars):
+            """
+            Fetches and renders template
+            """
             # URL = str(browser.window.location.href).replace(str(browser.window.location.pathname), "/")
             response = urllib.request.urlopen("/teacher_bio.html").read().rstrip()
             html = ""
@@ -142,6 +145,9 @@
             return html
 
         def search_by_tutor():
+            """
+            calls api
+            """
             # URL = "api.tadpoletutoring.org"
             URL = "http://localhost:5000"
             response = urllib.request.urlopen(URL + "/api/teachers").read().rstrip()
@@ -149,6 +155,8 @@
             response_dict = pickle.loads(response_decode)
             html = fetch_template(response_dict)
             print("HTML", html)
+
+            # set and save
             document['schedule-results'].html = html
 
         
@@ -158,7 +166,7 @@
     </script>
     <header style="padding-top: 0; padding-bottom: 0;">
             <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
-            <a href="/"><img alt="Logo" src="logo.png" height="70"></a>
+            <a href="/"><img alt="Logo" src="logo.jpg" height="70"></a>
             <div>
             <ul>
                 <li><a href="index.html">Home</a>
