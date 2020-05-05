@@ -74,8 +74,6 @@ var setupElements = function(data) {
 var pay = function(stripe, card, clientSecret, intentId) {
     changeLoadingState(true);
 
-    // Initiate the payment.
-    // If authentication is required, confirmCardPayment will automatically display a modal
     stripe
         .confirmCardPayment(clientSecret, {
             payment_method: {
@@ -103,10 +101,13 @@ var orderComplete = function(clientSecret, intentId) {
 };
 
 var showError = function(errorMsgText) {
-    changeLoadingState(false);
     var errorMsg = document.querySelector(".sr-field-error");
     errorMsg.textContent = errorMsgText;
     setTimeout(function() {
         errorMsg.textContent = "";
     }, 4000);
+};
+
+var changeLoadingState = function (state) {
+
 };
