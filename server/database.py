@@ -1,6 +1,6 @@
 import copy
 import dataset
-from datetime import datetime
+from datetime import datetime, timedelta
 import validators
 import secrets
 import string
@@ -300,12 +300,11 @@ class Database:
             must_be_unclaimed: If the session has to be unclaimed
 
         Returns a list of dicts representing each time with the following keys:
-                - "``teacher_email``": ``str`` - The email of the teacher hosting the session
-                - "``start_time``": ``datetime`` - The start time of the session
-                - "``end_time``": ``datetime`` - The end time of the session
-                - "``duration``": ``timedelta`` - The start time of the session
-                - "``claimed``": ``bool`` - If the session has been claimed
-                - "``student``": ``str`` - The student who claimed the session (if any)
+            - "``teacher_email``": The teacher's email address hosting the tutoring session
+            - "``start_time``": A unix timestamp representing the start of the session
+            - "``duration_type``": A number representing the duration of the session (0 for 1hr, 1 for 1.5hr)
+            - "``claimed``": A boolean representing if the session has been claimed
+            - "``student``": The email address of the student who claimed the session
 
         Returns:
             The list of dicts
@@ -341,9 +340,25 @@ class Database:
                 continue
 
             t['start_time'] = datetime.fromtimestamp(c_start)
-            results.append(t)
+
+            res = dict()
+
+            for key, value in res.items():
+                res.update({str(key): value})
+
+            results.append(res)
 
         return results
+
+    def get_time_schedule(self, timezone_offset: timedelta = None, num_days: int = 7):
+        if timezone_offset is None:
+            timezone_offset = timedelta(minutes=0)
+
+        midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) + timezone_offset
+
+        if midnight > datetime.utcnow():
+            midnight -=
+
 
     def get_student_notes(self, student_email: str) -> str:
         """

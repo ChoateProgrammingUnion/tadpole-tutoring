@@ -1,6 +1,6 @@
 import os
 import secrets
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import flask
 
@@ -129,6 +129,8 @@ def api_fetch_teachers():
 
 @app.route('/api/search-times')
 def api_search_times():
+    timezone_offset = timedelta(minutes=request.form.get("tz_offset", 0, int))
+
     teacher_email = request.form.get("teacher_email", None, str)
     subject = request.form.get("subject", None, str)
     min_start_time = request.form.get("min_start_time", None, int)
