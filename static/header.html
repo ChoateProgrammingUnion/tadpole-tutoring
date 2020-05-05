@@ -90,6 +90,26 @@
     .column {
         flex: 50%;
     }
+
+    .mobile {
+        display: none;
+    }
+
+    .not-mobile {
+        display: unset;
+    }
+
+    @media only screen and (max-width: 480px) {
+        .mobile {
+            display: unset;
+        }
+    }
+
+    @media only screen and (min-width: 480px) {
+        .not-mobile {
+            display: none;
+        }
+    }
     </style>
 
     <!-- use the element -->
