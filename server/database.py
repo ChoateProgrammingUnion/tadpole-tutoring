@@ -369,9 +369,23 @@ class Database:
             student_email: The email of the student
 
         Returns:
-            Everything about the student as a dict. Returns an empty dict if no student was found or if the student has no notes.
+            Everything about the student as a dict. Returns an empty dict if no student was found.
         """
         if student := self._db['students'].find_one(email=student_email):
+            return student
+        return {}
+
+    def get_teacher(self, teacher_email: str) -> dict:
+        """
+        Gets everything for a given teacher
+
+        Args:
+            teacher_email: The email of the teacher
+
+        Returns:
+            Everything about the teacher as a dict. Returns an empty dict if no teacher was found.
+        """
+        if student := self._db['teachers'].find_one(email=teacher_email):
             return student
         return {}
 

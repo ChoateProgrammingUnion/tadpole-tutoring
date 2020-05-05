@@ -135,7 +135,7 @@ def api_update_time():
     return flask.abort(500)
 
 @app.route('/api/add-to-cart')
-def api_update_time():
+def api_add_to_cart():
     if email := auth.check_login(request):
         time_id = request.form.get('id', None, int)
 
