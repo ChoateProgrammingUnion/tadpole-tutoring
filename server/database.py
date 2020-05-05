@@ -357,7 +357,9 @@ class Database:
         midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) + timezone_offset
 
         if midnight > datetime.utcnow():
-            midnight -=
+            midnight -= timedelta(hours=24)
+
+        
 
 
     def get_student_notes(self, student_email: str) -> str:
