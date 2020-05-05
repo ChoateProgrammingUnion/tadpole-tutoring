@@ -127,6 +127,28 @@ def api_fetch_teachers():
     teachers = list(api.fetch_teachers())
     return api.pickle_str(teachers)
 
+@app.route('/api/search-times')
+def api_search_times():
+    teacher_email = request.form.get("teacher_email", None, str)
+    subject = request.form.get("subject", None, str)
+    min_start_time = request.form.get("min_start_time", None, int)
+    max_start_time = request.form.get("max_start_time", None, int)
+    must_be_unclaimed = request.form.get("must_be_unclaimed", True, bool)
+
+    if min_start_time is not None:
+        min_start_time = datetime.utcfromtimestamp(min_start_time)
+
+    if max_start_time is not None:
+        max_start_time = datetime.utcfromtimestamp(max_start_time)
+
+    db = database.Database()
+
+    db.init_db_connection()
+    times = db.search_times(teacher_email, subject, min_start_time, max_start_time, must_be_unclaimed)
+    db.end_db_connection()
+
+    return api.pickle_str(times)
+
 @app.route('/api/update-time')
 def api_update_time():
     if api.update_time(request):
