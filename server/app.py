@@ -3,6 +3,7 @@ import secrets
 from datetime import datetime, timedelta
 
 import flask
+import pytz
 
 import stripe
 
@@ -79,6 +80,8 @@ def populate_index():
 
     db.init_db_connection()
 
+    midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
     db.add_student('student1@email.com')
     db.add_student('student2@email.com')
     db.add_student('student3@email.com')
@@ -87,8 +90,10 @@ def populate_index():
     db.add_teacher("teacher1@email.com", "teacher1", "teacherOne", ["English"], "")
     db.add_teacher("teacher2@email.com", "teacher2", "teacherTwo", ["English", "Math"], "")
     db.add_teacher("teacher3@email.com", "teacher3", "teacherThree", ["Math"], "")
-    db.add_time_for_tutoring("teacher1@email.com", datetime.now().replace(minute=0, second=0, microsecond=0))
-    db.add_time_for_tutoring("teacher2@email.com", datetime.now().replace(minute=0, second=0, microsecond=0))
+    db.add_time_for_tutoring("teacher1@email.com", midnight)
+    db.add_time_for_tutoring("teacher2@email.com", midnight + timedelta(days=1))
+    db.add_time_for_tutoring("teacher1@email.com", midnight + timedelta(days=2))
+    db.add_time_for_tutoring("teacher2@email.com", midnight + timedelta(days=3))
 
     db.append_cart('student1@email.com', 1)
     db.append_cart('student1@email.com', 2)
@@ -139,24 +144,22 @@ def api_fetch_teachers():
 
 @app.route('/api/search-times')
 def api_search_times():
-    timezone_offset = timedelta(minutes=request.form.get("tz_offset", 0, int))
+    timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
 
     teacher_email = request.form.get("teacher_email", None, str)
     subject = request.form.get("subject", None, str)
-    min_start_time = request.form.get("min_start_time", None, int)
-    max_start_time = request.form.get("max_start_time", None, int)
     must_be_unclaimed = request.form.get("must_be_unclaimed", True, bool)
 
-    if min_start_time is not None:
-        min_start_time = datetime.utcfromtimestamp(min_start_time)
-
-    if max_start_time is not None:
-        max_start_time = datetime.utcfromtimestamp(max_start_time)
+    search_params = {
+        "teacher_email": teacher_email,
+        "subject": subject,
+        "must_be_unclaimed": must_be_unclaimed
+    }
 
     db = database.Database()
 
     db.init_db_connection()
-    times = db.search_times(teacher_email, subject, min_start_time, max_start_time, must_be_unclaimed)
+    times = db.get_time_schedule(timezone_offset, search_params=search_params)
     db.end_db_connection()
 
     return api.pickle_str(times)

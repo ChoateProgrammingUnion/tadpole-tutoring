@@ -1,6 +1,8 @@
 import copy
 import dataset
 from datetime import datetime, timedelta
+
+import pytz
 import validators
 import secrets
 import string
@@ -288,7 +290,7 @@ class Database:
         log_info("Unable to find time with id " + str(time_id), header=student_email)
         return False
 
-    def search_times(self, teacher_email: str = None, subject: str = None, min_start_time: datetime = None, max_start_time: datetime = None, must_be_unclaimed: bool = False) -> List[dict]:
+    def search_times(self, teacher_email: str = None, subject: str = None, min_start_time: datetime = None, max_start_time: datetime = None, must_be_unclaimed: bool = False, string_time_offset: timedelta = None) -> List[dict]:
         """
         Searches the database for tutoring sessions satisfying the search parameters
 
@@ -309,10 +311,7 @@ class Database:
         Returns:
             The list of dicts
         """
-        if teacher_email:
-            possible_times = self._db['times'].find(teacher_email=teacher_email)
-        else:
-            possible_times = self._db['times'].all()
+        possible_times = self._db['times'].all()
 
         results: List[dict] = []
 
@@ -339,11 +338,17 @@ class Database:
             if max_start_time and c_start > max_start_time.timestamp():
                 continue
 
-            t['start_time'] = datetime.fromtimestamp(c_start)
+            if teacher_email and teacher_email == c_teacher_email:
+                continue
+
+            t['start_time'] = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
 
             res = dict()
 
             for key, value in t.items():
+                if string_time_offset is not None and type(value) == datetime:
+                    value = (value.astimezone(pytz.utc) + string_time_offset).strftime("%I:%M %p")
+
                 res.update({str(key): value})
 
             results.append(res)
@@ -362,13 +367,14 @@ class Database:
         if midnight > datetime.utcnow():
             midnight -= timedelta(hours=24)
 
-        schedule_list = []
+        schedule_dict = OrderedDict()
 
         for day_num in range(num_days):
-            today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24), **search_params)
-            schedule_list.append(today_schedule)
+            today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24), string_time_offset=timezone_offset, **search_params)
+            schedule_dict.update({midnight.strftime("%A"): today_schedule})
+            midnight += timedelta(hours=24)
 
-        return schedule_list
+        return schedule_dict
 
 
     def get_student_notes(self, student_email: str) -> str:
