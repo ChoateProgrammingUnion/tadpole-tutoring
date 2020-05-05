@@ -7,7 +7,12 @@
                 <li><a href="pricing.html">Pricing</a>
                 <!--<li><a href="schedule.html">Schedule</a>-->
                 <li><a href="about.html">About</a></li>
-                <li><a onclick="window.open('http://api.tadpoletutoring.org/login')"><i>Login</i></a></li>
+                <li id="login-state"><a onclick="window.open('http://localhost:5000/login')"><i>Login</i></a></li>
             </ul>
             </div>
         </nav>
+        <script>
+            if (document.cookie) {
+                document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('http://localhost:5000/logout')\"><i>Logout</i></a>"
+            }
+        </script> 

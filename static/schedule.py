@@ -108,8 +108,8 @@ def fetch_api(endpoint="/api/search-times", params={}):
     """
     Fetches stuff from any API endpoint
     """
-    # URL = "http://localhost:5000"
-    URL = "api.tadpoletutoring.org"
+    URL = "http://localhost:5000"
+    # URL = "http://api.tadpoletutoring.org"
     if params:
         encoded_params = urllib.parse.urlencode(params)
         response_raw = urllib.request.urlopen(URL + endpoint+"?" + encoded_params).read().rstrip()

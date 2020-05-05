@@ -118,7 +118,10 @@ def callback():
 def logout():
     auth.deauth_token(request)
     session.clear()
-    return render_template("index.html")
+    response = make_response(render_template("index.html"))
+    response.set_cookie("email", expires=0)
+    response.set_cookie("token", expires=0)
+    return response
 
 @app.route('/api/register')
 def api_register_student():

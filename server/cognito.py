@@ -33,7 +33,7 @@ def exchange_code(code: str) -> dict:
     params = {"grant_type": "authorization_code", 
               "client_id": config.APP_CLIENT_ID, 
               "code" : code, 
-              "redirect_uri" : "http://api.tadpoletutoring.org/callback"} 
+              "redirect_uri" : "http://localhost:5000/callback"} 
 
     response = requests.post(AUTH_URL, 
                              params=params,
