@@ -52,7 +52,8 @@ def index():
     email = auth.check_login(request) # do stuff with this
     if email:
         state['logged_in'] = True
-    return render_template("index.html", navbar=views.render_navbar(state))
+    # return render_template("index.html", navbar=views.render_navbar(state))
+    return render_template("index.html")
 
 @app.route('/login')
 def login():
@@ -62,7 +63,15 @@ def login():
     if not auth.check_login(request):
         return redirect(cognito.get_login_url())
     else:
-        return "You are logged in!"
+        url = request.headers.get("Referer")
+        return redirect(url)
+
+@app.route('/check', methods = ['POST'])
+def check_login():
+    if auth.check_login(request):
+        return "Success!"
+    else:
+        return ""
 
 @app.route('/populate-index')
 def populate_index():
@@ -95,7 +104,8 @@ def callback():
     """
     user_info = cognito.check_callback(request)
     if user_info: # todo add more checks
-        response = make_response(render_template("index.html", navbar=views.render_navbar({})))
+        # response = make_response(render_template("index.html", navbar=views.render_navbar({})))
+        response = make_response(render_template("index.html"))
 
     return auth.set_login(response, user_info)
 
@@ -103,7 +113,7 @@ def callback():
 def logout():
     auth.deauth_token(request)
     session.clear()
-    return redirect("/")
+    return render_template("index.html")
 
 @app.route('/api/register')
 def api_register_student():
