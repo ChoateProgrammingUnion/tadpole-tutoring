@@ -343,23 +343,32 @@ class Database:
 
             res = dict()
 
-            for key, value in res.items():
+            for key, value in t.items():
                 res.update({str(key): value})
 
             results.append(res)
 
         return results
 
-    def get_time_schedule(self, timezone_offset: timedelta = None, num_days: int = 7):
+    def get_time_schedule(self, timezone_offset: timedelta = None, num_days: int = 7, search_params: dict = None):
         if timezone_offset is None:
             timezone_offset = timedelta(minutes=0)
+
+        if search_params is None:
+            search_params = {}
 
         midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) + timezone_offset
 
         if midnight > datetime.utcnow():
             midnight -= timedelta(hours=24)
 
-        
+        schedule_list = []
+
+        for day_num in range(num_days):
+            today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24), **search_params)
+            schedule_list.append(today_schedule)
+
+        return schedule_list
 
 
     def get_student_notes(self, student_email: str) -> str:
