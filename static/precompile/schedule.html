@@ -93,25 +93,35 @@
     .column {
         flex: 50%;
     }
+
+    .mobile {
+        display: none;
+    }
+
+    .not-mobile {
+        display: unset;
+    }
+
+    @media only screen and (max-width: 480px) {
+        .mobile {
+            display: unset;
+        }
+
+        .not-mobile {
+            display: none;
+        }
+    }
+
     </style>
 
     <!-- use the element -->
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
 
-    <!--<script>-->
-        <!--$( document ).ready(function() {-->
-            <!--$( "#switch-tutor" ).click();-->
-        <!--});-->
-    <!--</script>-->
-    <script async src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js" integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
-    <script async type="text/javascript" src="brython/brython_modules.js"></script>
-    <!--<script type="text/javascript" src="brython/brython.js"></script>-->
-    <!--<script async type="text/javascript" src="brython/brython_stdlib.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js" integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="brython/brython_modules.js"></script>
 </head>
 <body onload="brython()">
     <script type="text/python" src="schedule.py"></script>
-    <!--<script type="text/python">-->
-    <!--</script>-->
     <header style="padding-top: 0; padding-bottom: 0;">
             <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
             <a href="/"><img alt="Logo" src="logo.png" height="70"></a>
