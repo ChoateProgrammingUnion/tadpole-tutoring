@@ -93,6 +93,26 @@
     .column {
         flex: 50%;
     }
+
+    .mobile {
+        display: none;
+    }
+
+    .not-mobile {
+        display: unset;
+    }
+
+    @media only screen and (max-width: 480px) {
+        .mobile {
+            display: unset;
+        }
+    }
+
+    @media only screen and (min-width: 480px) {
+        .not-mobile {
+            display: none;
+        }
+    }
     </style>
 
     <!-- use the element -->
@@ -153,13 +173,13 @@
     <!--<section style="background:#98fb98">-->
     </header>
     <div style="padding: 0; margin: 0; width: 100vw; text-align: center;">
-        <div style="background-image: url(images/banner_background_tall.jpg); background-size: 100%;  height: 80vh; background-repeat: no-repeat; position: relative;" id="banner-image-bg">
+        <div style="background-image: url(images/banner_background_tall.jpg); background-size: 100%;  height: min(80vh, 66vw); background-repeat: no-repeat; position: relative;" id="banner-image-bg">
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                 <br>
                 <picture>
                     <source type="image/webp" srcset="images/Tadpole_Tutoring_Logo_Side.webp">
                     <source type="image/jp2" srcset="images/Tadpole_Tutoring_Logo_Side.jp2">
-                    <img style="width: 30%; height: auto;" src="images/Tadpole_Tutoring_Logo_Side.png">
+                    <img style="width: max(220px, 40%); height: auto;" src="images/Tadpole_Tutoring_Logo_Side.png">
                 </picture>
                 <p><a href="#"><b>Schedule Now ↗</b></a></p>
                 <br>
