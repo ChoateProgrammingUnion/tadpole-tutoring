@@ -245,7 +245,7 @@ def handle_payment():
                 log_info("Times claimed")
 
                 notify_email = notify.Email()
-                notify_email.send(email, "Order Confirmation", )
+                notify_email.send(email, "Order Confirmation")
 
         return ""
 
