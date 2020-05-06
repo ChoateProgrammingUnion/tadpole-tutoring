@@ -11,6 +11,9 @@ import javascript
 
 
 def toggle_bind(event):
+    """
+    Binds to the toggle and figures out what to do
+    """
     value = bool(document['switch-tutor-value'].text.rstrip())
 
     if not value:
@@ -33,54 +36,88 @@ def search_by_time():
     searches by time
     """
     time_html = fetch_template("time_template.html")
-    timeslots_days_html = fetch_template("timeslots_days_template.html")
-    timeslot_html = fetch_template("timeslots_template.html")
 
     document['results'].html = time_html
 
     times = fetch_api("/api/search-times", params={"tz_offset": calculate_timezone_offset()})
-    print("Times api", times, calculate_timezone_offset())
-
-    timeslots = ""
-    timeslots += timeslots_days_html
-    for each_day in times:
-        timeslots += "<tr>"
-        for each_session in each_day:
-            # timeslots += timeslot_html.format(id=i, time="None")
-            print(each_session)
-            timeslots += timeslot_html.format(**each_session)
-        timeslots += "</tr>"
+    timeslots = generate_calendar_html(times)
 
     document['schedule-results'].html = timeslots
 
     # document['schedule-results'].html = tutor_bio_html
 
+def generate_calendar_html(times):
+    """
+    Generates calendar table html code given a list of times
+    """
+    timeslot_html = fetch_template("timeslots_template.html")
+    timeslots_days_html = fetch_template("timeslots_days_template.html")
+    print("Times api", times, calculate_timezone_offset())
+
+    timeslots = ""
+    timeslots += timeslots_days_html
+    ids_list = []
+    for each_day in times.values():
+        timeslots += "<tr>"
+        for each_session in each_day:
+            # timeslots += timeslot_html.format(id=i, time="None")
+            ids_list.append(each_session.get('id'))
+            print("Each session", each_session)
+            timeslots += timeslot_html.format(**each_session)
+        timeslots += "</tr>"
+
+    print(ids_list)
+    return timeslots
 
 def search_by_tutor():
     response_dict = fetch_teachers()
-    tutor_bio_html = render_tutor_bios(response_dict)
+    total_count, tutor_bio_html = render_tutor_bios(response_dict)
     print("Tutor HTML", tutor_bio_html)
 
     # set and save
     document['schedule-results'].html = tutor_bio_html
-    for i in range(0, len(tutor_bio_html) - 1):
-        print(i)
-        document["tutor-bio-" + str(i)].bind("mousedown", render_tutor)
+    for i in range(total_count):
+        try:
+            document[str(i)].bind("mousedown", render_tutor)
+            # document["clicky-slider"] = ""
+
+        except KeyError as e:
+            print("Error, need to debug later", e)
 
 
 def render_tutor(ev=""):
     # print(ev, dir(ev))
-    # print(ev.target)
+    # print("EV target", str(list(ev.target)), ev.target.get(), ev.target.id)
+    # print(dir(ev.target))
+    print("ev.target.id", ev.target.id)
 
-    index = int(ev.target[-1:])
+    # print("repr", repr(ev.target))
+
+    index = int(ev.target.id)
+
     tutor_dict = fetch_teachers()[index]
-    print(tutor_dict)
+    print("Tutor dict", tutor_dict)
 
     indiv_tutor_template = fetch_template("indiv_tutor_template.html").format(**tutor_dict)
     document['results'].html = indiv_tutor_template
 
+    schedule_now()
+
+    document['schedule-' + tutor_dict['id']].bind("mousedown", schedule_now)
+
     # cart_html = fetch_template("tutor_template.html")
     # document['results'].html = cart_html
+
+def schedule_now():
+    email = document['email'].html.rstrip()
+    print("email", email)
+    response = fetch_api("/api/search-times",{'teacher_email': email})
+
+    print("API Teacher Response", response)
+
+    if response:
+        calendar_template = generate_calendar_html(response)
+        document['schedule-results'].html = calendar_template
 
 
 def render_tutor_bios(vars):
@@ -91,11 +128,14 @@ def render_tutor_bios(vars):
     response = fetch_template("/teacher_bio.html")
     html = ""
     for count, each_var in enumerate(vars):
-        each_var["id"] = "tutor-bio-" + str(count)
+        each_var["id"] = str(count)
         print(response, each_var)
         html += response.format(**each_var)
 
-    return html
+    return len(vars), html
+
+
+## Fetching code
 
 def fetch_template(url):
     """
@@ -110,9 +150,8 @@ def fetch_api(endpoint="/api/search-times", params={}):
     """
     URL = "http://localhost:5000"
     # URL = "http://api.tadpoletutoring.org"
-    if params:
-        encoded_params = urllib.parse.urlencode(params)
-        response_raw = urllib.request.urlopen(URL + endpoint+"?" + encoded_params).read().rstrip()
+    if "teacher_email" in params:
+        response_raw = urllib.request.urlopen(URL + endpoint+"?teacher_email=" + params.get("teacher_email")).read().rstrip()
     else:
         response_raw = urllib.request.urlopen(URL + endpoint).read().rstrip()
 
@@ -141,3 +180,4 @@ def calculate_timezone_offset():
     return int(date.getTimezoneOffset())
 
 document["switch-tutor"].bind("mousedown", toggle_bind)
+search_by_time()
