@@ -555,11 +555,19 @@
             </div>
         </nav>
         <script>
-            if (document.cookie) {
-                document.cookie = ""
-                document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('http://localhost:5000/logout')\"><i>Logout</i></a>"
-                document.cookie = ""
+            function login() {
+                if (document.cookie) {
+                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('http://localhost:5000/logout')\"><i>Logout</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('http://localhost:5000/logout')\"><i>Logout</i></a>"
+                    }
+                } else {
+                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('http://localhost:5000/login')\"><i>Login</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('http://localhost:5000/login')\"><i>Login</i></a>"
+                    }
+                }
             }
+            login()
+            window.setInterval(login, 100);
         </script> 
 
     <!--<section style="background:#98fb98">-->
