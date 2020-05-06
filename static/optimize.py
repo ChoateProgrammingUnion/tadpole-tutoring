@@ -33,7 +33,7 @@ optimizers = {
         # 'closure-compiler --js input --js_output_file output -O ADVANCED'
     # ],
     "js-minify": ['**/*.js', 'minify -o output input'],
-    # "js-uglify": ['**/*.js', 'uglifyjs --compress input -o output'],
+    "js-uglify": ['**/*.js', 'uglifyjs --compress input -o output'],
     "html": ['**/*.html', 'minify -o output input'],
     "svgo": ['**/*.svg', 'svgo -i input -o output'],
     "webp": [
