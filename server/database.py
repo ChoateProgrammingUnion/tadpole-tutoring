@@ -14,8 +14,10 @@ from config import DB
 import pickle
 import codecs
 
+
 def pickle_str(obj):
     return codecs.encode(pickle.dumps(obj), "base64").decode()
+
 
 def pickle_decode(pickled_string):
     return pickle.loads(codecs.decode(pickled_string.encode(), "base64"))
@@ -31,6 +33,7 @@ class Database:
             - "``last_name``": The teacher's last name
             - "``subjects``": A pipe separated list of subjects that the teacher teachers
             - "``bio``": The teacher's biography
+            - "``zoom_id``": The teacher's zoom id (as an int)
         2) "``students``": A table used to map a student's email address to their name. Columns are as follows:
             - "``email``": The student's email address
             - "``first_name``": The student's first name
@@ -98,6 +101,8 @@ class Database:
         self.init_db_connection()
         self.end_db_connection()
 
+    # Check for entries in database
+
     def check_student(self, email: str) -> bool:
         """
         Checks if a student is in the database
@@ -122,7 +127,9 @@ class Database:
         """
         return bool(self._db['teachers'].find_one(email=email))
 
-    def add_teacher(self, email: str, first_name: str, last_name: str, subjects: List[str], bio: str) -> bool:
+    # Add entries to the database
+
+    def add_teacher(self, email: str, first_name: str, last_name: str, subjects: List[str], bio: str, zoom_id: int) -> bool:
         """
         Adds a teacher to the database
 
@@ -130,15 +137,19 @@ class Database:
             email: The email of the teacher
             first_name: The teacher's first name
             last_name: The teacher's last name
+            subjects: List of subjects the teacher teaches
+            bio: A biography of the teacher
+            zoom_id: The zoom id of the teacher's meeting room
 
         Returns:
             True if the teacher was added to the database or was already there, False if something went wrong
         """
-        data = {"email": email, "first_name": first_name, "last_name": last_name, "subjects": "|".join(subjects), "bio": bio}
+        data = {"email": email, "first_name": first_name, "last_name": last_name, "subjects": "|".join(subjects),
+                "bio": bio, "zoom_id": zoom_id}
         return self._transactional_upsert("teachers", data, ["email"])
 
-    def add_student(self, email: str) -> bool:
-    # def add_student(self, email: str, first_name: str, last_name: str) -> bool:
+    def add_student(self, email: str, first_name: str, last_name: str) -> bool:
+        # def add_student(self, email: str, first_name: str, last_name: str) -> bool:
         """
         Adds a student to the database
 
@@ -147,31 +158,48 @@ class Database:
             first_name: The student's first name
             last_name: The student's last name
         """
-        data = {"email": email}
+        data = {"email": email, "first_name": first_name, "last_name": last_name}
         return self._transactional_upsert("students", data, ["email"])
 
-    def make_teacher(self, email: str, subjects: List[str], bio: str) -> bool:
+    # Teacher database retrieval/manipulation
+
+    def get_teacher(self, teacher_email: str) -> dict:
+        """
+        Gets everything for a given teacher
+
+        Args:
+            teacher_email: The email of the teacher
+
+        Returns:
+            Everything about the teacher as a dict. Returns an empty dict if no teacher was found.
+        """
+        if student := self._db['teachers'].find_one(email=teacher_email):
+            return self.remove_quoted_name(student)
+        return {}
+
+    def make_teacher(self, email: str, subjects: List[str], bio: str, zoom_id: int) -> bool:
         """
         Makes a student into a teacher
 
         Args:
             email: The email of the student
-            subjects:
-            bio:
+            subjects: List of subjects the teacher teaches
+            bio: A biography of the teacher
+            zoom_id: The zoom id of the teacher's meeting room
 
         Returns:
-            True if the
+            True if success, False if anything went wrong
         """
 
         if student := self.get_student(email):
             if student_email := student.get("email"):
-                if self.add_teacher(student_email, student.get("first_name"), student.get("last_name"), subjects, bio):
+                if self.add_teacher(student_email, student.get("first_name"), student.get("last_name"), subjects, bio, zoom_id):
                     self._db['students'].delete(email=student_email)
                     return True
 
         return False
 
-    def all_teachers(self) -> List[OrderedDict]:
+    def all_teachers(self) -> List[dict]:
         """
         Gets all teachers in the database
 
@@ -179,9 +207,61 @@ class Database:
             List of teacher dicts
         """
 
-        return list(self._db['teachers'].all())
+        return [self.remove_quoted_name(i) for i in self._db['teachers'].all()]
 
-    def add_time_for_tutoring(self, teacher_email: str, start_time: datetime, duration_type: int = 0):
+    # Student database retrieval/manipulation
+
+    def get_student_notes(self, student_email: str) -> str:
+        """
+        Gets the teacher notes for a given student
+
+        Args:
+            student_email: The email of the student
+
+        Returns:
+            The notes as a string. Returns an empty string if no student was found or if the student has no notes
+        """
+        if student := self._db['students'].find_one(email=student_email):
+            if notes := student.get('notes'):
+                return notes
+
+        return ''
+
+    def get_student(self, student_email: str) -> dict:
+        """
+        Gets everything for a given student
+
+        Args:
+            student_email: The email of the student
+
+        Returns:
+            Everything about the student as a dict. Returns an empty dict if no student was found.
+        """
+        if student := self._db['students'].find_one(email=student_email):
+            return self.remove_quoted_name(student)
+        return {}
+
+    def set_student_notes(self, student_email: str, notes: str) -> bool:
+        """
+        Sets the teacher notes for a given student
+
+        Args:
+            student_email: The email of the student
+            notes: The notes to set
+
+        Returns:
+            True if the student is in the database and the notes were set, otherwise False
+        """
+        if student := self._db['students'].find_one(email=student_email):
+            student['notes'] = notes
+
+            return self._transactional_upsert('students', student, ['id'])
+
+        return False
+
+    # Time database retrieval/manipulation
+
+    def add_time_for_tutoring(self, teacher_email: str, start_time: datetime, duration_type: int = 0) -> bool:
         """
         Adds a time for tutoring. Intended to be used by a teacher once they have logged in. It is assumed that they
         are already authorized.
@@ -189,7 +269,7 @@ class Database:
         Args:
             teacher_email: Teacher's email address
             start_time: Start time of the session
-            is_hour_long: If the session is 1hr long (otherwise 1.5hr)
+            duration_type: The duration type of the session
 
         Returns:
             False if there was already a session in that time or the insert failed, otherwise True
@@ -204,7 +284,7 @@ class Database:
 
         return self._transactional_insert("times", data)
 
-    def claim_time(self, student_email: str, time_id: int):
+    def claim_time(self, student_email: str, time_id: int) -> bool:
         """
         Claim a time in the database. Intended to be used by a student once they have logged in. It is assumed that they
         are already authorized.
@@ -231,7 +311,8 @@ class Database:
         log_info("Unable to find time with id " + str(time_id), header=student_email)
         return False
 
-    def edit_time(self, id: int, start_time: int = None, duration_type: int = None, claimed: bool = None, student: str = None) -> bool:
+    def edit_time(self, id: int, start_time: int = None, duration_type: int = None, claimed: bool = None,
+                  student: str = None) -> bool:
         """
         Edits an already existing time.
 
@@ -258,7 +339,7 @@ class Database:
 
         return self._transactional_upsert("times", updated_time, ['id'])
 
-    def unclaim_time(self, student_email: str, time_id: int):
+    def unclaim_time(self, student_email: str, time_id: int) -> bool:
         """
         Unclaim a time in the database. Intended to be used by a student once they have logged in. It is assumed that they
         are already authorized.
@@ -280,7 +361,8 @@ class Database:
             c_student = time_to_unclaim.get("student")
 
             if c_student and c_student != student_email:
-                log_info("Attempted to unclaim time id " + str(time_id) + " that belongs to " + str(c_student), header=student_email)
+                log_info("Attempted to unclaim time id " + str(time_id) + " that belongs to " + str(c_student),
+                         header=student_email)
                 return False
 
             time_to_unclaim['claimed'] = False
@@ -290,7 +372,9 @@ class Database:
         log_info("Unable to find time with id " + str(time_id), header=student_email)
         return False
 
-    def search_times(self, teacher_email: str = None, subject: str = None, min_start_time: datetime = None, max_start_time: datetime = None, must_be_unclaimed: bool = False, string_time_offset: timedelta = None) -> List[dict]:
+    def search_times(self, teacher_email: str = None, subject: str = None, min_start_time: datetime = None,
+                     max_start_time: datetime = None, must_be_unclaimed: bool = False,
+                     string_time_offset: timedelta = None) -> List[dict]:
         """
         Searches the database for tutoring sessions satisfying the search parameters
 
@@ -338,24 +422,22 @@ class Database:
             if max_start_time and c_start > max_start_time.timestamp():
                 continue
 
-            if teacher_email and teacher_email == c_teacher_email:
+            if teacher_email and teacher_email != c_teacher_email:
                 continue
 
             t['start_time'] = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
 
-            res = dict()
+            res = self.remove_quoted_name(t)
 
-            for key, value in t.items():
+            for key, value in res.items():
                 if string_time_offset is not None and type(value) == datetime:
-                    value = (value.astimezone(pytz.utc) + string_time_offset).strftime("%I:%M %p")
-
-                res.update({str(key): value})
+                    res[key] = (value.astimezone(pytz.utc) + string_time_offset).strftime("%I:%M %p")
 
             results.append(res)
 
         return results
 
-    def get_time_schedule(self, timezone_offset: timedelta = None, num_days: int = 7, search_params: dict = None):
+    def get_time_schedule(self, timezone_offset: timedelta = None, num_days: int = 7, search_params: dict = None) -> OrderedDict[str, List[dict]]:
         if timezone_offset is None:
             timezone_offset = timedelta(minutes=0)
 
@@ -370,74 +452,18 @@ class Database:
         schedule_dict = OrderedDict()
 
         for day_num in range(num_days):
-            today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24), string_time_offset=timezone_offset, **search_params)
+            today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24),
+                                               string_time_offset=timezone_offset, **search_params)
             schedule_dict.update({midnight.strftime("%A"): today_schedule})
             midnight += timedelta(hours=24)
 
         return schedule_dict
 
+    def get_time_by_id(self, time_id: int) -> dict:
+        if time := self._db['times'].find_one(id=time_id):
+            return self.remove_quoted_name(time)
 
-    def get_student_notes(self, student_email: str) -> str:
-        """
-        Gets the teacher notes for a given student
-
-        Args:
-            student_email: The email of the student
-
-        Returns:
-            The notes as a string. Returns an empty string if no student was found or if the student has no notes
-        """
-        if student := self._db['students'].find_one(email=student_email):
-            if notes := student.get('notes'):
-                return notes
-
-        return ''
-
-    def get_student(self, student_email: str) -> dict:
-        """
-        Gets everything for a given student
-
-        Args:
-            student_email: The email of the student
-
-        Returns:
-            Everything about the student as a dict. Returns an empty dict if no student was found.
-        """
-        if student := self._db['students'].find_one(email=student_email):
-            return student
-        return {}
-
-    def get_teacher(self, teacher_email: str) -> dict:
-        """
-        Gets everything for a given teacher
-
-        Args:
-            teacher_email: The email of the teacher
-
-        Returns:
-            Everything about the teacher as a dict. Returns an empty dict if no teacher was found.
-        """
-        if student := self._db['teachers'].find_one(email=teacher_email):
-            return student
-        return {}
-
-    def set_student_notes(self, student_email: str, notes: str) -> bool:
-        """
-        Sets the teacher notes for a given student
-
-        Args:
-            student_email: The email of the student
-            notes: The notes to set
-
-        Returns:
-            True if the student is in the database and the notes were set, otherwise False
-        """
-        if student := self._db['students'].find_one(email=student_email):
-            student['notes'] = notes
-
-            return self._transactional_upsert('students', student, ['id'])
-
-        return False
+    # Cart database retrieval/manipulation
 
     def get_cart(self, email: str) -> Tuple[Set[int], str]:
         cart = self._db['carts'].find_one(email=email)
@@ -452,12 +478,15 @@ class Database:
 
     def set_intent(self, email: str, intent: str) -> bool:
         cart, _ = self.get_cart(email)
-        return self._transactional_upsert('carts', {"email": email, "cart": pickle_str(cart), "intent": intent}, ['email'])
+        return self._transactional_upsert('carts', {"email": email, "cart": pickle_str(cart), "intent": intent},
+                                          ['email'])
 
     def append_cart(self, email: str, session_id: int) -> bool:
         old_cart, _ = self.get_cart(email)
         old_cart.add(session_id)
         return self.set_cart(email, old_cart)
+
+    # Database tools
 
     def init_db_connection(self, attempt=0):
         """
@@ -542,13 +571,24 @@ class Database:
 
         return False
 
+    @staticmethod
+    def remove_quoted_name(d):
+        res = dict()
+
+        for key, value in d.items():
+            res.update({str(key): value})
+
+        return res
+
+    # Auth functions
+
     def create_token(self, email: str) -> Any:
         """
         Creates or overwrites token if one exists. If creation was successful, return token. If not, return False.
         """
 
         token = secrets.token_hex(16)
-        user = {"email": str(email), "token": token }
+        user = {"email": str(email), "token": token}
         if validators.email(email):
             if self._transactional_upsert("auth", user, ["email"]):
                 return token
@@ -564,7 +604,7 @@ class Database:
         Tries to fetch or make a token for a user. If not successful, return False
         """
         if token and email and self.possible_token(token):
-            log_info("Checking token and email pair, " + str(token) + " "+ str(email))
+            log_info("Checking token and email pair, " + str(token) + " " + str(email))
             if expected_token := self.find_token_by_email(str(email)):
                 if secrets.compare_digest(token, expected_token):
                     log_info("Token check success: " + str(token))
@@ -581,7 +621,7 @@ class Database:
             return token
         return False
 
-    def possible_token(self, token: str) -> bool: 
+    def possible_token(self, token: str) -> bool:
         """
         Validates if the input is a valid 128-bit token (16 byte)
 

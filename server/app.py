@@ -149,9 +149,9 @@ def api_fetch_teachers():
 def api_search_times():
     timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
 
-    teacher_email = request.form.get("teacher_email", None, str)
-    subject = request.form.get("subject", None, str)
-    must_be_unclaimed = request.form.get("must_be_unclaimed", True, bool)
+    teacher_email = request.args.get("teacher_email", None, str)
+    subject = request.args.get("subject", None, str)
+    must_be_unclaimed = request.args.get("must_be_unclaimed", True, bool)
 
     search_params = {
         "teacher_email": teacher_email,
@@ -185,6 +185,7 @@ def api_add_to_cart():
         db = database.Database()
 
         db.init_db_connection()
+        # if not db.time
         db.append_cart(email, time_id)
         cart = db.get_cart(email)
         db.end_db_connection()
@@ -196,17 +197,19 @@ def api_add_to_cart():
 
 @app.route('/api/make-teacher')
 def api_make_teacher():
-    if api.make_teacher(request):
-        return api.pickle_str({})
+    if email := auth.check_login(request):
+        # TODO Check if email is authorized to make this change
+
+        return api.make_teacher(request)
 
     return flask.abort(500)
 
-@app.route('/api/claim-time')
-def api_claim_time():
-    if api.claim_time(request):
-        return api.pickle_str({})
-
-    return flask.abort(500)
+# @app.route('/api/claim-time')
+# def api_claim_time():
+#     if api.claim_time(request):
+#         return api.pickle_str({})
+#
+#     return flask.abort(500)
 
 @app.route('/api/create-payment-intent', methods=['POST'])
 def create_payment():
