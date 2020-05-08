@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+{{ header }}
+    <head>
+<body>
+    <header style="padding-top: 0; padding-bottom: 0;">
+    {{ navbar }}
+        <h2>User Profile</h2>
+        <!--<p>We have a simple, flat rate of <strong><u>$25/hour</u></strong>.*</p>-->
+        <!--<p>However we have a discount program for those who pay ahead (which makes it easier for us to plan ahead).</p>-->
+        <!--<p><small>*If you have trouble affording tutoring, email us at support@tadpoletutoring.org for help.</small></p>-->
+    </header>
+    <main>
+        <hr>
+        <header><h2>Discounts</h2></header>
+        <section>
+            <form>
+                <header>
+                    <img alt="Tadpole Tutoring" src="logo.svg" height="80">
+                </header>
+                <label for="company">A company you like:</label>
+                <input type="text" id="company" name="company" size="28" placeholder="Company name">
+                <label for="hobby">A hobby you like:</label>
+                <textarea cols="28" rows="2" id="hobby"></textarea>
+                <label for="model">Business Model:</label>
+                <select id="model">
+                    <option value="bootstrapped">bootstrapped</option>
+                    <option value="VC-backed">funded</option>
+                </select>
+                <label>Team Size:</label>
+                <input type="radio" id="founders-solo" name="founders" value="a solo founder" checked=""> <label for="founders-solo">Solo</label>
+                <input type="radio" id="founders-co" name="founders" value="two co-founders"> <label for="founders-co">Co-founders</label>
+                <label>Focus:</label>
+                <input type="checkbox" id="focus-price" name="focus[]" value="price" checked=""> <label for="focus-price">Price</label>
+                <input type="checkbox" id="focus-service" name="focus[]" value="service"> <label for="focus-service">Service</label>
+                <input type="checkbox" id="focus-features" name="focus[]" value="features"> <label for="focus-features">Features</label>
+                <br>
+                <button type="submit" onclick="newIdea(); return false;">Submit</button>
+                <div id="results" style="max-width: 100%;">
+
+                </div>
+            </form>
+        </section>
+{{ footer }}
+</body>
+
+</html>
