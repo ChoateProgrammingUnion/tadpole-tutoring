@@ -2,6 +2,9 @@ import copy
 import dataset
 from datetime import datetime, timedelta
 
+import msgpack
+
+
 import pytz
 import validators
 import secrets

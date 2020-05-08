@@ -2,7 +2,8 @@ import database
 import validators
 import auth
 import codecs
-import pickle
+# import pickle
+import json
 
 from utils.log import *
 
@@ -118,8 +119,10 @@ def claim_time(request):
     log_info("claim_time was called, student_email and time_id weren't specified")
     return False
 
-def pickle_str(obj):
-    return codecs.encode(pickle.dumps(obj), "base64").decode()
+def serialize(obj):
+    return json.dumps(obj)
+    # return codecs.encode(pickle.dumps(obj), "base64").decode()
 
-def pickle_decode(pickled_string):
-    return pickle.loads(codecs.decode(pickled_string.encode(), "base64"))
+def deserialize(obj_str):
+    return json.loads(obj_str)
+    # return pickle.loads(codecs.decode(obj_str.encode(), "base64"))

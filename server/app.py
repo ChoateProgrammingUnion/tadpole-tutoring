@@ -82,14 +82,14 @@ def populate_index():
 
     midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
-    db.add_student('student1@email.com')
-    db.add_student('student2@email.com')
-    db.add_student('student3@email.com')
-    db.add_student('student4butactuallyteacher@email.com')
-    db.make_teacher('student4butactuallyteacher@email.com', [], "")
-    db.add_teacher("teacher1@email.com", "teacher1", "teacherOne", ["English"], "")
-    db.add_teacher("teacher2@email.com", "teacher2", "teacherTwo", ["English", "Math"], "")
-    db.add_teacher("teacher3@email.com", "teacher3", "teacherThree", ["Math"], "")
+    db.add_student('student1@email.com', "student1", "studentOne")
+    db.add_student('student2@email.com', "student2", "studentTwo")
+    db.add_student('student3@email.com', "student3", "studentThree")
+    db.add_student('student4butactuallyteacher@email.com', "student4", "studentFour")
+    db.make_teacher('student4butactuallyteacher@email.com', [], "", 0)
+    db.add_teacher("teacher1@email.com", "teacher1", "teacherOne", ["English"], "", 0)
+    db.add_teacher("teacher2@email.com", "teacher2", "teacherTwo", ["English", "Math"], "", 0)
+    db.add_teacher("teacher3@email.com", "teacher3", "teacherThree", ["Math"], "", 0)
     db.add_time_for_tutoring("teacher1@email.com", midnight)
     db.add_time_for_tutoring("teacher2@email.com", midnight + timedelta(days=1))
     db.add_time_for_tutoring("teacher1@email.com", midnight + timedelta(days=2))
@@ -126,7 +126,7 @@ def logout():
 @app.route('/api/register')
 def api_register_student():
     if api.register_student(request):
-        return api.pickle_str({})
+        return api.serialize({})
 
     return flask.abort(500)
 
@@ -136,22 +136,22 @@ def api_get_person():
 
     log_info(user_data)
 
-    return api.pickle_str(user_data)
+    return api.serialize(user_data)
 
     # return flask.abort(500)
 
-@app.route('/api/teachers')
+@app.route('/api/teachers', methods=['POST'])
 def api_fetch_teachers():
     teachers = list(api.fetch_teachers())
-    return api.pickle_str(teachers)
+    return api.serialize(teachers)
 
-@app.route('/api/search-times')
+@app.route('/api/search-times', methods=['POST'])
 def api_search_times():
-    timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
+    timezone_offset = timedelta(minutes=request.form.get("tz_offset", 0, int))
 
-    teacher_email = request.args.get("teacher_email", None, str)
-    subject = request.args.get("subject", None, str)
-    must_be_unclaimed = request.args.get("must_be_unclaimed", True, bool)
+    teacher_email = request.form.get("teacher_email", None, str)
+    subject = request.form.get("subject", None, str)
+    must_be_unclaimed = request.form.get("must_be_unclaimed", True, bool)
 
     search_params = {
         "teacher_email": teacher_email,
@@ -165,12 +165,12 @@ def api_search_times():
     times = db.get_time_schedule(timezone_offset, search_params=search_params)
     db.end_db_connection()
 
-    return api.pickle_str(times)
+    return api.serialize(times)
 
 @app.route('/api/update-time')
 def api_update_time():
     if api.update_time(request):
-        return api.pickle_str({})
+        return api.serialize({})
 
     return flask.abort(500)
 
@@ -190,7 +190,7 @@ def api_add_to_cart():
         cart = db.get_cart(email)
         db.end_db_connection()
 
-        return api.pickle_str(cart)
+        return api.serialize(cart)
 
     log_info("Not logged in")
     return flask.abort(500)
