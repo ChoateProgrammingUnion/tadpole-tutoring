@@ -1,4 +1,5 @@
-from browser import document, alert
+from browser import document, alert, aio
+import javascript
 # from browser.template import Template
 # import browser
 # from browser.template import Template
@@ -14,20 +15,19 @@ cart_entry_template = """<tr>
     <td><a id="remove{id}" href="#" onclick="return false;">Remove From Cart</a></td>
 </tr>"""
 
-def fetch_api(endpoint="/api/search-times", params={}):
-    import urllib.request
-    import base64
-    import pickle
+def deserialize(obj_str):
+    return javascript.JSON.parse(obj_str)
 
+async def fetch_api(endpoint="/api/search-times", params={}):
+    """
+    Fetches stuff from any API endpoint
+    """
     URL = "http://localhost:5000"
     # URL = "http://api.tadpoletutoring.org"
-    if "teacher_email" in params:
-        response_raw = urllib.request.urlopen(URL + endpoint+"?teacher_email=" + params.get("teacher_email")).read().rstrip()
-    else:
-        response_raw = urllib.request.urlopen(URL + endpoint).read().rstrip()
 
-    response_decode = base64.b64decode(response_raw.encode())
-    response = pickle.loads(response_decode)
+    req = await aio.post(URL + endpoint, data=params)
+    response = deserialize(req.data)
+
     return response
 
 def remove_from_cart(vars):
@@ -39,5 +39,10 @@ def add_template_to_table(id, teacher, time):
     document['cart-table'].html += template_html
     document['remove' + str(id)].bind("mousedown", remove_from_cart)
 
-print("hello!")
-add_template_to_table(0, "Teach", "8:00 PM")
+async def add_cart_to_table():
+    cart_ids = await fetch_api("/api/get-cart")
+
+    for i in cart_ids:
+        add_template_to_table(i, "Teach", "8:00 PM")
+
+aio.run(add_cart_to_table())

@@ -185,12 +185,25 @@ def api_add_to_cart():
         db = database.Database()
 
         db.init_db_connection()
-        # if not db.time
         db.append_cart(email, time_id)
-        cart = db.get_cart(email)
+        cart, _ = db.get_cart(email)
         db.end_db_connection()
 
-        return api.serialize(cart)
+        return api.serialize(list(cart))
+
+    log_info("Not logged in")
+    return flask.abort(500)
+
+@app.route('/api/get-cart', methods=['POST'])
+def api_get_cart():
+    if email := auth.check_login(request):
+        db = database.Database()
+
+        db.init_db_connection()
+        cart, _ = db.get_cart(email)
+        db.end_db_connection()
+
+        return api.serialize(list(cart))
 
     log_info("Not logged in")
     return flask.abort(500)

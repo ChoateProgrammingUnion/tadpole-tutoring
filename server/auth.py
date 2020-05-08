@@ -6,6 +6,7 @@ def check_login(request) -> str:
     """
     Returns email if logged in, if not return False.
     """
+    return "student1@email.com"
 
     token = request.cookies.get('token')
     email = request.cookies.get('email')

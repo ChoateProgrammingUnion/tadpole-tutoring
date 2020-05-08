@@ -17,7 +17,6 @@ for each_file in files:
 
 imports.append("schedule.py")
 imports.append("cart.py")
-imports.append("msgpack_compressed.py")
 args = {}
 for each_import in imports:
     name = each_import.split(".")[0]

@@ -1,4 +1,4 @@
-from browser import document, alert, ajax, aio
+from browser import document, alert, aio
 import javascript
 
 tutor_template = """<header>

@@ -1,4 +1,4 @@
-from browser import document, alert, ajax, aio
+from browser import document, alert, aio
 import javascript
 
 tutor_template = """<header>
@@ -103,7 +103,6 @@ def generate_calendar_html(times):
     for each_day in times.values():
         timeslots += "<tr>"
         for each_session in each_day:
-            # timeslots += timeslot_html.format(id=i, time="None")
             ids_list.append(each_session.get('id'))
             print("Each session", each_session)
             timeslots += timeslots_template.format(**each_session)
@@ -117,24 +116,17 @@ async def search_by_tutor():
     total_count, tutor_bio_html = render_tutor_bios(response_dict)
     print("Tutor HTML", tutor_bio_html)
 
-    # set and save
     document['schedule-results'].html = tutor_bio_html
     for i in range(total_count):
         try:
             document[str(i)].bind("mousedown", render_tutor)
-            # document["clicky-slider"] = ""
 
         except KeyError as e:
             print("Error, need to debug later", e)
 
 
 async def render_tutor(ev=""):
-    # print(ev, dir(ev))
-    # print("EV target", str(list(ev.target)), ev.target.get(), ev.target.id)
-    # print(dir(ev.target))
     print("ev.target.id", ev.target.id)
-
-    # print("repr", repr(ev.target))
 
     index = int(ev.target.id)
 
@@ -147,9 +139,6 @@ async def render_tutor(ev=""):
     await schedule_now()
 
     document['schedule-' + tutor_dict['id']].bind("mousedown", schedule_now)
-
-    # cart_html = fetch_template("tutor_template.html")
-    # document['results'].html = cart_html
 
 async def schedule_now():
     email = document['email'].html.rstrip()
@@ -167,7 +156,6 @@ def render_tutor_bios(vars):
     """
     Fetches and renders template
     """
-    # URL = str(browser.window.location.href).replace(str(browser.window.location.pathname), "/")
     html = ""
     for count, each_var in enumerate(vars):
         each_var["id"] = str(count)
@@ -176,43 +164,20 @@ def render_tutor_bios(vars):
 
     return len(vars), html
 
-
-## Fetching code
-
-# def fetch_template(url):
-#     response = urllib.request.urlopen(url).read().rstrip()
-#     return response
-
 async def fetch_api(endpoint="/api/search-times", params={}):
     """
     Fetches stuff from any API endpoint
     """
     URL = "http://localhost:5000"
-
     # URL = "http://api.tadpoletutoring.org"
-    # if "teacher_email" in params:
-    #     response_raw = urlopen(URL + endpoint+"?teacher_email=" + params.get("teacher_email")).read().rstrip()
-    # else:
-    #     response_raw = urlopen(URL + endpoint).read().rstrip()
+
     req = await aio.post(URL + endpoint, data=params)
     response = deserialize(req.data)
 
     return response
 
 async def fetch_teachers():
-    """
-    Fetches teacher from /api/teachers
-    """
-    # URL = "http://localhost:5000"
-    # response = urllib.request.urlopen(URL + "/api/teachers").read().rstrip()
-    # response_decode = base64.b64decode(response.encode())
-    # response_dict = pickle.loads(response_decode)
     response_dict = await fetch_api("/api/teachers")
-
-    # filtered_dict = []
-    # for count, each_var in enumerate(response_dict):
-    #     filtered_dict.append({x_var: y_var for _, (x_var, y_var) in each_var.items()})
-
     return response_dict
 
 def calculate_timezone_offset():
