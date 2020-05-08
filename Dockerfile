@@ -9,5 +9,5 @@ RUN pip3 install waitress flask Flask-Dance validators dataset pytz gitpython ic
 COPY . /usr/src/app
 RUN rm Dockerfile
 
-EXPOSE 80
-CMD [ "waitress-serve", "--listen=*:80", "--url-scheme=https", "app:app" ]
+EXPOSE 5000
+CMD [ "waitress-serve", "--listen=*:5000", "--url-scheme=https", "app:app" ]
