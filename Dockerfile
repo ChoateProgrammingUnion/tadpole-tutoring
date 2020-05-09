@@ -5,7 +5,7 @@ MAINTAINER InnovativeInventor
 WORKDIR /usr/src/app
 
 RUN apt-get update && apt-get install python-pip python-dev libmariadb-dev-compat libmariadb-dev -y
-RUN pip3 install waitress flask Flask-Dance validators dataset pytz gitpython icalendar rapidfuzz mysqlclient PyMySQL stripe msgpack
+RUN pip3 install waitress flask Flask-Dance validators dataset pytz gitpython icalendar rapidfuzz mysqlclient PyMySQL stripe msgpack flask_cors
 COPY server/ /usr/src/app/
 
 EXPOSE 5000
