@@ -1,48 +1,73 @@
-from browser import document, alert, aio
+from browser import document, alert, aio, bind
 import javascript
-# from browser.template import Template
-# import browser
-# from browser.template import Template
-# import urllib.request
-# import urllib.parse
-# import base64
-# import javascript
+from config import URL
 
 cart_entry_template = """<tr>
     <td>{id}</td>
-    <td>{teacher}</td>
-    <td>{time}</td>
-    <td><a id="remove{id}" href="#" onclick="return false;">Remove From Cart</a></td>
+    <td>{first_name} {last_name}</td>
+    <td>{start_time}</td>
+    <td>{date_str}</td>
+    <td>{subjects}</td>
+    <td><a class="remove" id="{id}" href="#" onclick="return false;">Remove From Cart</a></td>
+</tr>"""
+
+default_cart_table_contents = """<tr>
+    <th>Session ID</th>
+    <th>Teacher</th>
+    <th>Time</th>
+    <th>Date</th>
+    <th>Subjects</th>
+</tr>"""
+
+empty_cart_table_contents = """<tr>
+    <th>Your Cart Is Empty!</th><th><a href="/schedule.html">Browse Sessions</a></th>
 </tr>"""
 
 def deserialize(obj_str):
     return javascript.JSON.parse(obj_str)
 
-async def fetch_api(endpoint="/api/search-times", params={}):
+async def fetch_api(endpoint="/api/search-times", params={}, get_response=True):
     """
     Fetches stuff from any API endpoint
     """
-    # URL = "http://localhost:5000"
-    URL = "https://api.tadpoletutoring.org"
 
-    req = await aio.post(URL + endpoint, data=params)
-    response = deserialize(req.data)
+    req = await aio.get(URL + endpoint, data=params)
 
-    return response
+    if get_response:
+        response = deserialize(req.data)
+        return response
 
 def remove_from_cart(vars):
-    remove_id = vars.target.id
-    alert(remove_id)
+    remove_id = int(vars.target.id)
+    aio.run(remove_id_and_update(remove_id))
 
-def add_template_to_table(id, teacher, time):
-    template_html = cart_entry_template.format(id=str(id), teacher=teacher, time=time)
+async def remove_id_and_update(id):
+    await fetch_api("/api/remove-from-cart", {"time_id": id}, False)
+    await add_cart_to_table()
+
+def add_template_to_table(params):
+    template_html = cart_entry_template.format(**params)
     document['cart-table'].html += template_html
-    document['remove' + str(id)].bind("mousedown", remove_from_cart)
+    # document['remove' + str(id)].bind("click", remove_from_cart)
+
+def calculate_timezone_offset():
+    date = javascript.Date.new()
+    return int(date.getTimezoneOffset())
 
 async def add_cart_to_table():
-    cart_ids = await fetch_api("/api/get-cart")
+    document['cart-table'].html = default_cart_table_contents
 
-    for i in cart_ids:
-        add_template_to_table(i, "Teach", "8:00 PM")
+    cart_items = await fetch_api("/api/get-cart", {"tz_offset": calculate_timezone_offset()})
+
+    if len(cart_items) == 0:
+        document['cart-table'].html = empty_cart_table_contents
+        return
+
+    for entry in cart_items:
+        entry['subjects'] = entry['subjects'].replace("|", ", ")
+        add_template_to_table(entry)
+
+    for d in document.select(".remove"):
+        d.bind("click", remove_from_cart)
 
 aio.run(add_cart_to_table())

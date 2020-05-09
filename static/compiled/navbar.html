@@ -1,28 +1,3 @@
-        <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
-            <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
-            <div>
-            <ul>
-                <li><a href="index.html">Home</a>
-                <li><a href="schedule.html">Schedule</a>
-                <li><a href="pricing.html">Pricing</a>
-                <!--<li><a href="schedule.html">Schedule</a>-->
-                <li><a href="about.html">About</a></li>
-                <li id="login-state"><a onclick="window.open('https://api.tadpoletutoring.org/login')"><i>Login</i></a></li>
-            </ul>
-            </div>
-        </nav>
-        <script>
-            function login() {
-                if (document.cookie) {
-                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Logout</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Logout</i></a>"
-                    }
-                } else {
-                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Login</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Login</i></a>"
-                    }
-                }
-            }
-            login()
-            window.setInterval(login, 100);
-        </script>
+<nav id=navbar style=margin-bottom:0;overflow:hidden;background-color:#fff;width:100%><a href=/><img alt=Logo src=logo-sideways.svg height=70></a><div><ul><li><a href=index.html>Home</a><li><a href=schedule.html>Schedule</a><li><a href=pricing.html>Pricing</a><li><a href=about.html>About</a><li><a href=cart.html>View Cart</a><li id=login-state><a onclick="window.open('https://api.tadpoletutoring.org/login')"><i>Login</i></a></ul></div></nav><script>function login(){if(document.cookie){if(document.getElementById("login-state").innerHTML!="<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Logout</i></a>"){document.getElementById("login-state").innerHTML="<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Logout</i></a>"}}else{if(document.getElementById("login-state").innerHTML!="<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Login</i></a>"){document.getElementById("login-state").innerHTML="<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Login</i></a>"}}}
+login()
+window.setInterval(login,100);</script>
