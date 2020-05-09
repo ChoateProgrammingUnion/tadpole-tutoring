@@ -145,16 +145,33 @@ def api_fetch_teachers():
     teachers = list(api.fetch_teachers())
     return api.serialize(teachers)
 
+@app.route('/api/get-teacher')
+def api_get_teacher():
+    teacher_id = request.args.get("teacher_id", None, int)
+
+    if teacher_id is None:
+        return flask.abort(400)
+
+    db = database.Database()
+
+    db.init_db_connection()
+    teacher = db.get_teacher_by_id(teacher_id)
+    db.end_db_connection()
+
+    return api.serialize(teacher)
+
 @app.route('/api/search-times')
 def api_search_times():
     timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
 
     teacher_email = request.args.get("teacher_email", None, str)
+    teacher_id = request.args.get("teacher_id", None, int)
     subject = request.args.get("subject", None, str)
     must_be_unclaimed = request.args.get("must_be_unclaimed", True, bool)
 
     search_params = {
         "teacher_email": teacher_email,
+        "teacher_id": teacher_id,
         "subject": subject,
         "must_be_unclaimed": must_be_unclaimed
     }
@@ -163,6 +180,23 @@ def api_search_times():
 
     db.init_db_connection()
     times = db.get_time_schedule(timezone_offset, search_params=search_params)
+    db.end_db_connection()
+
+    return api.serialize(times)
+
+@app.route('/api/get-time')
+def api_get_time():
+    timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
+
+    time_id = request.args.get("time_id", None, int)
+
+    if time_id is None:
+        return flask.abort(400)
+
+    db = database.Database()
+
+    db.init_db_connection()
+    times = db.get_time_by_id(time_id, timezone_offset, True)
     db.end_db_connection()
 
     return api.serialize(times)

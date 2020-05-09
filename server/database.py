@@ -176,8 +176,22 @@ class Database:
         Returns:
             Everything about the teacher as a dict. Returns an empty dict if no teacher was found.
         """
-        if student := self._db['teachers'].find_one(email=teacher_email):
-            return self.remove_quoted_name(student)
+        if teacher := self._db['teachers'].find_one(email=teacher_email):
+            return self.remove_quoted_name(teacher)
+        return {}
+
+    def get_teacher_by_id(self, teacher_id: int) -> dict:
+        """
+        Gets everything for a given teacher
+
+        Args:
+            teacher_id: The id of the teacher
+
+        Returns:
+            Everything about the teacher as a dict. Returns an empty dict if no teacher was found.
+        """
+        if teacher := self._db['teachers'].find_one(id=teacher_id):
+            return self.remove_quoted_name(teacher)
         return {}
 
     def make_teacher(self, email: str, subjects: List[str], bio: str, zoom_id: int) -> bool:
@@ -375,8 +389,8 @@ class Database:
         log_info("Unable to find time with id " + str(time_id), header=student_email)
         return False
 
-    def search_times(self, teacher_email: str = None, subject: str = None, min_start_time: datetime = None,
-                     max_start_time: datetime = None, must_be_unclaimed: bool = False,
+    def search_times(self, teacher_email: str = None, teacher_id: int = None, subject: str = None, min_start_time: datetime = None,
+                     max_start_time: datetime = None, must_be_unclaimed: bool = False, insert_teacher_info=False,
                      string_time_offset: timedelta = None) -> List[dict]:
         """
         Searches the database for tutoring sessions satisfying the search parameters
@@ -430,11 +444,23 @@ class Database:
 
             t['start_time'] = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
 
+            t['date_str'] = (t['start_time'] + string_time_offset).strftime("%b %d %Y")
+
             res = self.remove_quoted_name(t)
 
             for key, value in res.items():
                 if string_time_offset is not None and type(value) == datetime:
                     res[key] = (value.astimezone(pytz.utc) + string_time_offset).strftime("%I:%M %p")
+
+            if insert_teacher_info:
+                if teacher := self.get_teacher(c_teacher_email):
+                    if teacher_id is not None and teacher['id'] != teacher_id:
+                        continue
+
+                    t_id = res['id']
+                    res.update(teacher)
+                    res['id'] = t_id
+                    del res['email']
 
             results.append(res)
 
@@ -456,7 +482,7 @@ class Database:
 
         for day_num in range(num_days):
             today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24),
-                                               string_time_offset=timezone_offset, **search_params)
+                                               string_time_offset=timezone_offset, insert_teacher_info=True, **search_params)
             schedule_dict.update({midnight.strftime("%A"): today_schedule})
             midnight += timedelta(hours=24)
 
@@ -466,11 +492,15 @@ class Database:
         if time := self._db['times'].find_one(id=time_id):
             if insert_teacher_info:
                 if teacher := self.get_teacher(time['teacher_email']):
+                    t_id = time['id']
                     time.update(teacher)
+                    time['id'] = t_id
                     del time['email']
 
             if string_time_offset is not None:
-                time['start_time'] = (datetime.utcfromtimestamp(time['start_time']) + string_time_offset).strftime("%I:%M %p")
+                time['start_time'] = datetime.fromtimestamp(time['start_time']).astimezone(pytz.utc) + string_time_offset
+                time['date_str'] = time['start_time'].strftime("%b %d %Y")
+                time['start_time'] = time['start_time'].strftime("%I:%M %p")
 
             return self.remove_quoted_name(time)
 
