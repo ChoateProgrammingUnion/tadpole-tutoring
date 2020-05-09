@@ -273,6 +273,20 @@ def api_get_cart():
     log_info("Not logged in")
     return flask.abort(500)
 
+@app.route('/api/get-cart-numbers')
+def api_get_cart_numbers():
+    if email := auth.check_login(request):
+        db = database.Database()
+
+        db.init_db_connection()
+        cart, _ = db.get_cart(email)
+        db.end_db_connection()
+
+        return api.serialize(list(cart))
+
+    log_info("Not logged in")
+    return flask.abort(500)
+
 @app.route('/api/make-teacher')
 def api_make_teacher():
     if email := auth.check_login(request):

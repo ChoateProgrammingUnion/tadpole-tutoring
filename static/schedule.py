@@ -131,8 +131,13 @@ async def fetch_and_display_timeslot(id):
     document['back-button-div'].html = back_button_template
     document["back-button"].bind("mousedown", update_view)
 
-    for d in document.select(".add-to-cart"):
-        d.bind("click", add_to_cart)
+    user_cart = await fetch_api("/api/get-cart-numbers")
+
+    if id in user_cart:
+        document[str(id)].html = "Added to Cart!"
+    else:
+        for d in document.select(".add-to-cart"):
+            d.bind("click", add_to_cart)
 
 def display_timeslot(vars):
     display_id = int(vars.target.id)
@@ -206,8 +211,8 @@ async def render_tutor(ev=""):
 
     tutor_dict = await fetch_teachers()
     tutor_dict = tutor_dict[index]
-    print("Tutor dict", tutor_dict)
 
+    tutor_dict['subjects'] = tutor_dict['subjects'].replace("|", ", ")
     document['results'].html = indiv_tutor_template.format(**tutor_dict)
 
     await schedule_now()
@@ -233,7 +238,7 @@ def render_tutor_bios(vars):
     html = ""
     for count, each_var in enumerate(vars):
         # each_var["id"] = str(count)
-        print(teacher_bio_template, each_var)
+        each_var['subjects'] = each_var['subjects'].replace("|", ", ")
         html += teacher_bio_template.format(**each_var)
 
     return len(vars), html
