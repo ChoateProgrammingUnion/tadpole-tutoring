@@ -1,5 +1,6 @@
 from browser import document, alert, aio
 import javascript
+from config import URL
 
 tutor_template = """<header>
     <h2>Our Tutors</h2>
@@ -168,9 +169,6 @@ async def fetch_api(endpoint="/api/search-times", params={}):
     """
     Fetches stuff from any API endpoint
     """
-    # URL = "http://localhost:5000"
-    URL = "https://api.tadpoletutoring.org"
-
     req = await aio.get(URL + endpoint, data=params)
     response = deserialize(req.data)
 

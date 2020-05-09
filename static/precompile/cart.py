@@ -1,5 +1,6 @@
 from browser import document, alert, aio, bind
 import javascript
+from config import URL
 
 cart_entry_template = """<tr>
     <td>{id}</td>
@@ -17,8 +18,6 @@ async def fetch_api(endpoint="/api/search-times", params={}, get_response=True):
     """
     Fetches stuff from any API endpoint
     """
-    # URL = "http://localhost:5000"
-    URL = "https://api.tadpoletutoring.org"
 
     req = await aio.get(URL + endpoint, data=params)
 

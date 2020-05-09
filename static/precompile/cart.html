@@ -555,19 +555,19 @@
                 <li><a href="pricing.html">Pricing</a>
                 <!--<li><a href="schedule.html">Schedule</a>-->
                 <li><a href="about.html">About</a></li>
-                <li id="login-state"><a onclick="window.open('https://api.tadpoletutoring.org/login')"><i>Login</i></a></li>
+                <li id="login-state"><a onclick="window.open('http://localhost:5000/login')"><i>Login</i></a></li>
             </ul>
             </div>
         </nav>
         <script>
             function login() {
                 if (document.cookie) {
-                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Logout</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Logout</i></a>"
+                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('http://localhost:5000/login')\"><i>Logout</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('http://localhost:5000/login')\"><i>Logout</i></a>"
                     }
                 } else {
-                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Login</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Login</i></a>"
+                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('http://localhost:5000/login')\"><i>Login</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('http://localhost:5000/login')\"><i>Login</i></a>"
                     }
                 }
             }
