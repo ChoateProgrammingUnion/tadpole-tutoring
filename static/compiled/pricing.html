@@ -550,19 +550,19 @@
                 <li><a href="pricing.html">Pricing</a>
                 <!--<li><a href="schedule.html">Schedule</a>-->
                 <li><a href="about.html">About</a></li>
-                <li id="login-state"><a onclick="window.open('http://localhost:5000/login')"><i>Login</i></a></li>
+                <li id="login-state"><a onclick="window.open('https://api.tadpoletutoring.org/login')"><i>Login</i></a></li>
             </ul>
             </div>
         </nav>
         <script>
             function login() {
                 if (document.cookie) {
-                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('http://localhost:5000/logout')\"><i>Logout</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('http://localhost:5000/logout')\"><i>Logout</i></a>"
+                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Logout</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Logout</i></a>"
                     }
                 } else {
-                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('http://localhost:5000/login')\"><i>Login</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('http://localhost:5000/login')\"><i>Login</i></a>"
+                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Login</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('https://api.tadpoletutoring.org/login')\"><i>Login</i></a>"
                     }
                 }
             }
@@ -573,7 +573,7 @@
         <h2>Pricing</h2>
         <p>We have a simple, flat rate of <strong><u>$25/hour</u></strong>.*</p>
         <p>However we have a discount program for those who pay ahead (which makes it easier for us to plan ahead).</p>
-        <p><small>*If you have trouble affording tutoring, email us at support@tadpoletutoring.org for help.</small></p>
+        <p><b>*If you have trouble affording tutoring, email us at support@tadpoletutoring.org for help.</b></p>
     </header>
     <main>
         <hr>
