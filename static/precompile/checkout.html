@@ -540,6 +540,34 @@
 
     <script src="https://js.stripe.com/v3/"></script>
     <script src="/checkout.js"></script>
+    <script>
+        function setupPayment() {
+            fetch(url + "/api/create-payment-intent", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(orderData)
+            })
+                .then(function (result) {
+                    return result.json();
+                })
+                .then(function (data) {
+                    return setupElements(data);
+                })
+                .then(function ({stripe, card, clientSecret, intentId}) {
+                    document.querySelector("button").disabled = false;
+
+                    // Handle form submission.
+                    var form = document.getElementById("payment-form");
+                    form.addEventListener("submit", function (event) {
+                        event.preventDefault();
+                        // Initiate payment when the submit button is clicked
+                        pay(stripe, card, clientSecret, intentId);
+                    });
+                });
+        }
+    </script>
     <link rel="stylesheet" href="css/global.css" />
 </head>
 

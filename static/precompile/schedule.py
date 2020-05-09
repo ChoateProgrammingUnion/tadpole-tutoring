@@ -31,7 +31,7 @@ time_template_for_tutor = """<header>
 
 timeslots_template = """<td><a href="#" onclick="return false;"><i class="timeslot" id="{id}">{first_name} {last_name}<br>{start_time}</i></a></td>"""
 
-back_button_template = """<a href="#" onclick="return false;"><i id="back-button">Back</i></a>"""
+back_button_template = """<a href="#" onclick="return false;"><i id="back-button">Schedule Another Appointment</i></a>"""
 
 timeslot_display_template = """
 <tr><th><a>Tutoring Session Info</a></th></tr>
@@ -41,7 +41,7 @@ timeslot_display_template = """
         <b>Subjects: </b> {subjects} <br>
         <b>Time: </b>{start_time}, {date_str} <br>
         <b>Duration: </b>1hr <br>
-        <a class="add-to-cart" id="{id}" href="#" onclick="return false;">Add To Cart</a>
+        <a href="#" onclick="return false;"><i class="add-to-cart" id="{id}">Add To Cart</i></a>
     </i>
 </td></tr>"""
 

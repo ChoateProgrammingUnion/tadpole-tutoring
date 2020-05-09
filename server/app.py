@@ -240,12 +240,10 @@ def api_remove_from_cart():
 
         db.init_db_connection()
         cart, _ = db.get_cart(email)
-        log_info(str(cart))
         try:
             cart.remove(time_id)
         except KeyError:
             log_info("Key " + str(time_id) + " not in " + str(cart))
-        log_info(str(cart))
         db.set_cart(email, cart)
         db.end_db_connection()
 
@@ -312,9 +310,9 @@ def create_payment():
         cart, intent = db.get_cart(email)
         db.end_db_connection()
 
-        if intent != "":
-            log_info("Intent " + intent + " already created. Aborting.")
-            return flask.abort(500)
+        # if intent != "":
+        #     log_info("Intent " + intent + " already created. Aborting.")
+        #     return flask.abort(500)
 
         num_sessions = len(cart)
 
@@ -349,10 +347,10 @@ def create_payment():
     return ""
 
 
-@app.route('/api/handle-payment', methods=['POST'])
+@app.route('/api/handle-payment')
 def handle_payment():
     if email := auth.check_login(request):
-        intent_id = request.form.get("intentId")
+        intent_id = request.args.get("intentId")
 
         if not intent_id:
             log_info("No intentId passed " + str(request.form))
@@ -360,9 +358,9 @@ def handle_payment():
 
         intent = stripe.PaymentIntent.retrieve(intent_id)
 
-        if intent['amount_received'] >= intent['amount']:
-            log_info("Amount Paid: " + str(intent['amount_received']) + " cents")
+        log_info("Amount Paid: " + str(intent['amount_received']) + " cents")
 
+        if intent['amount_received'] >= intent['amount']:
             db = database.Database()
 
             db.init_db_connection()

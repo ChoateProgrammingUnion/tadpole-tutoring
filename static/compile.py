@@ -17,6 +17,7 @@ for each_file in files:
         else:
             imports.append(each_file)
 
+imports.append("checkout.js")
 imports.append("schedule.py")
 imports.append("cart.py")
 imports.append("config.py")
