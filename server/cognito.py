@@ -1,6 +1,6 @@
 import json
 import config
-from config import AUTH_URL
+from config import AUTH_URL, SERVER_NAME, PROTOCOL
 import requests
 import base64
 
@@ -33,7 +33,7 @@ def exchange_code(code: str) -> dict:
     params = {"grant_type": "authorization_code", 
               "client_id": config.APP_CLIENT_ID, 
               "code" : code, 
-              "redirect_uri" : "http://localhost:5000/callback"} 
+              "redirect_uri" : PROTOCOL + "://" + SERVER_NAME + "/callback"} 
 
     response = requests.post(AUTH_URL, 
                              params=params,
