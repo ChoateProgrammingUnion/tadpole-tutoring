@@ -462,8 +462,16 @@ class Database:
 
         return schedule_dict
 
-    def get_time_by_id(self, time_id: int) -> dict:
+    def get_time_by_id(self, time_id: int, string_time_offset: timedelta = None, insert_teacher_info=False) -> dict:
         if time := self._db['times'].find_one(id=time_id):
+            if insert_teacher_info:
+                if teacher := self.get_teacher(time['teacher_email']):
+                    time.update(teacher)
+                    del time['email']
+
+            if string_time_offset is not None:
+                time['start_time'] = (datetime.utcfromtimestamp(time['start_time']) + string_time_offset).strftime("%I:%M %p")
+
             return self.remove_quoted_name(time)
 
     # Cart database retrieval/manipulation

@@ -140,18 +140,18 @@ def api_get_person():
 
     # return flask.abort(500)
 
-@app.route('/api/teachers', methods=['POST'])
+@app.route('/api/teachers')
 def api_fetch_teachers():
     teachers = list(api.fetch_teachers())
     return api.serialize(teachers)
 
-@app.route('/api/search-times', methods=['POST'])
+@app.route('/api/search-times')
 def api_search_times():
-    timezone_offset = timedelta(minutes=request.form.get("tz_offset", 0, int))
+    timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
 
-    teacher_email = request.form.get("teacher_email", None, str)
-    subject = request.form.get("subject", None, str)
-    must_be_unclaimed = request.form.get("must_be_unclaimed", True, bool)
+    teacher_email = request.args.get("teacher_email", None, str)
+    subject = request.args.get("subject", None, str)
+    must_be_unclaimed = request.args.get("must_be_unclaimed", True, bool)
 
     search_params = {
         "teacher_email": teacher_email,
@@ -177,7 +177,7 @@ def api_update_time():
 @app.route('/api/add-to-cart')
 def api_add_to_cart():
     if email := auth.check_login(request):
-        time_id = request.form.get('id', None, int)
+        time_id = request.args.get('time_id', None, int)
 
         if time_id is None:
             return flask.abort(400)
@@ -194,16 +194,47 @@ def api_add_to_cart():
     log_info("Not logged in")
     return flask.abort(500)
 
-@app.route('/api/get-cart', methods=['POST'])
+@app.route('/api/remove-from-cart')
+def api_remove_from_cart():
+    if email := auth.check_login(request):
+        time_id = request.args.get('time_id', None, int)
+
+        if time_id is None:
+            return flask.abort(400)
+
+        db = database.Database()
+
+        db.init_db_connection()
+        cart, _ = db.get_cart(email)
+        log_info(str(cart))
+        try:
+            cart.remove(time_id)
+        except KeyError:
+            log_info("Key " + str(time_id) + " not in " + str(cart))
+        log_info(str(cart))
+        db.set_cart(email, cart)
+        db.end_db_connection()
+
+        return api.serialize(list(cart))
+
+    log_info("Not logged in")
+    return flask.abort(500)
+
+@app.route('/api/get-cart')
 def api_get_cart():
     if email := auth.check_login(request):
         db = database.Database()
 
         db.init_db_connection()
         cart, _ = db.get_cart(email)
+
+        cart_list = []
+
+        for i in cart:
+            cart_list.append(db.get_time_by_id(i, timedelta(minutes=request.args.get("tz_offset", 0, int)), True))
         db.end_db_connection()
 
-        return api.serialize(list(cart))
+        return api.serialize(list(cart_list))
 
     log_info("Not logged in")
     return flask.abort(500)
@@ -276,7 +307,7 @@ def handle_payment():
         intent_id = request.form.get("intentId")
 
         if not intent_id:
-            log_info("No intentId passed " + str(request.args) + " " + str(request.form))
+            log_info("No intentId passed " + str(request.form))
             return ""
 
         intent = stripe.PaymentIntent.retrieve(intent_id)

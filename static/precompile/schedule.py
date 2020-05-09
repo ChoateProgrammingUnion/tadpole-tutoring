@@ -171,7 +171,7 @@ async def fetch_api(endpoint="/api/search-times", params={}):
     URL = "http://localhost:5000"
     # URL = "http://api.tadpoletutoring.org"
 
-    req = await aio.post(URL + endpoint, data=params)
+    req = await aio.get(URL + endpoint, data=params)
     response = deserialize(req.data)
 
     return response
