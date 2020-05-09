@@ -22,8 +22,8 @@ async def fetch_api(endpoint="/api/search-times", params={}):
     """
     Fetches stuff from any API endpoint
     """
-    URL = "http://localhost:5000"
-    # URL = "http://api.tadpoletutoring.org"
+    # URL = "http://localhost:5000"
+    URL = "https://api.tadpoletutoring.org"
 
     req = await aio.post(URL + endpoint, data=params)
     response = deserialize(req.data)
