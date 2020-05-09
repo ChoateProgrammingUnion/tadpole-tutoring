@@ -64,8 +64,8 @@ def login():
     if not auth.check_login(request):
         return redirect(cognito.get_login_url())
     else:
-        url = request.headers.get("Referer")
-        return redirect(url)
+        # url = request.headers.get("Referer")
+        return render_template("index.html")
 
 @app.route('/check', methods = ['POST'])
 def check_login():
