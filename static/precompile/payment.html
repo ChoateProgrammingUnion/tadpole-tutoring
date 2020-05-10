@@ -535,6 +535,10 @@
         }
     }
 
+    img {
+        border-radius: 10px;
+    }
+
     </style>
     <!-- use the element -->
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
@@ -542,36 +546,194 @@
     <head>
 <body>
     <header style="padding-top: 0; padding-bottom: 0;">
-            <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
-            <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
+    <!--        <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">-->
+<!--            <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>-->
+<!--            <div>-->
+<!--            <ul>-->
+<!--                &lt;!&ndash;<li><a href="index.html">Home</a>&ndash;&gt;-->
+<!--                <li><a href="about.html">About</a></li>-->
+<!--                <li><a href="pricing.html">Pricing</a>-->
+<!--                <li><a href="schedule.html">Schedule</a>-->
+<!--                &lt;!&ndash;<li><a href="schedule.html">Schedule</a>&ndash;&gt;-->
+<!--                <span id="cart-stuff">-->
+<!--                </span>-->
+<!--                <li id="login-state" onclick="window.open('https://api.tadpoletutoring.org/login')"><a onclick="window.open('https://api.tadpoletutoring.org/login')"><i onclick="window.open('https://api.tadpoletutoring.org/login')">Login</i></a></li>-->
+<!--            </ul>-->
+<!--            </div>-->
+<!--        </nav>-->
+<!--        <script>-->
+<!--            function login() {-->
+<!--                if (document.cookie.includes('@')) {-->
+<!--                    if (document.getElementById("login-state").innerHTML != "<a href=profile.html><i>Profile</i></a>") {-->
+<!--                        document.getElementById("login-state").innerHTML = "<a href=profile.html><i>Profile</i></a>"-->
+<!--                        document.getElementById("cart-stuff").innerHTML = "<li><a href='cart.html'>View Cart</a></li><li><a href='sessions.html'>Your Sessions</a></li>"-->
+<!--                    }-->
+<!--                } else {-->
+<!--                    if (document.getElementById("login-state").innerHTML != "<a><i onclick=\"window.open('https://api.tadpoletutoring.org/login')\">Login</i></a>") {-->
+<!--                        document.getElementById("login-state").innerHTML = "<a><i onclick=\"window.open('https://api.tadpoletutoring.org/login')\">Login</i></a>"-->
+<!--                        document.getElementById("cart-stuff").innerHTML = ""-->
+<!--                    }-->
+<!--                }-->
+<!--            }-->
+<!--            login();-->
+<!--            window.setInterval(login, 100);-->
+<!--        </script>-->
+
+        <head>
+            <style>
+                .topnav {
+                    overflow: hidden;
+                    background-color: #fff;
+                }
+
+                .topnav a {
+                    float: left;
+                    display: block;
+                    color: black;
+                    text-align: center;
+                    padding: 14px 16px;
+                    text-decoration: none;
+                    font-size: 17px;
+                }
+
+                .topnav .right {
+                    float: right;
+                }
+
+                .active {
+                    background-color: #4CAF50;
+                    color: black;
+                }
+
+                .topnav .icon {
+                    display: none;
+                }
+
+                .dropdown {
+                    float: left;
+                    overflow: hidden;
+                }
+
+                .dropdown .dropbtn {
+                    font-size: 17px;
+                    border: none;
+                    outline: none;
+                    color: black;
+                    padding: 14px 16px;
+                    background-color: inherit;
+                    font-family: inherit;
+                    margin: 0;
+                }
+
+                .dropdown-content {
+                    display: none;
+                    position: absolute;
+                    background-color: #f9f9f9;
+                    min-width: 160px;
+                    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                    z-index: 1;
+                }
+
+                .dropdown-content a {
+                    float: none;
+                    color: black;
+                    padding: 12px 16px;
+                    text-decoration: none;
+                    display: block;
+                    text-align: left;
+                }
+
+                .topnav a:hover, .dropdown:hover .dropbtn {
+                    background-color: #fff;
+                    color: black;
+                }
+
+                .dropdown-content a:hover {
+                    background-color: #fff;
+                    color: black;
+                }
+
+                .dropdown:hover .dropdown-content {
+                    display: block;
+                }
+                @media screen and (max-width: 600px) {
+                    .topnav a:not(:first-child), .dropdown .dropbtn {
+                        display: none;
+                    }
+                    .topnav a.icon {
+                        float: right;
+                        display: block;
+                    }
+                }
+
+                @media screen and (max-width: 600px) {
+                    .topnav.responsive {position: relative;}
+                    .topnav.responsive .icon {
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+                    }
+                    .topnav.responsive a {
+                        float: none;
+                        display: block;
+                        text-align: left;
+                    }
+                    .topnav.responsive .dropdown {float: none;}
+                    .topnav.responsive .dropdown-content {position: relative;}
+                    .topnav.responsive .dropdown .dropbtn {
+                        display: block;
+                        width: 100%;
+                        text-align: left;
+                    }
+                }
+            </style>
+        </head>
+
+        <div class="topnav" id="myTopnav">
             <div>
-            <ul>
-                <!--<li><a href="index.html">Home</a>-->
-                <li><a href="schedule.html">Schedule</a>
-                <li><a href="pricing.html">Pricing</a>
-                <!--<li><a href="schedule.html">Schedule</a>-->
-                <li><a href="about.html">About</a></li>
-                <li><a href="cart.html">View Cart</a></li>
-                <li><a href="sessions.html">Your Sessions</a></li>
-                <li id="login-state" onclick="window.open('"https://api.tadpoletutoring.org"/login')"><a onclick="window.open('"https://api.tadpoletutoring.org"/login')"><i onclick="window.open('"https://api.tadpoletutoring.org"/login')">Login</i></a></li>
-            </ul>
+                <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
+                <span id="login-state"><a class="right" herf="javascript:openwindow()"><i>Login</i></a></span>
+                <a class="right" href="schedule.html">Schedule</a>
+                <a class="right" href="pricing.html">Pricing</a>
+                <a class="right" href="about.html">About</a>
+                <span id="cart-stuff">
+                </span>
             </div>
-        </nav>
+            <!--<div class="right" id="login-state"></div>-->
+            <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
+        </div>
+
         <script>
+            function openwindow() {
+                window.open('https://api.tadpoletutoring.org/login')
+            }
             function login() {
                 if (document.cookie.includes('@')) {
-                    if (document.getElementById("login-state").innerHTML != "<a href=profile.html><i>Profile</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a href=profile.html><i>Profile</i></a>"
+                    if (document.getElementById("login-state").innerHTML != "<a href=profile.html class=\"right\"><i>Profile</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a href=profile.html class=\"right\"><i>Profile</i></a>"
+                        document.getElementById("cart-stuff").innerHTML = "<li><a href='cart.html'>View Cart</a></li><li><a href='sessions.html'>Your Sessions</a></li>"
                     }
                 } else {
-                    if (document.getElementById("login-state").innerHTML != "<a><i onclick=\"window.open('"https://api.tadpoletutoring.org"/login')\">Login</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a><i onclick=\"window.open('"https://api.tadpoletutoring.org"/login')\">Login</i></a>"
+                    if (document.getElementById("login-state").innerHTML != "<a class=\"right\" herf=\"javascript:openwindow()\"><i>Login</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a class=\"right\" herf=\"javascript:openwindow()\"><i>Login</i></a>"
+                        document.getElementById("cart-stuff").innerHTML = ""
                     }
                 }
             }
             login();
             window.setInterval(login, 100);
-        </script> 
+        </script>
+
+        <script>
+            function myFunction() {
+                var x = document.getElementById("myTopnav");
+                if (x.className === "topnav") {
+                    x.className += " responsive";
+                } else {
+                    x.className = "topnav";
+                }
+            }
+        </script>
 
         <h2>Payment</h2>
         <p><small>If you have trouble affording tutoring, email us at support@tadpoletutornig.org for help.</small></p>
@@ -584,7 +746,7 @@
     <p>
         Email us at <a href="mailto:contact@tadpoletutoring.org">contact@tadpoletutoring.org</a> if you want to get in touch!
     </p>
-    <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+    <form style="all: unset;" action="https://www.paypal.com/cgi-bin/webscr" method="post">
 
         <!-- Identify your business so that you can collect the payments. -->
         <input type="hidden" name="business"
@@ -599,9 +761,8 @@
         <input type="hidden" name="currency_code" value="USD">
 
         <!-- Display the payment button. -->
-        <input type="image" name="submit"
-        src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"
-        alt="Donate">
+        <button type="submit" name="submit">Donate</button>
+
         <img alt="" width="1" height="1"
         src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" >
 
