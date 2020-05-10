@@ -21,6 +21,7 @@ imports.append("checkout.js")
 imports.append("schedule.py")
 imports.append("cart.py")
 imports.append("sessions.py")
+imports.append("profile.py")
 imports.append("config.py")
 
 args = {}
@@ -39,7 +40,7 @@ for each_file in pages:
     with open(each_file) as f:
         html = f.read().rstrip()
         template = Template(html)
-        rendered = template.render(**args)
+        rendered = template.render(**args).replace("{URL}", URL)
 
     with open("precompile/" + each_file, "w") as f:
         f.write(rendered)
