@@ -324,7 +324,7 @@ def pick_subject(vars):
 def subject_chooser():
     document['clicky-slider'].html = ""
 
-    document['results'].html = """<a href="#" onclick="return false;"><i class="subject-button" id="All Subjects">All Subjects</i></a>&nbsp&nbsp"""
+    document['results'].html = """<h2>Pick a Subject:</h2><a href="#" onclick="return false;"><i class="subject-button" id="All Subjects">All Subjects</i></a>&nbsp&nbsp"""
 
     for s in SUBJECTS:
         document['results'].html += """<a href="#" onclick="return false;"><i class="subject-button" id="{subject}">{subject}</i></a>&nbsp&nbsp""".format(subject=s)
