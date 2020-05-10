@@ -566,7 +566,7 @@
         </nav>
         <script>
             function login() {
-                if (document.cookie) {
+                if (document.cookie.includes('@')) {
                     if (document.getElementById("login-state").innerHTML != "<a href=profile.html><i>Profile</i></a>") {
                         document.getElementById("login-state").innerHTML = "<a href=profile.html><i>Profile</i></a>"
                     }

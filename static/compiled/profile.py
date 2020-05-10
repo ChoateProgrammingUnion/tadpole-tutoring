@@ -13,7 +13,10 @@ teacher_profile_form = """
         <h2>Account Settings</h2>
     </header>
     <label for="hours">Max hours:</label>
-    <input type="text" id="hours" name="hours" size="28" placeholder="3">
+    <input type="number" id="hours" name="hours" size="28" placeholder="3">
+
+    <label for="hours">Zoom link:</label>
+    <input type="text" id="zoom" name="zoom" size="28" placeholder="https://zoom.us/j/0000000">
 
     <label>Subjects:</label>
 
@@ -35,10 +38,17 @@ teacher_profile_form = """
 """
 
 claim_teacher_button = """
-<form action="/api/claim-teacher">
-    <button type="submit">I am a teacher</button>
-</form>
+<button id="claim-teacher">I am a teacher</button>
 """
+def get_cookies():
+    cookie_list = document.cookie.split('; ')
+    cookie_dict = dict()
+    for c in cookie_list:
+        if c == "":
+            continue
+        cookie_tuple = c.split('=')
+        cookie_dict.update({cookie_tuple[0]: cookie_tuple[1].replace('"', '')})
+    return cookie_dict
 
 def deserialize(obj_str):
     return javascript.JSON.parse(obj_str)
@@ -56,31 +66,41 @@ async def fetch_teachers():
     response_dict = await fetch_api("/api/teachers")
     return response_dict
 
+async def fetch_api(endpoint="/api/search-times", params={}):
+    """
+    Fetches stuff from any API endpoint
+    """
+    params.update(get_cookies())
+
+    req = await aio.get(URL + endpoint, data=params)
+    response = deserialize(req.data)
+
+    return response
+
+async def post_form_result():
+    # await fetch_api('/api/claim-teacher')
+    await fetch_api('/api/make-teacher')
+
+def post_form_result_run(vars):
+    aio.run(post_form_result())
+
 async def load_settings_page():
     """
     Loads setting page and checks if student or teacher
     """
-    # is_teacher = await check_teacher()
-    is_teacher = check_teacher()
+    is_teacher = await check_teacher()
+    # is_teacher = check_teacher()
     if is_teacher:
         document['user-settings'].html = teacher_profile_form
     else:
         document['user-settings'].html = claim_teacher_button
 
+    document['claim-teacher'].bind("mousedown", post_form_result_run)
+
     return True
 
 async def check_teacher():
-    teachers = await fetch_teachers()
-    print(teachers)
-    if not document.cookie.get("email"):
-        # TODO: redirect to login!
-        print("Not logged in")
-    else:
-        if document.get("email"):
-            print(document.get("email"))
-            for each_teacher in teachers:
-                if document.get("email").rstrip() == each_teacher.get("email"):
-                    return True
-    return False
+    return await fetch_api("/api/check-teacher")
+    # return await fetch_api("/api/make-teacher")
 
 aio.run(load_settings_page())

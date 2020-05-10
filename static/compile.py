@@ -22,6 +22,7 @@ imports.append("schedule.py")
 imports.append("cart.py")
 imports.append("sessions.py")
 imports.append("profile.py")
+imports.append("create.py")
 imports.append("config.py")
 
 args = {}

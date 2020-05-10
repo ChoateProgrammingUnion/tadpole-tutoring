@@ -67,6 +67,9 @@ def check_teacher(request):
     email = check_login(request)
     if email:
         authentication = database.Database()
-        return authentication.check_teacher(email)
+        authentication.init_db_connection()
+        r = authentication.check_teacher(email)
+        authentication.end_db_connection()
+        return r
     return False
 
