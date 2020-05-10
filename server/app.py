@@ -150,7 +150,9 @@ def api_get_person():
 
 @app.route('/api/teachers')
 def api_fetch_teachers():
-    teachers = list(api.fetch_teachers())
+    subject = request.args.get("subject", None, str)
+
+    teachers = list(api.fetch_teachers(subject))
     return api.serialize(teachers)
 
 @app.route('/api/get-teacher')
