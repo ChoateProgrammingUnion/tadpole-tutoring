@@ -2,6 +2,14 @@ from browser import document, alert, aio
 import javascript
 from config import URL
 
+subject_card_template = """
+<aside onclick="location='/'" style="background-color: #0a721b; text-align: center;">
+    <h1 style="color: white;">
+        {subject}
+    </h1>
+</aside>
+"""
+
 tutor_template = """<header>
     <h2>Our Tutors</h2>
     <p>Our team of tutors is small and tight-knit. Each tutor here is hand-picked to help ensure that you can learn well.</p>
