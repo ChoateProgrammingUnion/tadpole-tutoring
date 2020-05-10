@@ -403,8 +403,9 @@ class Database:
         log_info("Unable to find time with id " + str(time_id), header=student_email)
         return False
 
-    def search_times(self, teacher_email: str = None, teacher_id: int = None, student_email: str = None, subject: str = None, min_start_time: datetime = None,
-                     max_start_time: datetime = None, must_be_unclaimed: bool = False, insert_teacher_info=False,
+    def search_times(self, teacher_email: str = None, teacher_id: int = None, student_email: str = None,
+                     subject: str = None, min_start_time: datetime = None, max_start_time: datetime = None,
+                     must_be_unclaimed: bool = False, insert_teacher_info=False,
                      string_time_offset: timedelta = None) -> List[dict]:
         """
         Searches the database for tutoring sessions satisfying the search parameters
@@ -448,10 +449,10 @@ class Database:
             if must_be_unclaimed and c_claimed:
                 continue
 
-            if min_start_time and c_start < min_start_time.timestamp():
+            if min_start_time and datetime.fromtimestamp(c_start).astimezone(pytz.utc) < pytz.utc.localize(min_start_time):
                 continue
 
-            if max_start_time and c_start > max_start_time.timestamp():
+            if max_start_time and datetime.fromtimestamp(c_start).astimezone(pytz.utc) >= pytz.utc.localize(max_start_time):
                 continue
 
             if teacher_email and teacher_email != c_teacher_email:
@@ -461,6 +462,8 @@ class Database:
                 continue
 
             t['start_time'] = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
+
+            t['time_num'] = c_start
 
             t['date_str'] = (t['start_time'] - string_time_offset).strftime("%b %d %Y")
 
@@ -482,7 +485,7 @@ class Database:
 
             results.append(res)
 
-        return results
+        return sorted(results, key=lambda x: x['time_num'])
 
     def get_time_schedule(self, timezone_offset: timedelta = None, num_days: int = 7, search_params: dict = None) -> List[Tuple[str, List[dict]]]:
         if timezone_offset is None:
@@ -491,7 +494,7 @@ class Database:
         if search_params is None:
             search_params = {}
 
-        midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timezone_offset
+        midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) + timezone_offset
 
         if midnight > datetime.utcnow():
             midnight -= timedelta(hours=24)
@@ -501,7 +504,7 @@ class Database:
         for day_num in range(num_days):
             today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24),
                                                string_time_offset=timezone_offset, insert_teacher_info=True, **search_params)
-            schedule_dict.append(((midnight + timezone_offset).strftime("%A"), today_schedule))
+            schedule_dict.append(((midnight - timezone_offset).strftime("%A"), today_schedule))
             midnight += timedelta(hours=24)
 
         return schedule_dict

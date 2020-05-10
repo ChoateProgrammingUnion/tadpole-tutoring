@@ -16,19 +16,6 @@ SUBJECTS = ['English',
             'High School Chemistry',
             'High School Physics']
 
-SUBJECTS = ['English',
-            'Elementary School Math',
-            'Middle School Math',
-            'Geometry',
-            'Algebra II',
-            'Pre-Calc',
-            'BC Calc',
-            'Introductory Computer Programming',
-            'AP Macroeconomics',
-            'AP Microeconomics',
-            'High School Chemistry',
-            'High School Physics']
-
 subject_card_template = """
 """
 
@@ -337,7 +324,7 @@ def pick_subject(vars):
 def subject_chooser():
     document['clicky-slider'].html = ""
 
-    document['results'].html = """<a href="#" onclick="return false;"><i class="subject-button" id="All Subjects">All Subjects</i></a>&nbsp&nbsp"""
+    document['results'].html = """<h2>Pick a Subject:</h2><a href="#" onclick="return false;"><i class="subject-button" id="All Subjects">All Subjects</i></a>&nbsp&nbsp"""
 
     for s in SUBJECTS:
         document['results'].html += """<a href="#" onclick="return false;"><i class="subject-button" id="{subject}">{subject}</i></a>&nbsp&nbsp""".format(subject=s)

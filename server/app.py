@@ -458,7 +458,7 @@ def handle_payment():
 
         if not intent_id:
             log_info("No intentId passed " + str(request.form))
-            return ""
+            return api.serialize(False)
 
         intent = stripe.PaymentIntent.retrieve(intent_id)
 
@@ -481,10 +481,9 @@ def handle_payment():
                 db.end_db_connection()
                 log_info("Times claimed")
 
-                # notify_email = notify.Email()
-                # notify_email.send(email, "Order Confirmation")
+                return api.serialize(True)
 
-        return ""
+        return api.serialize(False)
 
     log_info("Not logged in")
     return ""
