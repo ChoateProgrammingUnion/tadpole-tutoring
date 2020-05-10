@@ -180,6 +180,18 @@ class Database:
             return self.remove_quoted_name(teacher)
         return {}
 
+    def edit_teacher(self, teacher_email: str, subjects: str, zoom_id: int, bio: str, first_name: str, last_name: str) -> bool:
+        if teacher := self._db['teachers'].find_one(email=teacher_email):
+            if subjects is not None: teacher['subjects'] = subjects
+            if zoom_id is not None: teacher['zoom_id'] = zoom_id
+            if bio is not None: teacher['bio'] = bio
+            if first_name is not None: teacher['first_name'] = first_name
+            if last_name is not None: teacher['last_name'] = last_name
+
+            return self._transactional_upsert('teachers', teacher, ['id'])
+
+        return False
+
     def get_teacher_by_id(self, teacher_id: int) -> dict:
         """
         Gets everything for a given teacher

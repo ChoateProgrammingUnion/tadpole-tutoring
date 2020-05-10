@@ -168,6 +168,40 @@ def api_get_teacher():
 
     return api.serialize(teacher)
 
+@app.route('/api/get-teacher-by-email')
+def api_get_teacher_by_email():
+    teacher_email = request.args.get("email", None, str)
+
+    if teacher_email is None:
+        return flask.abort(400)
+
+    db = database.Database()
+
+    db.init_db_connection()
+    teacher = db.get_teacher(teacher_email)
+    db.end_db_connection()
+
+    return api.serialize(teacher)
+
+@app.route('/api/edit-teacher')
+def api_edit_teacher():
+    if email := auth.check_login(request):
+        subjects = request.args.get("subjects", None, str)
+        zoom_id = request.args.get("zoom_id", None, int)
+        bio = request.args.get("bio", None, str)
+        first_name = request.args.get("first_name", None, str)
+        last_name = request.args.get("last_name", None, str)
+
+        db = database.Database()
+
+        db.init_db_connection()
+        db.edit_teacher(email, subjects, zoom_id, bio, first_name, last_name)
+        db.end_db_connection()
+
+        return api.serialize(True)
+
+    return api.serialize(False)
+
 @app.route('/api/check-teacher')
 def api_check_teacher():
     return api.serialize(auth.check_teacher(request))
@@ -358,9 +392,9 @@ def api_make_teacher():
             db.make_teacher(email, [], "", 0)
             db.end_db_connection()
 
-            return api.serialize(0)
+            return api.serialize(True)
 
-    return flask.abort(500)
+    return api.serialize(False)
 
 # @app.route('/api/claim-time')
 # def api_claim_time():
