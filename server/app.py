@@ -350,14 +350,15 @@ def api_get_cart_numbers():
 
 @app.route('/api/make-teacher')
 def api_make_teacher():
-    if email := auth.check_login(request):
-        db = database.Database()
+    if secrets.compare_digest(request.args.get('pass').rstrip(), TEACHER_PASSWORD.rstrip()):
+        if email := auth.check_login(request):
+            db = database.Database()
 
-        db.init_db_connection()
-        db.make_teacher(email, [], "", 0)
-        db.end_db_connection()
+            db.init_db_connection()
+            db.make_teacher(email, [], "", 0)
+            db.end_db_connection()
 
-        return api.serialize(0)
+            return api.serialize(0)
 
     return flask.abort(500)
 
