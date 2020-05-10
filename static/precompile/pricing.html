@@ -598,6 +598,7 @@
 
                 .topnav .right {
                     float: right;
+                    padding-top: 30px;
                 }
 
                 .active {
@@ -690,15 +691,16 @@
         </head>
 
         <div class="topnav" id="myTopnav">
-            <div>
-                <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
-                <span id="login-state"><a class="right" herf="javascript:openwindow()"><i>Login</i></a></span>
-                <a class="right" href="schedule.html">Schedule</a>
-                <a class="right" href="pricing.html">Pricing</a>
-                <a class="right" href="about.html">About</a>
-                <span id="cart-stuff">
-                </span>
-            </div>
+            <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
+            <a id="login" class="right" onclick="openwindow()">Login</a>
+            <a id="profile" class="right" href="profile.html">Profile</a>
+            <a id="cart" class="right" href='cart.html'>View Cart</a>
+            <a id="sessions" class="right" href='sessions.html'>Your Sessions</a>
+            <a class="right" href="schedule.html">Schedule</a>
+            <a class="right" href="pricing.html">Pricing</a>
+            <a class="right" href="about.html">About</a>
+            <span id="cart-stuff">
+            </span>
             <!--<div class="right" id="login-state"></div>-->
             <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
         </div>
@@ -709,14 +711,18 @@
             }
             function login() {
                 if (document.cookie.includes('@')) {
-                    if (document.getElementById("login-state").innerHTML != "<a href=profile.html class=\"right\"><i>Profile</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a href=profile.html class=\"right\"><i>Profile</i></a>"
-                        document.getElementById("cart-stuff").innerHTML = "<li><a href='cart.html'>View Cart</a></li><li><a href='sessions.html'>Your Sessions</a></li>"
+                    if (document.getElementById("profile").style.display !== "block") {
+                        document.getElementById("login").style.display = "none"
+                        document.getElementById("profile").style.display = "block"
+                        document.getElementById("cart").style.display = "block"
+                        document.getElementById("sessions").style.display = "block"
                     }
                 } else {
-                    if (document.getElementById("login-state").innerHTML != "<a class=\"right\" herf=\"javascript:openwindow()\"><i>Login</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a class=\"right\" herf=\"javascript:openwindow()\"><i>Login</i></a>"
-                        document.getElementById("cart-stuff").innerHTML = ""
+                    if (document.getElementById("profile").style.display !== "none") {
+                        document.getElementById("login").style.display = "block"
+                        document.getElementById("profile").style.display = "none"
+                        document.getElementById("cart").style.display = "none"
+                        document.getElementById("sessions").style.display = "none"
                     }
                 }
             }
@@ -782,7 +788,10 @@
         <input type="hidden" name="currency_code" value="USD">
 
         <!-- Display the payment button. -->
-        <button type="submit" name="submit">Donate</button>
+        <input type="image" name="submit"
+               src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"
+               alt="Donate">
+<!--        <img type="img" name="submit" alt="Donate" src="">-->
 
         <img alt="" width="1" height="1"
         src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" >
