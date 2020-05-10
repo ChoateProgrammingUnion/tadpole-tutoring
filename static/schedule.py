@@ -299,7 +299,13 @@ async def fetch_api(endpoint="/api/search-times", params={}):
     return response
 
 async def fetch_teachers():
-    response_dict = await fetch_api("/api/teachers")
+    subject = document['chosen-subject'].html
+
+    if subject == "" or subject == "All Subjects":
+        response_dict = await fetch_api("/api/teachers")
+    else:
+        response_dict = await fetch_api("/api/teachers", {"subject": subject})
+
     return response_dict
 
 def calculate_timezone_offset():
@@ -308,6 +314,7 @@ def calculate_timezone_offset():
 
 def pick_subject(vars):
     document['chosen-subject'].html = vars.target.id
+    document['back-to-subject'].html = """<a href="/schedule.html">Pick Another Subject</a>"""
 
     document['clicky-slider'].html = slider_html
     document["switch-tutor"].bind("mousedown", toggle_bind)

@@ -227,7 +227,7 @@ class Database:
 
         return False
 
-    def all_teachers(self) -> List[dict]:
+    def all_teachers(self, subject: str = None) -> List[dict]:
         """
         Gets all teachers in the database
 
@@ -235,7 +235,10 @@ class Database:
             List of teacher dicts
         """
 
-        return [self.remove_quoted_name(i) for i in self._db['teachers'].all()]
+        if subject is None:
+            return [self.remove_quoted_name(i) for i in self._db['teachers'].all()]
+
+        return [self.remove_quoted_name(i) for i in self._db['teachers'].all() if subject in i['subjects'].split('|')]
 
     # Student database retrieval/manipulation
 

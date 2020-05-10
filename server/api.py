@@ -59,11 +59,14 @@ def get_person(request):
     return None
 
 # @app.route('/api/teachers')
-def fetch_teachers():
+def fetch_teachers(subject):
     db = database.Database()
 
     db.init_db_connection()
-    all_teachers = db.all_teachers()
+    if subject is not None:
+        all_teachers = db.all_teachers(subject)
+    else:
+        all_teachers = db.all_teachers()
     db.end_db_connection()
 
     return all_teachers
