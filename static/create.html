@@ -20,6 +20,11 @@
         $('#time-datepicker').timepicker({});
     });
   </script>
+    <style>
+        #ui-datepicker-div {
+            background-color: white;
+        }
+    </style>
 </head>
 <body>
     <!--<script type="text/python" src="schedule.py"></script>-->
@@ -29,9 +34,13 @@
     <main>
         <section>
             <form action="{URL}/create-time">
+                <h1>
+                    Create Session:
+                </h1>
                 <p>Date: <input type="text" id="datepicker"></p>
                 <p>Time: <input type="text" id="time-datepicker"></p>
                 <button type="submit">Submit</button>
+                <p><small>*please triple-check your info and availability before submitting</small></p>
             </form>
         </section>
     </main>
