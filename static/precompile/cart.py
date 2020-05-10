@@ -67,10 +67,20 @@ payment_template = """
 def deserialize(obj_str):
     return javascript.JSON.parse(obj_str)
 
+def get_cookies():
+    cookie_list = document.cookie.split('; ')
+    cookie_dict = dict()
+    for c in cookie_list:
+        cookie_tuple = c.split('=')
+        cookie_dict.update({cookie_tuple[0]: cookie_tuple[1].replace('"', '')})
+    return cookie_dict
+
 async def fetch_api(endpoint="/api/search-times", params={}, get_response=True):
     """
     Fetches stuff from any API endpoint
     """
+
+    params.update(get_cookies())
 
     req = await aio.get(URL + endpoint, data=params)
 
@@ -147,6 +157,6 @@ async def handle_payment(intentId):
     await fetch_api("/api/handle-payment", {"intentId": intentId}, False)
     await add_cart_to_table()
 
-
 window.handle_payment = handle_payment_run
+window.get_cookies = get_cookies
 aio.run(add_cart_to_table())

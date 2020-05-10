@@ -15,8 +15,8 @@
         <script>
             function login() {
                 if (document.cookie) {
-                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('{URL}/login')\"><i>Logout</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('{URL}/login')\"><i>Logout</i></a>"
+                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('{URL}/logout')\"><i>Logout</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('{URL}/logout')\"><i>Logout</i></a>"
                     }
                 } else {
                     if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('{URL}/login')\"><i>Login</i></a>") {

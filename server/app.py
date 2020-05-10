@@ -116,7 +116,7 @@ def callback():
 
 @app.route('/logout')
 def logout():
-    auth.deauth_token(request)
+    # auth.deauth_token(request)
     session.clear()
     response = make_response(render_template("index.html"))
     response.set_cookie("email", expires=0)

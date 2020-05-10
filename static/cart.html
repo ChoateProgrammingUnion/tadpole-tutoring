@@ -9,12 +9,22 @@
     <script src="/checkout.js"></script>
     <script>
         function setupPayment() {
+            tempData = {};
+            Object.assign(tempData, orderData);
+
+            cookie_list = document.cookie.split('; ');
+
+            for (var i = 0; i < cookie_list.length; i++) {
+                cookie_tuple = cookie_list[i].split('=');
+                tempData[cookie_tuple[0]] = cookie_tuple[1].replace('"', '').replace('"', '')
+            }
+
             fetch(url + "/api/create-payment-intent", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(orderData)
+                body: JSON.stringify(tempData)
             })
                 .then(function (result) {
                     return result.json();

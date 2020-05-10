@@ -243,10 +243,20 @@ def render_tutor_bios(vars):
 
     return len(vars), html
 
+def get_cookies():
+    cookie_list = document.cookie.split('; ')
+    cookie_dict = dict()
+    for c in cookie_list:
+        cookie_tuple = c.split('=')
+        cookie_dict.update({cookie_tuple[0]: cookie_tuple[1].replace('"', '')})
+    return cookie_dict
+
 async def fetch_api(endpoint="/api/search-times", params={}):
     """
     Fetches stuff from any API endpoint
     """
+    params.update(get_cookies())
+
     req = await aio.get(URL + endpoint, data=params)
     response = deserialize(req.data)
 
