@@ -357,6 +357,8 @@ def api_make_teacher():
         db.make_teacher(email, [], "", 0)
         db.end_db_connection()
 
+        return api.serialize(0)
+
     return flask.abort(500)
 
 # @app.route('/api/claim-time')
