@@ -7,6 +7,8 @@ teacher_profile_form = """
     <header>
         <h2>Account Settings</h2>
     </header>
+    <label for="hours">Max hours:</label>
+    <input type="text" id="hours" name="hours" size="28" placeholder="3">
 
     <label>Subjects:</label>
 
