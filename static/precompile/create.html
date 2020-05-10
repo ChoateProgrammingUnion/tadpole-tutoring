@@ -571,6 +571,7 @@
                 <!--<li><a href="schedule.html">Schedule</a>-->
                 <li><a href="about.html">About</a></li>
                 <li><a href="cart.html">View Cart</a></li>
+                <li><a href="sessions.html">Your Sessions</a></li>
                 <li id="login-state"><a onclick="window.open('http://localhost:5000/login')"><i>Login</i></a></li>
             </ul>
             </div>
@@ -587,7 +588,7 @@
                     }
                 }
             }
-            login()
+            login();
             window.setInterval(login, 100);
         </script> 
 
@@ -595,8 +596,8 @@
     <main>
         <section>
             <form action="http://localhost:5000/create-time">
-                <p>Date: <input type="text" id="datepicker"></p>
-                <p>Time: <input type="text" id="time-datepicker"></p>
+                <p>Date: <input type="text" id="datepicker" name="datepicker"></p>
+                <p>Time: <input type="text" id="time-datepicker" name="time-datepicker"></p>
                 <button type="submit">Submit</button>
             </form>
         </section>
