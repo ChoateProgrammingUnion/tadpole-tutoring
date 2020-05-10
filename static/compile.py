@@ -39,7 +39,7 @@ for each_file in pages:
     with open(each_file) as f:
         html = f.read().rstrip()
         template = Template(html)
-        rendered = template.render(**args)
+        rendered = template.render(**args).replace("{URL}", URL)
 
     with open("precompile/" + each_file, "w") as f:
         f.write(rendered)

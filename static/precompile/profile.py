@@ -16,7 +16,7 @@ teacher_profile_form = """
     <input type="checkbox" id="focus-service" name="english" value="English">
     <label for="focus-service">English</label>
 
-    <input type="checkbox" id="focus-service" name="cs" value="CS (Computer Science)">
+    <input type="checkbox" id="focus-service" name="cs" value="cs">
     <label for="focus-service">Computer Science</label>
 
     <label for="bio">Bio:</label>
