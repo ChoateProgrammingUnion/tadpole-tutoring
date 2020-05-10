@@ -549,26 +549,26 @@
             <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
             <div>
             <ul>
-                <li><a href="index.html">Home</a>
+                <!--<li><a href="index.html">Home</a>-->
                 <li><a href="schedule.html">Schedule</a>
                 <li><a href="pricing.html">Pricing</a>
                 <!--<li><a href="schedule.html">Schedule</a>-->
                 <li><a href="about.html">About</a></li>
                 <li><a href="cart.html">View Cart</a></li>
                 <li><a href="sessions.html">Your Sessions</a></li>
-                <li id="login-state"><a onclick="window.open('http://localhost:5000/login')"><i>Login</i></a></li>
+                <li id="login-state" onclick="window.open('"https://api.tadpoletutoring.org"/login')"><a onclick="window.open('"https://api.tadpoletutoring.org"/login')"><i onclick="window.open('"https://api.tadpoletutoring.org"/login')">Login</i></a></li>
             </ul>
             </div>
         </nav>
         <script>
             function login() {
-                if (document.cookie) {
+                if (document.cookie.includes('@')) {
                     if (document.getElementById("login-state").innerHTML != "<a href=profile.html><i>Profile</i></a>") {
                         document.getElementById("login-state").innerHTML = "<a href=profile.html><i>Profile</i></a>"
                     }
                 } else {
-                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('http://localhost:5000/login')\"><i>Login</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('http://localhost:5000/login')\"><i>Login</i></a>"
+                    if (document.getElementById("login-state").innerHTML != "<a><i onclick=\"window.open('"https://api.tadpoletutoring.org"/login')\">Login</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a><i onclick=\"window.open('"https://api.tadpoletutoring.org"/login')\">Login</i></a>"
                     }
                 }
             }
@@ -601,6 +601,28 @@
     <p>
         Email us at <a href="mailto:contact@tadpoletutoring.org">contact@tadpoletutoring.org</a> if you want to get in touch!
     </p>
+    <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+
+        <!-- Identify your business so that you can collect the payments. -->
+        <input type="hidden" name="business"
+            value="ashenuda50@gmail.com">
+
+        <!-- Specify a Donate button. -->
+        <input type="hidden" name="cmd" value="_donations">
+
+        <!-- Specify details about the contribution -->
+        <input type="hidden" name="item_name" value="Tadpole Tutoring">
+        <input type="hidden" name="item_number" value="Tadpole Tutoring General Donation">
+        <input type="hidden" name="currency_code" value="USD">
+
+        <!-- Display the payment button. -->
+        <input type="image" name="submit"
+        src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"
+        alt="Donate">
+        <img alt="" width="1" height="1"
+        src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" >
+
+    </form>
 
     <p>Open source under the MIT license.</p>
 </footer>
