@@ -17,7 +17,7 @@ def register_student(request):
     if email:
         db = database.Database()
         db.init_db_connection()
-        db.add_student(email)
+        db.add_student(email, "", "")
         db.end_db_connection()
         return True
     return False

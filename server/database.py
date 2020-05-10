@@ -208,11 +208,10 @@ class Database:
             True if success, False if anything went wrong
         """
 
-        if student := self.get_student(email):
-            if student_email := student.get("email"):
-                if self.add_teacher(student_email, student.get("first_name"), student.get("last_name"), subjects, bio, zoom_id):
-                    self._db['students'].delete(email=student_email)
-                    return True
+        # if student := self.get_student(email):
+        if self.add_teacher(email, "", "", subjects, bio, zoom_id):
+            self._db['students'].delete(email=email)
+            return True
 
         return False
 
