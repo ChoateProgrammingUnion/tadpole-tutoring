@@ -41,6 +41,9 @@ null = """
 
 claim_teacher_button = """
 <button id="claim-teacher">I am a teacher</button>
+<form>
+<input type="text" id="teacher-secret" name="teacher secret" size="28" placeholder="shhh">
+</form>
 """
 def get_cookies():
     cookie_list = document.cookie.split('; ')
@@ -81,7 +84,7 @@ async def fetch_api(endpoint="/api/search-times", params={}):
 
 async def post_form_result():
     # await fetch_api('/api/claim-teacher')
-    await fetch_api('/api/make-teacher')
+    await fetch_api('/api/make-teacher', {"pass": document['teacher-secret'].text})
 
 def post_form_result_run(vars):
     aio.run(post_form_result())
