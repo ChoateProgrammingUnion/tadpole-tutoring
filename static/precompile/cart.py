@@ -156,7 +156,13 @@ def handle_payment_run(intentId):
     aio.run(handle_payment(intentId))
 
 async def handle_payment(intentId):
-    await fetch_api("/api/handle-payment", {"intentId": intentId}, False)
+    success = await fetch_api("/api/handle-payment", {"intentId": intentId})
+
+    if success:
+        alert("Your times have been claimed!")
+    else:
+        alert("An error has occurred")
+
     await add_cart_to_table()
 
 def verify_cart_run(pay):

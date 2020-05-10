@@ -39,7 +39,9 @@ async def post_form_result():
     for d in document.select(".form-textbox"):
         params.update({d.id: d.value})
 
-    await fetch_api('/api/create-time', params)
+    await fetch_api('/api/create-time', params, False)
+
+    alert("Your time has been created!")
 
 def post_form_result_run(vars):
     aio.run(post_form_result())
