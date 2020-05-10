@@ -121,7 +121,9 @@ def logout():
     session.clear()
     response = make_response(render_template("index.html"))
     response.set_cookie("email", expires=0)
+    response.set_cookie("email", domain='tadpoletutoring.org', expires=0)
     response.set_cookie("token", expires=0)
+    response.set_cookie("token", domain='tadpoletutoring.org', expires=0)
     return response
 
 @app.route('/api/register')

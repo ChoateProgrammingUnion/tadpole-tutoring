@@ -1,20 +1,7 @@
 from browser import document, alert, aio
 import javascript
 
-URL = "http://localhost:5000"
-
-SUBJECTS = ['English',
-            'Elementary School Math',
-            'Middle School Math',
-            'Geometry',
-            'Algebra II',
-            'Pre-Calc',
-            'BC Calc',
-            'Introductory Computer Programming',
-            'AP Macroeconomics',
-            'AP Microeconomics',
-            'High School Chemistry',
-            'High School Physics']
+URL = "https://api.tadpoletutoring.org"
 
 subject_card_template = """
 """
