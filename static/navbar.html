@@ -156,7 +156,7 @@
 </head>
 
 <div class="topnav" id="myTopnav">
-    <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
+    <a href="/"><img alt="Logo" src="logo-sideways.svg" id="logo" height="70"></a>
     <a id="login" class="right" onclick="openwindow()">Login</a>
     <a id="profile" class="right" href="profile.html">Profile</a>
     <a id="cart" class="right" href='cart.html'>View Cart</a>
@@ -167,7 +167,7 @@
     <span id="cart-stuff">
             </span>
     <!--<div class="right" id="login-state"></div>-->
-    <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
+    <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction(); login()">&#9776;</a>
 </div>
 
 <script>
@@ -176,19 +176,45 @@
     }
 
     function login() {
-        if (document.cookie.includes('@')) {
-            if (document.getElementById("profile").style.display !== "block") {
+        if (screen.width <= 600) {
+            if (document.getElementById("myTopnav").className === "topnav responsive") {
+                if (document.cookie.includes('@')) {
+                    if (document.getElementById("profile").style.display !== "block") {
+                        document.getElementById("login").style.display = "none"
+                        document.getElementById("profile").style.display = "block"
+                        document.getElementById("cart").style.display = "block"
+                        document.getElementById("sessions").style.display = "block"
+                    }
+                } else {
+                    if (document.getElementById("login").style.display !== "block") {
+                        document.getElementById("login").style.display = "block"
+                        document.getElementById("profile").style.display = "none"
+                        document.getElementById("cart").style.display = "none"
+                        document.getElementById("sessions").style.display = "none"
+                    }
+                }
+            } else {
                 document.getElementById("login").style.display = "none"
-                document.getElementById("profile").style.display = "block"
-                document.getElementById("cart").style.display = "block"
-                document.getElementById("sessions").style.display = "block"
-            }
-        } else {
-            if (document.getElementById("profile").style.display !== "none") {
-                document.getElementById("login").style.display = "block"
                 document.getElementById("profile").style.display = "none"
                 document.getElementById("cart").style.display = "none"
                 document.getElementById("sessions").style.display = "none"
+            }
+
+        } else {
+            if (document.cookie.includes('@')) {
+                if (document.getElementById("profile").style.display !== "block") {
+                    document.getElementById("login").style.display = "none"
+                    document.getElementById("profile").style.display = "block"
+                    document.getElementById("cart").style.display = "block"
+                    document.getElementById("sessions").style.display = "block"
+                }
+            } else {
+                if (document.getElementById("login").style.display !== "block") {
+                    document.getElementById("login").style.display = "block"
+                    document.getElementById("profile").style.display = "none"
+                    document.getElementById("cart").style.display = "none"
+                    document.getElementById("sessions").style.display = "none"
+                }
             }
         }
     }
