@@ -542,7 +542,6 @@
     <!--Only for teachers to schedule stuff-->
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js" integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>-->
     <!--<script type="text/javascript" src="brython/brython_modules.js"></script>-->
-    <script>
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -556,6 +555,11 @@
         $('#time-datepicker').timepicker({});
     });
   </script>
+    <style>
+        #ui-datepicker-div {
+            background-color: white;
+        }
+    </style>
 </head>
 <body>
     <!--<script type="text/python" src="schedule.py"></script>-->
@@ -564,7 +568,7 @@
             <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
             <div>
             <ul>
-                <li><a href="index.html">Home</a>
+                <!--<li><a href="index.html">Home</a>-->
                 <li><a href="schedule.html">Schedule</a>
                 <li><a href="pricing.html">Pricing</a>
                 <!--<li><a href="schedule.html">Schedule</a>-->
@@ -595,9 +599,14 @@
     <main>
         <section>
             <form action="http://localhost:5000/create-time">
+
+                <h1>
+                    Create Session:
+                </h1>
                 <p>Date: <input type="text" id="datepicker" name="datepicker"></p>
                 <p>Time: <input type="text" id="time-datepicker" name="time-datepicker"></p>
                 <button type="submit">Submit</button>
+                <p><small>*please triple-check your info and availability before submitting</small></p>
             </form>
         </section>
     </main>
