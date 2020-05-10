@@ -1,84 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-{{ header }}
+<head>
+    {{ header }}
     <!--<script>-->
     <!--function testWebP(callback) {-->
-        <!--var webP = new Image();-->
-        <!--webP.onload = webP.onerror = function () {-->
-            <!--callback(webP.height == 2);-->
-        <!--};-->
-        <!--webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';-->
+    <!--var webP = new Image();-->
+    <!--webP.onload = webP.onerror = function () {-->
+    <!--callback(webP.height == 2);-->
+    <!--};-->
+    <!--webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';-->
     <!--};-->
     <!--testWebP(function(support) {-->
-        <!--support ? true : document.getElementById("banner-image-bg").style.cssText = 'background-image: url(images/banner_background_tall.webp); background-size: 100%;  height: 80vh; background-repeat: no-repeat; position: relative;'-->
+    <!--support ? true : document.getElementById("banner-image-bg").style.cssText = 'background-image: url(images/banner_background_tall.webp); background-size: 100%;  height: 80vh; background-repeat: no-repeat; position: relative;'-->
     <!--});-->
     <!--</script>-->
-<!--    <script>-->
-        <!--// Credit: https://davidwalsh.name/detect-webp-->
-        <!--async function supportsWebp() {-->
-  <!--if (!self.createImageBitmap) return false;-->
+    <!--    <script>-->
+    <!--// Credit: https://davidwalsh.name/detect-webp-->
+    <!--async function supportsWebp() {-->
+    <!--if (!self.createImageBitmap) return false;-->
 
-  <!--const webpData = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';-->
-  <!--const blob = await fetch(webpData).then(r => r.blob());-->
-  <!--return createImageBitmap(blob).then(() => true, () => false);-->
-<!--}-->
-      <!--function bgChange(){-->
-          <!--document.getElementById("banner-image-bg").style.backgroundImage = "url(images/banner_background_tall.webp)"-->
-      <!--}-->
+    <!--const webpData = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';-->
+    <!--const blob = await fetch(webpData).then(r => r.blob());-->
+    <!--return createImageBitmap(blob).then(() => true, () => false);-->
+    <!--}-->
+    <!--function bgChange(){-->
+    <!--document.getElementById("banner-image-bg").style.backgroundImage = "url(images/banner_background_tall.webp)"-->
+    <!--}-->
 
-<!--(async () => {-->
-  <!--if(await supportsWebp()) {-->
+    <!--(async () => {-->
+    <!--if(await supportsWebp()) {-->
     <!--console.log('does support');-->
-  <!--} else {-->
+    <!--} else {-->
     <!--//console.log('does not support');-->
     <!--//$("#banner-image-bg").css("background-image", "url(images/banner_background_tall.webp)")-->
-      <!--bgChange().catch(err => console.log('Error:', err));-->
-  <!--}-->
-<!--})();-->
+    <!--bgChange().catch(err => console.log('Error:', err));-->
+    <!--}-->
+    <!--})();-->
     <!--</script>-->
 </head>
 <body>
-    <header style="padding-top: 0; padding-bottom: 0;">
+<header style="padding-top: 0; padding-bottom: 0;">
     {{ navbar }}
     <!--<section style="background:#98fb98">-->
-    </header>
-    <div style="padding: 0; margin: 0; width: 100vw; text-align: center;">
-        <div style="background-image: url(images/banner_background_tall.jpg); background-size: 100%;  height: min(80vh, 66vw); background-repeat: no-repeat; position: relative;" id="banner-image-bg">
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                <br>
-                <img class="not-mobile" style="width: 40hw; height: auto;" src="logo-upright.svg">
-                <img class="mobile" style="height: 50vw; width: auto;" src="logo-upright.svg">
-                <!--<picture>-->
-                    <!--<source type="image/webp" srcset="images/Tadpole_Tutoring_Logo_Side.webp">-->
-                    <!--<source type="image/jp2" srcset="images/Tadpole_Tutoring_Logo_Side.jp2">-->
-                    <!--<img style="width: max(220px, 40%); height: auto;" src="images/Tadpole_Tutoring_Logo_Side.png">-->
-                <!--</picture>-->
-                <div style="text-align: center;">
-                    <p class="not-mobile"><a href="schedule.html"><b>Schedule Now ↗</b></a></p>
-                </div>
-                <br>
+</header>
+<div style="padding: 0; margin: 0; width: 100vw; text-align: center;">
+    <div style="background-image: url(images/banner_background_tall.jpg); background-size: 100%;  height: min(80vh, 66vw); background-repeat: no-repeat; position: relative;"
+         id="banner-image-bg">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+            <br>
+            <img class="not-mobile" style="width: 40hw; height: auto;" src="logo-upright.svg">
+            <img class="mobile" style="height: 50vw; width: auto;" src="logo-upright.svg">
+            <!--<picture>-->
+            <!--<source type="image/webp" srcset="images/Tadpole_Tutoring_Logo_Side.webp">-->
+            <!--<source type="image/jp2" srcset="images/Tadpole_Tutoring_Logo_Side.jp2">-->
+            <!--<img style="width: max(220px, 40%); height: auto;" src="images/Tadpole_Tutoring_Logo_Side.png">-->
+            <!--</picture>-->
+            <div style="text-align: center;">
+                <p class="not-mobile"><a href="schedule.html"><b>Schedule Now ↗</b></a></p>
             </div>
+            <br>
         </div>
-        <br>
     </div>
-    <div style="text-align: center;">
-        <p class="mobile"><a href="schedule.html"><b>Schedule Now ↗</b></a></p>
-    </div>
+    <br>
+</div>
+<div style="text-align: center;">
+    <p class="mobile"><a href="schedule.html"><b>Schedule Now ↗</b></a></p>
+</div>
 
-    <div class="mobile">
-        <figure style="margin: 3%; max-height: 94%; max-width: 94%; text-align: right; vertical-align: middle;">
+<div class="mobile">
+    <figure style="margin: 3%; max-height: 94%; max-width: 94%; text-align: right; vertical-align: middle;">
+        <picture>
+            <source type="image/webp" srcset="images/student_2.webp">
+            <source type="image/jp2" srcset="images/student_2.jp2">
+            <img src="images/student_2.jpg">
+        </picture>
+    </figure>
+    <h1 style="margin: 3%;">Our Mission</h1>
+    <p style="margin: 3%;">Tadpole Tutoring offers affordable, high quality tutoring to students all over the world. We
+        have a profound
+        commitment to charity, donating 100% of our profits to reputable, charitable organizations in need.</p>
+    <p>We seek to be the friends, role models, and educators that help students find meaning in what they do and
+        challenge themselves. All our tutors are thoughtful, highly talented individuals. They are the soul of
+        who we are.</p>
+    <p style="margin: 3%; margin-top: 0;"><a href="about.html"><i>Read More ↗</i></a></p>
+    <div style="background-image: linear-gradient(#dde4c3, #aabf9e); padding-top: 3%; padding-bottom: 3%;">
+        <figure style="margin: 3%; max-height: 94%; max-width: 94%; text-align: left; vertical-align: middle;">
             <picture>
-                <source type="image/webp" srcset="images/student_2.webp">
-                <source type="image/jp2" srcset="images/student_2.jp2">
-                <img src="images/student_2.jpg">
+                <source type="image/webp" srcset="images/student_1.webp">
+                <source type="image/jp2" srcset="images/student_1.jp2">
+                <img src="images/student_1.jpg">
             </picture>
         </figure>
-        <h1 style="margin: 3%;">Our Mission</h1>
-        <p style="margin: 3%;">Tadpole Tutoring offers affordable, high quality tutoring to students all over the world. We have a profound
-            commitment to charity, donating 100% of our profits to reputable, charitable organizations in need.</p>
-        <p style="margin: 3%; margin-top: 0;"><a href="about.html"><i>Read More ↗</i></a></p>
-        <div style="background-image: linear-gradient(#dde4c3, #aabf9e); padding-top: 3%; padding-bottom: 3%;">
+        <div style="margin: 3%;">
+            <p>TADPOLE TUTORING</p>
+            <h1>Set a Meeting Today!</h1>
+            <p>Tadpole Tutoring takes the time to learn about each and every student, matching them up
+                with tutors who would not only be good teachers, but better friends. Please know that if you choose to
+                work with us, we will personally ensure that you and your child will receive the utmost care. If at any
+                point you require assistance, feel free to <a href="directory.html">contact one of our co-founders
+                    directly.</a></p>
+            <p style="margin-top: 0;"><a href="schedule.html"><b>Schedule Now ↗</b></a></p>
+        </div>
+    </div>
+</div>
+<div style="font-size: 1.3vw" class="not-mobile">
+    <div class="row">
+        <div class="column">
+            <figure style="margin: 3%; max-height: 94%; max-width: 94%; text-align: right; vertical-align: middle;">
+                <picture>
+                    <source type="image/webp" srcset="images/student_2.webp">
+                    <source type="image/jp2" srcset="images/student_2.jp2">
+                    <img src="images/student_2.jpg">
+                </picture>
+            </figure>
+        </div>
+        <div style="margin: 3%;" class="column">
+            <h1>Our Mission</h1>
+            <p>Tadpole Tutoring offers affordable, high quality tutoring to students all over the world. We have a
+                profound
+                commitment to charity, donating 100% of our profits to reputable, charitable organizations in need.</p>
+            <p>We seek to be the friends, role models, and educators that help students find meaning in what they do and
+                challenge themselves. All our tutors are thoughtful, highly talented individuals. They are the soul of
+                who we are.</p>
+            <p style="margin: 3%; margin-top: 0;"><a href="about.html"><i>Read More ↗</i></a></p>
+        </div>
+    </div>
+    <div class="row" style="background-image: linear-gradient(#dde4c3, #aabf9e);">
+        <div class="column" style="margin: 3%;">
+            <p>TADPOLE TUTORING</p>
+            <h1>Set a Meeting Today!</h1>
+            <p>Tadpole Tutoring takes the time to learn about each and every student, matching them up
+                with tutors who would not only be good teachers, but better friends. Please know that if you choose to
+                work with us, we will personally ensure that you and your child will receive the utmost care. If at any
+                point you require assistance, feel free to <a href="directory.html">contact one of our co-founders
+                    directly.</a></p>
+            <p style="margin-top: 0;"><a href="schedule.html"><b>Schedule Now ↗</b></a></p>
+        </div>
+        <div class="column">
             <figure style="margin: 3%; max-height: 94%; max-width: 94%; text-align: left; vertical-align: middle;">
                 <picture>
                     <source type="image/webp" srcset="images/student_1.webp">
@@ -86,61 +144,9 @@
                     <img src="images/student_1.jpg">
                 </picture>
             </figure>
-            <div style="margin: 3%;">
-                <p>TADPOLE TUTORING</p>
-                <h1>Set a Meeting Today!</h1>
-                <p>We seek to be the friends, role models, and educators that help students find meaning in what they do and
-                    challenge themselves. All our tutors are thoughtful, highly talented individuals. They are the soul of
-                    who we are.</p>
-                <p>Tadpole Tutoring takes the time to learn about each and every student, matching them up
-                    with tutors who would not only be good teachers, but better friends. Please know that if you choose to
-                    work with us, we will personally ensure that you and your child will receive the utmost care.</p>
-                <p style="margin-top: 0;"><a href="schedule.html"><b>Schedule Now ↗</b></a></p>
-            </div>
         </div>
     </div>
-    <div class="not-mobile">
-        <div class="row">
-            <div class="column">
-                <figure style="margin: 3%; max-height: 94%; max-width: 94%; text-align: right; vertical-align: middle;">
-                    <picture>
-                        <source type="image/webp" srcset="images/student_2.webp">
-                        <source type="image/jp2" srcset="images/student_2.jp2">
-                        <img src="images/student_2.jpg">
-                    </picture>
-                </figure>
-            </div>
-            <div style="margin: 3%;" class="column">
-                <h1>Our Mission</h1>
-                <p>Tadpole Tutoring offers affordable, high quality tutoring to students all over the world. We have a
-                    profound
-                    commitment to charity, donating 100% of our profits to reputable, charitable organizations in need.</p>
-                <p style="margin: 3%; margin-top: 0;"><a href="about.html"><i>Read More ↗</i></a></p>
-            </div>
-        </div>
-        <div class="row" style="background-image: linear-gradient(#dde4c3, #aabf9e);">
-            <div class="column" style="margin: 3%;">
-                <p>TADPOLE TUTORING</p>
-                <h1>Set a Meeting Today!</h1>
-                <p>We seek to be the friends, role models, and educators that help students find meaning in what they do and
-                    challenge themselves. All our tutors are thoughtful, highly talented individuals. They are the soul of
-                    who we are.</p>
-                <p>Tadpole Tutoring takes the time to learn about each and every student, matching them up
-                    with tutors who would not only be good teachers, but better friends. Please know that if you choose to
-                    work with us, we will personally ensure that you and your child will receive the utmost care.</p>
-                <p style="margin-top: 0;"><a href="schedule.html"><b>Schedule Now ↗</b></a></p>
-            </div>
-            <div class="column">
-                <figure style="margin: 3%; max-height: 94%; max-width: 94%; text-align: left; vertical-align: middle;">
-                    <picture>
-                        <source type="image/webp" srcset="images/student_1.webp">
-                        <source type="image/jp2" srcset="images/student_1.jp2">
-                        <img src="images/student_1.jpg">
-                    </picture>
-                </figure>
-            </div>
-        </div>
-    </div>
+</div>
 </body>
 {{ footer }}
 
