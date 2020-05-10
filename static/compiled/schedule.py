@@ -1,6 +1,10 @@
 from browser import document, alert, aio
 import javascript
-from config import URL
+
+URL = "https://api.tadpoletutoring.org"
+
+subject_card_template = """
+"""
 
 tutor_template = """<header>
     <h2>Our Tutors</h2>

@@ -1,6 +1,5 @@
 from jinja2 import Template, Markup
 import glob
-
 from config import URL
 
 files = glob.glob("*.html")
@@ -29,7 +28,7 @@ args = {}
 for each_import in imports:
     name = each_import.split(".")[0]
     with open(each_import) as f:
-        import_html = f.read().replace("{URL}", URL)
+        import_html = f.read().replace("{URL}", "\"" + URL + "\"")
     args[name] = import_html
 
 # with open("footer.html") as f:
@@ -41,14 +40,14 @@ for each_file in pages:
     with open(each_file) as f:
         html = f.read().rstrip()
         template = Template(html)
-        rendered = template.render(**args).replace("{URL}", URL)
+        rendered = template.render(**args).replace("{URL}", "\"" + URL + "\"")
 
     with open("precompile/" + each_file, "w") as f:
         f.write(rendered)
 
 for each_file in imports:
     with open(each_file) as f:
-        html = f.read().rstrip().replace("{URL}", URL)
+        html = f.read().rstrip().replace("{URL}", "\"" + URL + "\"")
 
     with open("precompile/" + each_file, "w") as f:
         f.write(html)

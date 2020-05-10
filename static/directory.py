@@ -1,6 +1,7 @@
 from browser import document, alert, aio
 import javascript
-from config import URL
+
+URL = {URL}
 
 teacher_bio_template = """<aside>
     <center>

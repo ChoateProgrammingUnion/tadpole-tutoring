@@ -1,6 +1,7 @@
 from browser import document, alert, aio
 import javascript
-from config import URL
+
+URL = "https://api.tadpoletutoring.org"
 
 teacher_profile_form = """
 <section>
@@ -12,8 +13,6 @@ teacher_profile_form = """
     <header>
         <h2>Account Settings</h2>
     </header>
-    <label for="hours">Max hours:</label>
-    <input type="number" id="hours" name="hours" size="28" placeholder="3">
 
     <label for="hours">Zoom link:</label>
     <input type="text" id="zoom" name="zoom" size="28" placeholder="https://zoom.us/j/0000000">
@@ -29,6 +28,9 @@ teacher_profile_form = """
     <input type="checkbox" id="focus-service" name="cs" value="cs">
     <label for="focus-service">Computer Science</label>
 
+    <input type="checkbox" id="focus-price" name="math" value="Math">
+    <label for="focus-price">Math</label>
+
     <label for="bio">Bio:</label>
 
     <textarea cols="40" rows="5" id="bio"></textarea>
@@ -36,9 +38,16 @@ teacher_profile_form = """
 </form>
 </section>
 """
+null = """
+    <label for="hours">Max hours:</label>
+    <input type="number" id="hours" name="hours" size="28" placeholder="3">
+"""
 
 claim_teacher_button = """
 <button id="claim-teacher">I am a teacher</button>
+<form>
+<input type="text" id="teacher-secret" name="teacher secret" size="28" placeholder="shhh">
+</form>
 """
 def get_cookies():
     cookie_list = document.cookie.split('; ')
@@ -79,7 +88,7 @@ async def fetch_api(endpoint="/api/search-times", params={}):
 
 async def post_form_result():
     # await fetch_api('/api/claim-teacher')
-    await fetch_api('/api/make-teacher')
+    await fetch_api('/api/make-teacher', {"pass": document['teacher-secret'].text})
 
 def post_form_result_run(vars):
     aio.run(post_form_result())

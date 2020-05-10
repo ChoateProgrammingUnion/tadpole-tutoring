@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-    <link rel="icon" href="logo.svg">
+<head>
+        <link rel="icon" href="logo.svg">
     <!--<link rel="stylesheet" href="/css/mvp.css">-->
 
     <meta charset="utf-8">
@@ -541,7 +541,7 @@
 
     <head>
 <body>
-    <header style="padding-top: 0; padding-bottom: 0;">
+<header style="padding-top: 0; padding-bottom: 0;">
             <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
             <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
             <div>
@@ -573,12 +573,52 @@
             window.setInterval(login, 100);
         </script> 
 
-        <h2>Payment</h2>
-        <p><small>If you have trouble affording tutoring, email us at support@tadpoletutornig.org for help.</small></p>
-    </header>
-    <main>
-        <hr>
-    </main>
+    <!--<section style="background:#98fb98">-->
+</header>
+<div style="padding: 0; margin: 0; width: 100vw; text-align: center;">
+    <div style="background-image: url(images/header_background.jpg); background-size: 100%; background-repeat: no-repeat; text-align: left">
+        <div style="margin-left: 10%;">
+            <br>
+            <h1>Our Subjects</h1>
+            <p>Please Select a Subject to Search</p>
+            <br>
+        </div>
+    </div>
+    <br>
+</div>
+<section style="color: white;">
+    <aside onclick="location='/'" style="background-color: #0a721b; text-align: center;">
+        <h1>
+            English
+        </h1>
+        <ul>
+            <li>
+                sub subject
+            </li>
+        </ul>
+    </aside>
+    <aside onclick="location='/'" style="background-color: #0a721b; text-align: center;">
+        <h1>
+            Math
+        </h1>
+        <ul>
+            <li>
+                sub subject
+            </li>
+        </ul>
+    </aside>
+    <aside onclick="location='/'" style="background-color: #0a721b; text-align: center;">
+        <h1>
+            Science
+        </h1>
+        <ul>
+            <li>
+                sub subject
+            </li>
+        </ul>
+    </aside>
+</section>
+</body>
 <footer>
     <hr>
     <p>
@@ -588,6 +628,13 @@
     <p>Open source under the MIT license.</p>
 </footer>
 
-</body>
 
 </html>
+
+
+<aside onclick="location='/'" style="background-color: #0a721b; text-align: center;">
+    <h1 style="color: white;">
+        {subject}
+    </h1>
+    {sub_subjects}
+</aside>

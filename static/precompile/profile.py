@@ -1,6 +1,7 @@
 from browser import document, alert, aio, window
 import javascript
-from config import URL
+
+URL = "https://api.tadpoletutoring.org"
 
 SUBJECTS = ['English',
 'Elementary School Math',
