@@ -50,12 +50,14 @@ def set_login(response, user_info) -> str:
     """
     if user_info and (email := user_info.get('email')) and user_info.get('email_verified') == "true":
         response.set_cookie('email', email)
+        response.set_cookie('email', email, domain='tadpoletutoring.org')
 
         authentication = database.Database()
         authentication.init_db_connection()
         token = authentication.create_token(str(email))
         authentication.end_db_connection()
         response.set_cookie('token', token)
+        response.set_cookie('token', token, domain='tadpoletutoring.org')
 
         log_info("Set login for " + email)
         return response
