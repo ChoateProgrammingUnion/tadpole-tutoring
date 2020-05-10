@@ -558,12 +558,12 @@
             <div>
             <ul>
                 <!--<li><a href="index.html">Home</a>-->
-                <li><a href="schedule.html">Schedule</a>
-                <li><a href="pricing.html">Pricing</a>
-                <!--<li><a href="schedule.html">Schedule</a>-->
                 <li><a href="about.html">About</a></li>
-                <li><a href="cart.html">View Cart</a></li>
-                <li><a href="sessions.html">Your Sessions</a></li>
+                <li><a href="pricing.html">Pricing</a>
+                <li><a href="schedule.html">Schedule</a>
+                <!--<li><a href="schedule.html">Schedule</a>-->
+                <span id="cart-stuff">
+                </span>
                 <li id="login-state" onclick="window.open('"https://api.tadpoletutoring.org"/login')"><a onclick="window.open('"https://api.tadpoletutoring.org"/login')"><i onclick="window.open('"https://api.tadpoletutoring.org"/login')">Login</i></a></li>
             </ul>
             </div>
@@ -573,10 +573,12 @@
                 if (document.cookie.includes('@')) {
                     if (document.getElementById("login-state").innerHTML != "<a href=profile.html><i>Profile</i></a>") {
                         document.getElementById("login-state").innerHTML = "<a href=profile.html><i>Profile</i></a>"
+                        document.getElementById("cart-stuff").innerHTML = "<li><a href='cart.html'>View Cart</a></li><li><a href='sessions.html'>Your Sessions</a></li>"
                     }
                 } else {
                     if (document.getElementById("login-state").innerHTML != "<a><i onclick=\"window.open('"https://api.tadpoletutoring.org"/login')\">Login</i></a>") {
                         document.getElementById("login-state").innerHTML = "<a><i onclick=\"window.open('"https://api.tadpoletutoring.org"/login')\">Login</i></a>"
+                        document.getElementById("cart-stuff").innerHTML = ""
                     }
                 }
             }
