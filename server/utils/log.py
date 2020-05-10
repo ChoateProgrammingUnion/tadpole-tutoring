@@ -75,7 +75,7 @@ def log_function(func, msg: str, header=None, frame=None, traceback_length=5):
         msg = color.GREEN + caller + color.END + msg
 
     if header:
-        msg = color.YELLOW + header + color.END + msg
+        msg = color.YELLOW + header + color.END + " " + msg
 
     filename_display = ' [' + file_name + ':' + line_no + '] '
     if len(filename_display) > max_filename_length:

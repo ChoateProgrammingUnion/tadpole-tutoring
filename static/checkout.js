@@ -1,6 +1,45 @@
 // A reference to Stripe.js
 var stripe;
 
+function setupPayment() {
+    tempData = {};
+    Object.assign(tempData, orderData);
+
+    cookie_list = document.cookie.split('; ');
+
+    for (var i = 0; i < cookie_list.length; i++) {
+        cookie_tuple = cookie_list[i].split('=');
+        tempData[cookie_tuple[0]] = cookie_tuple[1].replace('"', '').replace('"', '')
+    }
+
+    fetch(url + "/api/create-payment-intent", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(tempData)
+    })
+        .then(function (result) {
+            return result.json();
+        })
+        .then(function (data) {
+            return setupElements(data);
+        })
+        .then(function ({stripe, card, clientSecret, intentId}) {
+            document.querySelector("button").disabled = false;
+
+            // Handle form submission.
+            var form = document.getElementById("payment-form");
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+                // Initiate payment when the submit button is clicked
+                var lambda = function() {pay(stripe, card, clientSecret, intentId);};
+
+                window.verify_cart(lambda);
+            });
+        });
+}
+
 var orderData = {
     items: [{ id: "photo-subscription" }],
     currency: "usd"

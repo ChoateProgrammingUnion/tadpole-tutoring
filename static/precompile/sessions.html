@@ -539,12 +539,15 @@
     <!-- use the element -->
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js" integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js"
+            integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="brython/brython_modules.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body onload="brython()">
-    <script type="text/python" src="schedule.py"></script>
-    <header style="padding-top: 0; padding-bottom: 0;">
+<script type="text/python" src="sessions.py"></script>
+
+<header style="padding-top: 0; padding-bottom: 0;">
             <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
             <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
             <div>
@@ -576,35 +579,12 @@
             window.setInterval(login, 100);
         </script> 
 
-    </header>
-    <main>
-        <div style="margin-left:80%" id="clicky-slider">
-            <div style="display: inline-block">
-            <span style="white-space: nowrap;">By Time</span>
-            <label id="switch-tutor" class="switch">
-                <input type="checkbox">
-                <span class="slider round"></span> 
-            </label> 
-            <span style="white-space: nowrap;">By Tutor</span>
-            <span id="switch-tutor-value" style="visibility:hidden"></span>
-            </div>
-        </div>
-        <div style="margin-right:80%">
-            <div style="display: inline-block" id="back-button-div">
-            </div>
-        </div>
-        <div id="results">
-        </div>
-    </main>
-<footer>
-    <hr>
-    <p>
-        Email us at <a href="mailto:contact@tadpoletutoring.org">contact@tadpoletutoring.org</a> if you want to get in touch!
-    </p>
-
-    <p>Open source under the MIT license.</p>
-</footer>
-
+</header>
+<div style="text-align: center;">
+    <p><u>Your Sessions</u></p>
+    <table id="session-table">
+        <tr><th>Loading Sessions...</th></tr>
+    </table>
+</div>
 </body>
-
 </html>

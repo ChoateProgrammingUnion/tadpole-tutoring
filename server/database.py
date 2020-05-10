@@ -389,7 +389,7 @@ class Database:
         log_info("Unable to find time with id " + str(time_id), header=student_email)
         return False
 
-    def search_times(self, teacher_email: str = None, teacher_id: int = None, subject: str = None, min_start_time: datetime = None,
+    def search_times(self, teacher_email: str = None, teacher_id: int = None, student_email: str = None, subject: str = None, min_start_time: datetime = None,
                      max_start_time: datetime = None, must_be_unclaimed: bool = False, insert_teacher_info=False,
                      string_time_offset: timedelta = None) -> List[dict]:
         """
@@ -421,6 +421,7 @@ class Database:
                 c_start = t['start_time']
                 c_claimed = t['claimed']
                 c_teacher_email = t['teacher_email']
+                c_student_email = t['student']
             except KeyError:
                 log_error("Invalid time: " + str(t))
                 continue
@@ -440,6 +441,9 @@ class Database:
                 continue
 
             if teacher_email and teacher_email != c_teacher_email:
+                continue
+
+            if student_email and student_email != c_student_email:
                 continue
 
             t['start_time'] = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
@@ -516,6 +520,24 @@ class Database:
 
     def set_cart(self, email: str, cart: Set[int]) -> bool:
         return self._transactional_upsert('carts', {"email": email, "cart": pickle_str(cart), "intent": ""}, ['email'])
+
+    def verify_cart(self, email: str, change=True):
+        cart_set, intent = self.get_cart(email)
+
+        new_cart_set = set()
+
+        verified = True
+
+        for entry in cart_set:
+            if self.get_time_by_id(entry)['claimed'] and self.get_time_by_id(entry)['student'] != email:
+                verified = False
+            else:
+                new_cart_set.add(entry)
+
+        if change and not verified:
+            self.set_cart(email, new_cart_set)
+
+        return verified
 
     def set_intent(self, email: str, intent: str) -> bool:
         cart, _ = self.get_cart(email)

@@ -247,6 +247,8 @@ def get_cookies():
     cookie_list = document.cookie.split('; ')
     cookie_dict = dict()
     for c in cookie_list:
+        if c == "":
+            continue
         cookie_tuple = c.split('=')
         cookie_dict.update({cookie_tuple[0]: cookie_tuple[1].replace('"', '')})
     return cookie_dict
