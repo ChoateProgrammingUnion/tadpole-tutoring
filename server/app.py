@@ -348,12 +348,16 @@ def api_get_cart_numbers():
     log_info("Not logged in")
     return flask.abort(500)
 
-# @app.route('/api/make-teacher')
-# def api_make_teacher():
-#     if email := auth.check_login(request):
-#         return api.make_teacher(request)
-#
-#     return flask.abort(500)
+@app.route('/api/make-teacher')
+def api_make_teacher():
+    if email := auth.check_login(request):
+        db = database.Database()
+
+        db.init_db_connection()
+        db.make_teacher(email, [], "", 0)
+        db.end_db_connection()
+
+    return flask.abort(500)
 
 # @app.route('/api/claim-time')
 # def api_claim_time():
