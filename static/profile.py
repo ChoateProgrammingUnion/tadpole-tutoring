@@ -41,6 +41,9 @@ null = """
 
 claim_teacher_button = """
 <button id="claim-teacher">I am a teacher</button>
+<form>
+<input type="text" id="teacher-secret" name="teacher secret" size="28" placeholder="shhh">
+</form>
 """
 def get_cookies():
     cookie_list = document.cookie.split('; ')
