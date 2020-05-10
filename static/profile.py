@@ -84,7 +84,7 @@ async def fetch_api(endpoint="/api/search-times", params={}):
 
 async def post_form_result():
     # await fetch_api('/api/claim-teacher')
-    await fetch_api('/api/make-teacher')
+    await fetch_api('/api/make-teacher', {"pass": document['teacher-secret'].text})
 
 def post_form_result_run(vars):
     aio.run(post_form_result())
