@@ -144,24 +144,30 @@
         <div class="topnav" id="myTopnav">
             <div>
                 <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
-                <a class="right" href="about.html">About</a>
-                <a class="right" href="pricing.html">Pricing</a>
+                <span id="login-state"><a class="right" herf="javascript:openwindow()"><i>Login</i></a></span>
                 <a class="right" href="schedule.html">Schedule</a>
+                <a class="right" href="pricing.html">Pricing</a>
+                <a class="right" href="about.html">About</a>
+                <span id="cart-stuff">
+                </span>
             </div>
-            <div class="right" id="login-state" onclick="window.open('{URL}/login')"><a onclick="window.open('{URL}/login')"><i onclick="window.open('{URL}/login')">Login</i></a></div>
+            <!--<div class="right" id="login-state"></div>-->
             <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
         </div>
 
         <script>
+            function openwindow() {
+                window.open('{URL}/login')
+            }
             function login() {
                 if (document.cookie.includes('@')) {
-                    if (document.getElementById("login-state").innerHTML != "<a href=profile.html><i>Profile</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a href=profile.html><i>Profile</i></a>"
+                    if (document.getElementById("login-state").innerHTML != "<a href=profile.html class=\"right\"><i>Profile</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a href=profile.html class=\"right\"><i>Profile</i></a>"
                         document.getElementById("cart-stuff").innerHTML = "<li><a href='cart.html'>View Cart</a></li><li><a href='sessions.html'>Your Sessions</a></li>"
                     }
                 } else {
-                    if (document.getElementById("login-state").innerHTML != "<a><i onclick=\"window.open('{URL}/login')\">Login</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a><i onclick=\"window.open('{URL}/login')\">Login</i></a>"
+                    if (document.getElementById("login-state").innerHTML != "<a class=\"right\" herf=\"javascript:openwindow()\"><i>Login</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a class=\"right\" herf=\"javascript:openwindow()\"><i>Login</i></a>"
                         document.getElementById("cart-stuff").innerHTML = ""
                     }
                 }
