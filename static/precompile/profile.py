@@ -3,6 +3,11 @@ import javascript
 from config import URL
 
 teacher_profile_form = """
+<section>
+<a href="create.html"><i>Create Session</i></a>
+</section>
+
+<section>
 <form action="/teacher">
     <header>
         <h2>Account Settings</h2>
@@ -26,6 +31,7 @@ teacher_profile_form = """
     <textarea cols="40" rows="5" id="bio"></textarea>
     <button type="submit">Save</button>
 </form>
+</section>
 """
 
 claim_teacher_button = """

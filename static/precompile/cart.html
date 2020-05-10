@@ -544,44 +544,6 @@
     <script type="text/javascript" src="brython/brython_modules.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
     <script src="/checkout.js"></script>
-    <script>
-        function setupPayment() {
-            tempData = {};
-            Object.assign(tempData, orderData);
-
-            cookie_list = document.cookie.split('; ');
-
-            for (var i = 0; i < cookie_list.length; i++) {
-                cookie_tuple = cookie_list[i].split('=');
-                tempData[cookie_tuple[0]] = cookie_tuple[1].replace('"', '').replace('"', '')
-            }
-
-            fetch(url + "/api/create-payment-intent", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(tempData)
-            })
-                .then(function (result) {
-                    return result.json();
-                })
-                .then(function (data) {
-                    return setupElements(data);
-                })
-                .then(function ({stripe, card, clientSecret, intentId}) {
-                    document.querySelector("button").disabled = false;
-
-                    // Handle form submission.
-                    var form = document.getElementById("payment-form");
-                    form.addEventListener("submit", function (event) {
-                        event.preventDefault();
-                        // Initiate payment when the submit button is clicked
-                        pay(stripe, card, clientSecret, intentId);
-                    });
-                });
-        }
-    </script>
 </head>
 <body onload="brython()">
 <script type="text/python" src="cart.py"></script>
@@ -597,6 +559,7 @@
                 <!--<li><a href="schedule.html">Schedule</a>-->
                 <li><a href="about.html">About</a></li>
                 <li><a href="cart.html">View Cart</a></li>
+                <li><a href="sessions.html">Your Sessions</a></li>
                 <li id="login-state"><a onclick="window.open('http://localhost:5000/login')"><i>Login</i></a></li>
             </ul>
             </div>
@@ -613,7 +576,7 @@
                     }
                 }
             }
-            login()
+            login();
             window.setInterval(login, 100);
         </script> 
 

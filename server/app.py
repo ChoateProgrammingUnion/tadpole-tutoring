@@ -130,6 +130,13 @@ def api_register_student():
 
     return flask.abort(500)
 
+@app.route('/api/register-teacher')
+def api_register_teacher():
+    if auth.check_teacher(request):
+        pass
+
+    return flask.abort(405)
+
 @app.route('/api/person')
 def api_get_person():
     user_data = api.get_person(request)
@@ -201,6 +208,21 @@ def api_get_time():
 
     return api.serialize(times)
 
+@app.route('/api/get-user-times')
+def api_get_user_times():
+    if email := auth.check_login(request):
+        timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
+
+        db = database.Database()
+
+        db.init_db_connection()
+        times = db.search_times(student_email=email, string_time_offset=timezone_offset, insert_teacher_info=True)
+        db.end_db_connection()
+
+        return api.serialize(times)
+
+    return flask.abort(405)
+
 @app.route('/api/update-time')
 def api_update_time():
     if api.update_time(request):
@@ -224,6 +246,20 @@ def api_add_to_cart():
         db.end_db_connection()
 
         return api.serialize(list(cart))
+
+    log_info("Not logged in")
+    return flask.abort(500)
+
+@app.route('/api/verify-cart')
+def api_verify_cart():
+    if email := auth.check_login(request):
+        db = database.Database()
+
+        db.init_db_connection()
+        verified = db.verify_cart(email)
+        db.end_db_connection()
+
+        return api.serialize(verified)
 
     log_info("Not logged in")
     return flask.abort(500)
@@ -285,14 +321,12 @@ def api_get_cart_numbers():
     log_info("Not logged in")
     return flask.abort(500)
 
-@app.route('/api/make-teacher')
-def api_make_teacher():
-    if email := auth.check_login(request):
-        # TODO Check if email is authorized to make this change
-
-        return api.make_teacher(request)
-
-    return flask.abort(500)
+# @app.route('/api/make-teacher')
+# def api_make_teacher():
+#     if email := auth.check_login(request):
+#         return api.make_teacher(request)
+#
+#     return flask.abort(500)
 
 # @app.route('/api/claim-time')
 # def api_claim_time():
@@ -377,8 +411,8 @@ def handle_payment():
                 db.end_db_connection()
                 log_info("Times claimed")
 
-                notify_email = notify.Email()
-                notify_email.send(email, "Order Confirmation")
+                # notify_email = notify.Email()
+                # notify_email.send(email, "Order Confirmation")
 
         return ""
 

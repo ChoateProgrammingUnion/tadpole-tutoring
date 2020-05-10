@@ -539,8 +539,14 @@
     <!-- use the element -->
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
 
+
+
+    <style>
+
+    </style>
+
     <head>
-<body>
+<body onload="brython()">
 <header style="padding-top: 0; padding-bottom: 0;">
             <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
             <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
@@ -552,6 +558,7 @@
                 <!--<li><a href="schedule.html">Schedule</a>-->
                 <li><a href="about.html">About</a></li>
                 <li><a href="cart.html">View Cart</a></li>
+                <li><a href="sessions.html">Your Sessions</a></li>
                 <li id="login-state"><a onclick="window.open('http://localhost:5000/login')"><i>Login</i></a></li>
             </ul>
             </div>
@@ -568,7 +575,7 @@
                     }
                 }
             }
-            login()
+            login();
             window.setInterval(login, 100);
         </script> 
 
@@ -585,6 +592,42 @@
     </div>
     <br>
 </div>
+
+<header>
+    <h1>Our Co-Founders</h1>
+</header>
+<section>
+    <aside>
+        <center>
+            <img alt="Profile Picture" src="https://github.com/identicons/jasonlong.png" height="150">
+            <h3>Andrew Shenouda</h3>
+        </center>
+        <p><b>Studies at: </b>Choate Rosemary Hall</p>
+        <p><b>Phone Number: </b>867-5309</p>
+        <p><b>Email: </b><span>ashenouda@email.com</span></p>
+        <p>Hi I am name Shenouda.</p>
+    </aside>
+    <aside>
+        <center>
+            <img alt="Profile Picture" src="https://github.com/identicons/jasonlong.png" height="150">
+            <h3>Kai Joseph</h3>
+        </center>
+        <p><b>Studies at: </b>Choate Rosemary Hall</p>
+        <p><b>Phone Number: </b>867-5309</p>
+        <p><b>Email: </b><span>kai@email.com</span></p>
+        <p>Hi I am name Shenouda.</p>
+    </aside>
+    <aside>
+        <center>
+            <img alt="Profile Picture" src="https://github.com/identicons/jasonlong.png" height="150">
+            <h3>Henry Mars</h3>
+        </center>
+        <p><b>Studies at: </b>Choate Rosemary Hall</p>
+        <p><b>Phone Number: </b>867-5309</p>
+        <p><b>Email: </b><span>henry@email.com</span></p>
+        <p>Hi I am name Shenouda.</p>
+    </aside>
+</section>
 
 </body>
 <footer>

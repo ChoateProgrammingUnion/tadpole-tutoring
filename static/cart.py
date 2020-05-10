@@ -71,6 +71,8 @@ def get_cookies():
     cookie_list = document.cookie.split('; ')
     cookie_dict = dict()
     for c in cookie_list:
+        if c == "":
+            continue
         cookie_tuple = c.split('=')
         cookie_dict.update({cookie_tuple[0]: cookie_tuple[1].replace('"', '')})
     return cookie_dict
@@ -157,6 +159,19 @@ async def handle_payment(intentId):
     await fetch_api("/api/handle-payment", {"intentId": intentId}, False)
     await add_cart_to_table()
 
+def verify_cart_run(pay):
+    aio.run(verify_cart(pay))
+
+async def verify_cart(pay):
+    verified = await fetch_api("/api/verify-cart")
+
+    if verified:
+        pay()
+    else:
+        alert("Some of your cart items have already been bought")
+        await add_cart_to_table()
+
+window.verify_cart = verify_cart_run
 window.handle_payment = handle_payment_run
 window.get_cookies = get_cookies
 aio.run(add_cart_to_table())

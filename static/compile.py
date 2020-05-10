@@ -20,6 +20,7 @@ for each_file in files:
 imports.append("checkout.js")
 imports.append("schedule.py")
 imports.append("cart.py")
+imports.append("sessions.py")
 imports.append("profile.py")
 imports.append("config.py")
 
