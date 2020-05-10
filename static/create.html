@@ -14,11 +14,9 @@
             integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="brython/brython_modules.js"></script>
   <script>
-    $( function() {
-        $("#datepicker").datepicker();
-    });
     $(document).ready(function(){
         $('#time-datepicker').timepicker({});
+        $("#datepicker").datepicker();
     });
   </script>
     <style>
@@ -34,11 +32,11 @@
     {{ navbar }}
 </header>
 <main>
-    <section>
+    <form action="javascript:void(0);">
         <p>Date: <input autocomplete="off" class="form-textbox" type="text" id="datepicker" name="datepicker"></p>
         <p>Time: <input autocomplete="off" class="form-textbox" type="text" id="time-datepicker" name="time-datepicker"></p>
         <button id="submit-button">Submit</button>
-    </section>
+    </form>
 </main>
 {{ footer }}
 </body>

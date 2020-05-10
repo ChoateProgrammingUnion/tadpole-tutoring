@@ -459,13 +459,13 @@ class Database:
 
             t['start_time'] = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
 
-            t['date_str'] = (t['start_time'] + string_time_offset).strftime("%b %d %Y")
+            t['date_str'] = (t['start_time'] - string_time_offset).strftime("%b %d %Y")
 
             res = self.remove_quoted_name(t)
 
             for key, value in res.items():
                 if string_time_offset is not None and type(value) == datetime:
-                    res[key] = (value.astimezone(pytz.utc) + string_time_offset).strftime("%I:%M %p")
+                    res[key] = (value.astimezone(pytz.utc) - string_time_offset).strftime("%I:%M %p")
 
             if insert_teacher_info:
                 if teacher := self.get_teacher(c_teacher_email):
@@ -481,24 +481,24 @@ class Database:
 
         return results
 
-    def get_time_schedule(self, timezone_offset: timedelta = None, num_days: int = 7, search_params: dict = None) -> OrderedDict[str, List[dict]]:
+    def get_time_schedule(self, timezone_offset: timedelta = None, num_days: int = 7, search_params: dict = None) -> List[Tuple[str, List[dict]]]:
         if timezone_offset is None:
             timezone_offset = timedelta(minutes=0)
 
         if search_params is None:
             search_params = {}
 
-        midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) + timezone_offset
+        midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) - timezone_offset
 
         if midnight > datetime.utcnow():
             midnight -= timedelta(hours=24)
 
-        schedule_dict = OrderedDict()
+        schedule_dict = []
 
         for day_num in range(num_days):
             today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24),
                                                string_time_offset=timezone_offset, insert_teacher_info=True, **search_params)
-            schedule_dict.update({midnight.strftime("%A"): today_schedule})
+            schedule_dict.append(((midnight + timezone_offset).strftime("%A"), today_schedule))
             midnight += timedelta(hours=24)
 
         return schedule_dict
@@ -513,7 +513,7 @@ class Database:
                     del time['email']
 
             if string_time_offset is not None:
-                time['start_time'] = datetime.fromtimestamp(time['start_time']).astimezone(pytz.utc) + string_time_offset
+                time['start_time'] = datetime.fromtimestamp(time['start_time']).astimezone(pytz.utc) - string_time_offset
                 time['date_str'] = time['start_time'].strftime("%b %d %Y")
                 time['start_time'] = time['start_time'].strftime("%I:%M %p")
 

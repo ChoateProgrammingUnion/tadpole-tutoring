@@ -1,7 +1,7 @@
 from browser import document, alert, aio, window
 import javascript
 
-URL = {URL}
+URL = "{URL}"
 
 SUBJECTS = ['English',
 'Elementary School Math',

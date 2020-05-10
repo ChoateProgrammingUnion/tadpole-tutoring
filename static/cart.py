@@ -1,6 +1,6 @@
 from browser import document, alert, aio, bind, window
 import javascript
-URL = {URL}
+URL = "{URL}"
 
 cart_entry_template = """
 <tr>
