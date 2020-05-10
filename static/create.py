@@ -1,7 +1,7 @@
 from browser import document, alert, aio, bind, window
 import javascript
-from config import URL
 
+URL = {URL}
 
 def calculate_timezone_offset():
     date = javascript.Date.new()

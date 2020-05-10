@@ -1,6 +1,7 @@
 from browser import document, alert, aio
 import javascript
-from config import URL
+
+URL = {URL}
 
 teacher_profile_form = """
 <section>
@@ -26,6 +27,9 @@ teacher_profile_form = """
 
     <input type="checkbox" id="focus-service" name="cs" value="cs">
     <label for="focus-service">Computer Science</label>
+
+    <input type="checkbox" id="focus-price" name="math" value="Math">
+    <label for="focus-price">Math</label>
 
     <label for="bio">Bio:</label>
 
