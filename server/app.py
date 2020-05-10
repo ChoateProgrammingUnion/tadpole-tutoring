@@ -1,6 +1,7 @@
 import os
 import secrets
 from datetime import datetime, timedelta
+import time
 
 import flask
 import pytz
@@ -167,6 +168,10 @@ def api_get_teacher():
 
     return api.serialize(teacher)
 
+@app.route('/api/check-teacher')
+def api_check_teacher():
+    return api.serialize(auth.check_teacher(request))
+
 @app.route('/api/search-times')
 def api_search_times():
     timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
@@ -246,6 +251,28 @@ def api_add_to_cart():
         db.end_db_connection()
 
         return api.serialize(list(cart))
+
+    log_info("Not logged in")
+    return flask.abort(500)
+
+@app.route('/api/create-time')
+def api_create_time():
+    if email := auth.check_login(request):
+        date_str = request.args.get('datepicker', "", str) + " " + request.args.get('time-datepicker', "", str)
+        timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
+
+        try:
+            d = pytz.utc.localize(datetime.strptime(date_str, '%m/%d/%Y %I:%M %p')) + timezone_offset
+        except ValueError:
+            log_info(date_str + " failed to serialize")
+            return flask.abort(400)
+
+        db = database.Database()
+        db.init_db_connection()
+        db.add_time_for_tutoring(email, d)
+        db.end_db_connection()
+
+        return ""
 
     log_info("Not logged in")
     return flask.abort(500)
