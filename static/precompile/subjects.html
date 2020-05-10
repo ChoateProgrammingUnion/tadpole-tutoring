@@ -539,6 +539,17 @@
     <!-- use the element -->
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
 
+
+    <style>
+        section aside h1 {
+            font-size: 200%;
+        }
+
+        section aside ul {
+            text-align: left;
+        }
+    </style>
+
     <head>
 <body>
 <header style="padding-top: 0; padding-bottom: 0;">
@@ -586,34 +597,67 @@
     </div>
     <br>
 </div>
-<section style="color: white;">
-    <aside onclick="location='/'" style="background-color: #0a721b; text-align: center;">
+<section>
+    <aside style="text-align: center;">
         <h1>
-            English
+            Humanities
         </h1>
+        <hr>
         <ul>
             <li>
-                sub subject
+                <a href="">English</a>
+            </li>
+            <li>
+                <a href="">AP Macroeconomics</a>
+            </li>
+            <li>
+                <a href="">AP Microeconomics</a>
             </li>
         </ul>
     </aside>
-    <aside onclick="location='/'" style="background-color: #0a721b; text-align: center;">
+    <aside style="text-align: center;">
         <h1>
             Math
         </h1>
+        <hr>
         <ul>
             <li>
-                sub subject
+                <a href="">Elementary School Math</a>
+            </li>
+            <li>
+                <a href="">Middle School Math</a>
+            </li>
+            <li>
+                <a href="">Geometry</a>
+            </li>
+            <li>
+                <a href="">Algebra II</a>
+            </li>
+            <li>
+                <a href="">Pre-Calculus</a>
+            </li>
+            <li>
+                <a href="">Calculus</a>
             </li>
         </ul>
     </aside>
-    <aside onclick="location='/'" style="background-color: #0a721b; text-align: center;">
+    <aside style="text-align: center;">
         <h1>
             Science
         </h1>
+        <hr>
         <ul>
             <li>
-                sub subject
+                <a href="">Introductory Computer Programming</a>
+            </li>
+<!--            <li>-->
+<!--                <a href="">Advanced Computer Science</a>-->
+<!--            </li>-->
+            <li>
+                <a href="">High School Chemistry</a>
+            </li>
+            <li>
+                <a href="">High School Physics</a>
             </li>
         </ul>
     </aside>
@@ -630,11 +674,3 @@
 
 
 </html>
-
-
-<aside onclick="location='/'" style="background-color: #0a721b; text-align: center;">
-    <h1 style="color: white;">
-        {subject}
-    </h1>
-    {sub_subjects}
-</aside>

@@ -1,2 +1,30 @@
-<nav id=navbar style=margin-bottom:0;overflow:hidden;background-color:#fff;width:100%><a href=/><img alt=Logo src=logo-sideways.svg height=70></a><div><ul><li><a href=schedule.html>Schedule</a><li><a href=pricing.html>Pricing</a><li><a href=about.html>About</a><li><a href=cart.html>View Cart</a><li><a href=sessions.html>Your Sessions</a><li id=login-state onclick="window.open('" https://api.tadpoletutoring.org"/login')"><a onclick="window.open('" https://api.tadpoletutoring.org"/login')"><i onclick="window.open('" https://api.tadpoletutoring.org"/login')">Login</i></a></ul></div></nav><script>function login(){if(document.cookie.includes('@')){if(document.getElementById("login-state").innerHTML!="<a href=profile.html><i>Profile</i></a>"){document.getElementById("login-state").innerHTML="<a href=profile.html><i>Profile</i></a>"}}else{if(document.getElementById("login-state").innerHTML!="<a onclick=\"window.open('"https:document.getElementById("login-state").innerHTML="<a onclick=\"window.open('"https:}}}
-login();window.setInterval(login,100);</script>
+        <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
+            <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
+            <div>
+            <ul>
+                <!--<li><a href="index.html">Home</a>-->
+                <li><a href="schedule.html">Schedule</a>
+                <li><a href="pricing.html">Pricing</a>
+                <!--<li><a href="schedule.html">Schedule</a>-->
+                <li><a href="about.html">About</a></li>
+                <li><a href="cart.html">View Cart</a></li>
+                <li><a href="sessions.html">Your Sessions</a></li>
+                <li id="login-state" onclick="window.open('"https://api.tadpoletutoring.org"/login')"><a onclick="window.open('"https://api.tadpoletutoring.org"/login')"><i onclick="window.open('"https://api.tadpoletutoring.org"/login')">Login</i></a></li>
+            </ul>
+            </div>
+        </nav>
+        <script>
+            function login() {
+                if (document.cookie.includes('@')) {
+                    if (document.getElementById("login-state").innerHTML != "<a href=profile.html><i>Profile</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a href=profile.html><i>Profile</i></a>"
+                    }
+                } else {
+                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('"https://api.tadpoletutoring.org"/login')\"><i>Login</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('"https://api.tadpoletutoring.org"/login')\"><i>Login</i></a>"
+                    }
+                }
+            }
+            login();
+            window.setInterval(login, 100);
+        </script>
