@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{ header }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js" integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="brython/brython_modules.js"></script>
+</head>
+<body onload="brython()">
+    <script type="text/python" src="schedule.py"></script>
+    <header style="padding-top: 0; padding-bottom: 0;">
+    {{ navbar }}
+    </header>
+    <main>
+        <div style="margin-left:80%" id="clicky-slider">
+            <div style="display: inline-block">
+            <span style="white-space: nowrap;">By Time</span>
+            <label id="switch-tutor" class="switch">
+                <input type="checkbox">
+                <span class="slider round"></span> 
+            </label> 
+            <span style="white-space: nowrap;">By Tutor</span>
+            <span id="switch-tutor-value" style="visibility:hidden"></span>
+            </div>
+        </div>
+        <div style="margin-right:80%">
+            <div style="display: inline-block" id="back-button-div">
+            </div>
+        </div>
+        <div id="results">
+        </div>
+    </main>
+{{ footer }}
+</body>
+
+</html>
