@@ -27,6 +27,9 @@ teacher_profile_form = """
     <input type="checkbox" id="focus-service" name="cs" value="cs">
     <label for="focus-service">Computer Science</label>
 
+    <input type="checkbox" id="focus-price" name="math" value="Math">
+    <label for="focus-price">Math</label>
+
     <label for="bio">Bio:</label>
 
     <textarea cols="40" rows="5" id="bio"></textarea>
