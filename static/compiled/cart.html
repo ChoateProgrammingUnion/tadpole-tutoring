@@ -10,6 +10,7 @@
 
     <script async src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
     <title>Tadpole Tutoring</title>
+    <link rel="stylesheet" type="text/css" href="css/inter/inter.css">
     <style>
     body {
         padding-top: 0;
@@ -26,7 +27,7 @@
         --color-shadow: #f4f4f4;
         --color-text: #000;
         --color-text-secondary: #999;
-        --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+        --font-family: Inter, sans-serif;
         --hover-brightness: 1.2;
         --justify-important: center;
         --justify-normal: left;
@@ -541,6 +542,46 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js"
             integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="brython/brython_modules.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="/checkout.js"></script>
+    <script>
+        function setupPayment() {
+            tempData = {};
+            Object.assign(tempData, orderData);
+
+            cookie_list = document.cookie.split('; ');
+
+            for (var i = 0; i < cookie_list.length; i++) {
+                cookie_tuple = cookie_list[i].split('=');
+                tempData[cookie_tuple[0]] = cookie_tuple[1].replace('"', '').replace('"', '')
+            }
+
+            fetch(url + "/api/create-payment-intent", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(tempData)
+            })
+                .then(function (result) {
+                    return result.json();
+                })
+                .then(function (data) {
+                    return setupElements(data);
+                })
+                .then(function ({stripe, card, clientSecret, intentId}) {
+                    document.querySelector("button").disabled = false;
+
+                    // Handle form submission.
+                    var form = document.getElementById("payment-form");
+                    form.addEventListener("submit", function (event) {
+                        event.preventDefault();
+                        // Initiate payment when the submit button is clicked
+                        pay(stripe, card, clientSecret, intentId);
+                    });
+                });
+        }
+    </script>
 </head>
 <body onload="brython()">
 <script type="text/python" src="cart.py"></script>
@@ -555,6 +596,7 @@
                 <li><a href="pricing.html">Pricing</a>
                 <!--<li><a href="schedule.html">Schedule</a>-->
                 <li><a href="about.html">About</a></li>
+                <li><a href="cart.html">View Cart</a></li>
                 <li id="login-state"><a onclick="window.open('http://localhost:5000/login')"><i>Login</i></a></li>
             </ul>
             </div>
@@ -562,8 +604,8 @@
         <script>
             function login() {
                 if (document.cookie) {
-                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('http://localhost:5000/logout')\"><i>Logout</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('http://localhost:5000/logout')\"><i>Logout</i></a>"
+                    if (document.getElementById("login-state").innerHTML != "<a href=profile.html><i>Profile</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a href=profile.html><i>Profile</i></a>"
                     }
                 } else {
                     if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('http://localhost:5000/login')\"><i>Login</i></a>") {
@@ -579,12 +621,15 @@
 <div style="text-align: center;">
     <p><u>Cart</u></p>
     <table id="cart-table">
-        <tr>
-            <th>Session ID</th>
-            <th>Teacher</th>
-            <th>Time</th>
-        </tr>
+        <tr><th>Loading Cart...</th></tr>
     </table>
+    <br><br>
+    <p><u id='checkout-label'></u></p>
+    <table id="checkout-table">
+    </table>
+    <br><br>
+    <section id="payment-area">
+    </section>
 </div>
 </body>
 </html>

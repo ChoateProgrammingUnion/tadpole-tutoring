@@ -10,6 +10,7 @@
 
     <script async src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
     <title>Tadpole Tutoring</title>
+    <link rel="stylesheet" type="text/css" href="css/inter/inter.css">
     <style>
     body {
         padding-top: 0;
@@ -26,7 +27,7 @@
         --color-shadow: #f4f4f4;
         --color-text: #000;
         --color-text-secondary: #999;
-        --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+        --font-family: Inter, sans-serif;
         --hover-brightness: 1.2;
         --justify-important: center;
         --justify-normal: left;
@@ -538,8 +539,11 @@
     <!-- use the element -->
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
 
-    <head>
-<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js" integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="brython/brython_modules.js"></script>
+</head>
+<body onload="brython()">
+    <script type="text/python" src="profile.py"></script>
     <header style="padding-top: 0; padding-bottom: 0;">
             <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">
             <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>
@@ -550,6 +554,7 @@
                 <li><a href="pricing.html">Pricing</a>
                 <!--<li><a href="schedule.html">Schedule</a>-->
                 <li><a href="about.html">About</a></li>
+                <li><a href="cart.html">View Cart</a></li>
                 <li id="login-state"><a onclick="window.open('http://localhost:5000/login')"><i>Login</i></a></li>
             </ul>
             </div>
@@ -557,8 +562,8 @@
         <script>
             function login() {
                 if (document.cookie) {
-                    if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('http://localhost:5000/logout')\"><i>Logout</i></a>") {
-                        document.getElementById("login-state").innerHTML = "<a onclick=\"window.open('http://localhost:5000/logout')\"><i>Logout</i></a>"
+                    if (document.getElementById("login-state").innerHTML != "<a href=profile.html><i>Profile</i></a>") {
+                        document.getElementById("login-state").innerHTML = "<a href=profile.html><i>Profile</i></a>"
                     }
                 } else {
                     if (document.getElementById("login-state").innerHTML != "<a onclick=\"window.open('http://localhost:5000/login')\"><i>Login</i></a>") {
@@ -576,35 +581,12 @@
         <!--<p><small>*If you have trouble affording tutoring, email us at support@tadpoletutoring.org for help.</small></p>-->
     </header>
     <main>
-        <hr>
-        <header><h2>Discounts</h2></header>
         <section>
-            <form>
-                <header>
-                    <img alt="Tadpole Tutoring" src="logo.svg" height="80">
-                </header>
-                <label for="company">A company you like:</label>
-                <input type="text" id="company" name="company" size="28" placeholder="Company name">
-                <label for="hobby">A hobby you like:</label>
-                <textarea cols="28" rows="2" id="hobby"></textarea>
-                <label for="model">Business Model:</label>
-                <select id="model">
-                    <option value="bootstrapped">bootstrapped</option>
-                    <option value="VC-backed">funded</option>
-                </select>
-                <label>Team Size:</label>
-                <input type="radio" id="founders-solo" name="founders" value="a solo founder" checked=""> <label for="founders-solo">Solo</label>
-                <input type="radio" id="founders-co" name="founders" value="two co-founders"> <label for="founders-co">Co-founders</label>
-                <label>Focus:</label>
-                <input type="checkbox" id="focus-price" name="focus[]" value="price" checked=""> <label for="focus-price">Price</label>
-                <input type="checkbox" id="focus-service" name="focus[]" value="service"> <label for="focus-service">Service</label>
-                <input type="checkbox" id="focus-features" name="focus[]" value="features"> <label for="focus-features">Features</label>
-                <br>
-                <button type="submit" onclick="newIdea(); return false;">Submit</button>
-                <div id="results" style="max-width: 100%;">
-
-                </div>
-            </form>
+        <a href="http://localhost:5000/logout"><i>Logout</i></a>
+        </section>
+        <hr>
+        <!--<header><h2>Account Info</h2></header>-->
+        <section id="user-settings">
         </section>
 <footer>
     <hr>

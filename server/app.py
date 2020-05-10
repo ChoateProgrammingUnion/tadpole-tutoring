@@ -36,7 +36,7 @@ app.config.update(
 app.config["GOOGLE_OAUTH_CLIENT_ID"] = GOOGLE_CLIENT_ID
 app.config["GOOGLE_OAUTH_CLIENT_SECRET"] = GOOGLE_CLIENT_SECRET
 app.config["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "true"
-app.config['SERVER_NAME'] = SERVER_NAME
+# app.config['SERVER_NAME'] = SERVER_NAME
 app.config['PREFERRED_URL_SCHEME'] = "https"
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "true"
 
@@ -64,8 +64,8 @@ def login():
     if not auth.check_login(request):
         return redirect(cognito.get_login_url())
     else:
-        url = request.headers.get("Referer")
-        return redirect(url)
+        # url = request.headers.get("Referer")
+        return render_template("index.html")
 
 @app.route('/check', methods = ['POST'])
 def check_login():
@@ -116,7 +116,7 @@ def callback():
 
 @app.route('/logout')
 def logout():
-    auth.deauth_token(request)
+    # auth.deauth_token(request)
     session.clear()
     response = make_response(render_template("index.html"))
     response.set_cookie("email", expires=0)
@@ -140,21 +140,38 @@ def api_get_person():
 
     # return flask.abort(500)
 
-@app.route('/api/teachers', methods=['POST'])
+@app.route('/api/teachers')
 def api_fetch_teachers():
     teachers = list(api.fetch_teachers())
     return api.serialize(teachers)
 
-@app.route('/api/search-times', methods=['POST'])
-def api_search_times():
-    timezone_offset = timedelta(minutes=request.form.get("tz_offset", 0, int))
+@app.route('/api/get-teacher')
+def api_get_teacher():
+    teacher_id = request.args.get("teacher_id", None, int)
 
-    teacher_email = request.form.get("teacher_email", None, str)
-    subject = request.form.get("subject", None, str)
-    must_be_unclaimed = request.form.get("must_be_unclaimed", True, bool)
+    if teacher_id is None:
+        return flask.abort(400)
+
+    db = database.Database()
+
+    db.init_db_connection()
+    teacher = db.get_teacher_by_id(teacher_id)
+    db.end_db_connection()
+
+    return api.serialize(teacher)
+
+@app.route('/api/search-times')
+def api_search_times():
+    timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
+
+    teacher_email = request.args.get("teacher_email", None, str)
+    teacher_id = request.args.get("teacher_id", None, int)
+    subject = request.args.get("subject", None, str)
+    must_be_unclaimed = request.args.get("must_be_unclaimed", True, bool)
 
     search_params = {
         "teacher_email": teacher_email,
+        "teacher_id": teacher_id,
         "subject": subject,
         "must_be_unclaimed": must_be_unclaimed
     }
@@ -163,6 +180,23 @@ def api_search_times():
 
     db.init_db_connection()
     times = db.get_time_schedule(timezone_offset, search_params=search_params)
+    db.end_db_connection()
+
+    return api.serialize(times)
+
+@app.route('/api/get-time')
+def api_get_time():
+    timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
+
+    time_id = request.args.get("time_id", None, int)
+
+    if time_id is None:
+        return flask.abort(400)
+
+    db = database.Database()
+
+    db.init_db_connection()
+    times = db.get_time_by_id(time_id, timezone_offset, True)
     db.end_db_connection()
 
     return api.serialize(times)
@@ -177,7 +211,7 @@ def api_update_time():
 @app.route('/api/add-to-cart')
 def api_add_to_cart():
     if email := auth.check_login(request):
-        time_id = request.form.get('id', None, int)
+        time_id = request.args.get('time_id', None, int)
 
         if time_id is None:
             return flask.abort(400)
@@ -194,8 +228,51 @@ def api_add_to_cart():
     log_info("Not logged in")
     return flask.abort(500)
 
-@app.route('/api/get-cart', methods=['POST'])
+@app.route('/api/remove-from-cart')
+def api_remove_from_cart():
+    if email := auth.check_login(request):
+        time_id = request.args.get('time_id', None, int)
+
+        if time_id is None:
+            return flask.abort(400)
+
+        db = database.Database()
+
+        db.init_db_connection()
+        cart, _ = db.get_cart(email)
+        try:
+            cart.remove(time_id)
+        except KeyError:
+            log_info("Key " + str(time_id) + " not in " + str(cart))
+        db.set_cart(email, cart)
+        db.end_db_connection()
+
+        return api.serialize(list(cart))
+
+    log_info("Not logged in")
+    return flask.abort(500)
+
+@app.route('/api/get-cart')
 def api_get_cart():
+    if email := auth.check_login(request):
+        db = database.Database()
+
+        db.init_db_connection()
+        cart, _ = db.get_cart(email)
+
+        cart_list = []
+
+        for i in cart:
+            cart_list.append(db.get_time_by_id(i, timedelta(minutes=request.args.get("tz_offset", 0, int)), True))
+        db.end_db_connection()
+
+        return api.serialize(list(cart_list))
+
+    log_info("Not logged in")
+    return flask.abort(500)
+
+@app.route('/api/get-cart-numbers')
+def api_get_cart_numbers():
     if email := auth.check_login(request):
         db = database.Database()
 
@@ -233,9 +310,9 @@ def create_payment():
         cart, intent = db.get_cart(email)
         db.end_db_connection()
 
-        if intent != "":
-            log_info("Intent " + intent + " already created. Aborting.")
-            return flask.abort(500)
+        # if intent != "":
+        #     log_info("Intent " + intent + " already created. Aborting.")
+        #     return flask.abort(500)
 
         num_sessions = len(cart)
 
@@ -270,20 +347,20 @@ def create_payment():
     return ""
 
 
-@app.route('/api/handle-payment', methods=['POST'])
+@app.route('/api/handle-payment')
 def handle_payment():
     if email := auth.check_login(request):
-        intent_id = request.form.get("intentId")
+        intent_id = request.args.get("intentId")
 
         if not intent_id:
-            log_info("No intentId passed " + str(request.args) + " " + str(request.form))
+            log_info("No intentId passed " + str(request.form))
             return ""
 
         intent = stripe.PaymentIntent.retrieve(intent_id)
 
-        if intent['amount_received'] >= intent['amount']:
-            log_info("Amount Paid: " + str(intent['amount_received']) + " cents")
+        log_info("Amount Paid: " + str(intent['amount_received']) + " cents")
 
+        if intent['amount_received'] >= intent['amount']:
             db = database.Database()
 
             db.init_db_connection()

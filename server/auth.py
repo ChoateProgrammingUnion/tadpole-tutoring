@@ -6,10 +6,14 @@ def check_login(request) -> str:
     """
     Returns email if logged in, if not return False.
     """
-    return "student1@email.com"
 
-    token = request.cookies.get('token')
-    email = request.cookies.get('email')
+    d = request.args.copy()
+    d.update(request.form)
+    if (request.is_json):
+        d.update(request.json)
+
+    token = d.get('token')
+    email = d.get('email')
 
     authentication = database.Database()
     authentication.init_db_connection()

@@ -11,30 +11,7 @@ let url = "http://localhost:5000";
 // Disable the button until we have Stripe set up on the page
 // document.querySelector("button").disabled = true;
 
-fetch(url + "/api/create-payment-intent", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify(orderData)
-})
-    .then(function(result) {
-        return result.json();
-    })
-    .then(function(data) {
-        return setupElements(data);
-    })
-    .then(function({ stripe, card, clientSecret, intentId }) {
-        document.querySelector("button").disabled = false;
-
-        // Handle form submission.
-        var form = document.getElementById("payment-form");
-        form.addEventListener("submit", function(event) {
-            event.preventDefault();
-            // Initiate payment when the submit button is clicked
-            pay(stripe, card, clientSecret, intentId);
-        });
-    });
+// setupPayment();
 
 // Set up Stripe.js and Elements to use in checkout form
 var setupElements = function(data) {
@@ -86,7 +63,8 @@ var pay = function(stripe, card, clientSecret, intentId) {
                 showError(result.error.message);
             } else {
                 // The payment has been processed!
-                orderComplete(clientSecret, intentId);
+                // orderComplete(clientSecret, intentId);
+                handle_payment(intentId)
             }
         });
 };
@@ -97,7 +75,7 @@ var pay = function(stripe, card, clientSecret, intentId) {
 var orderComplete = function(clientSecret, intentId) {
     $.post(url + '/api/handle-payment', {
         intentId: intentId
-    })
+    });
 };
 
 var showError = function(errorMsgText) {
