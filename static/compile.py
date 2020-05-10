@@ -1,6 +1,5 @@
 from jinja2 import Template, Markup
 import glob
-
 from config import URL
 
 files = glob.glob("*.html")

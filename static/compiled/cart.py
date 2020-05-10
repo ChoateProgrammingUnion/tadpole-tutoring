@@ -1,6 +1,6 @@
 from browser import document, alert, aio, bind, window
 import javascript
-from config import URL
+URL = https://api.tadpoletutoring.org
 
 cart_entry_template = """
 <tr>

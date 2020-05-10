@@ -1,6 +1,7 @@
 from browser import document, alert, aio, bind, window
 import javascript
-from config import URL
+
+URL = https://api.tadpoletutoring.org
 
 default_session_table_header = """
 <tr>
