@@ -4,11 +4,6 @@ import javascript
 URL = {URL}
 
 subject_card_template = """
-<aside onclick="location='/'" style="background-color: #0a721b; text-align: center;">
-    <h1 style="color: white;">
-        {subject}
-    </h1>
-</aside>
 """
 
 tutor_template = """<header>
