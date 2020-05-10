@@ -3,6 +3,19 @@ import javascript
 
 URL = "https://api.tadpoletutoring.org"
 
+SUBJECTS = ['English',
+            'Elementary School Math',
+            'Middle School Math',
+            'Geometry',
+            'Algebra II',
+            'Pre-Calc',
+            'BC Calc',
+            'Introductory Computer Programming',
+            'AP Macroeconomics',
+            'AP Microeconomics',
+            'High School Chemistry',
+            'High School Physics']
+
 subject_card_template = """
 """
 
@@ -33,7 +46,7 @@ time_template_for_tutor = """<header>
 </section>
 """
 
-timeslots_template = """<td><a href="#" onclick="return false;"><i class="timeslot" id="{id}">{first_name} {last_name}<br>{start_time}</i></a></td>"""
+timeslots_template = """<td><a href="#" onclick="return false;"><i class="timeslot" id="{id}">{start_time}</i></a></td>"""
 
 back_button_template = """<a href="#" onclick="return false;"><i id="back-button">Schedule Another Appointment</i></a>"""
 
@@ -48,16 +61,6 @@ timeslot_display_template = """
         <a href="#" onclick="return false;"><i class="add-to-cart" id="{id}">Add To Cart</i></a>
     </i>
 </td></tr>"""
-
-timeslots_days_template = """<tr>
-<th><a>Sunday</a></th>
-<th><a>Monday</a></th>
-<th><a>Tuesday</a></th>
-<th><a>Wednesday</a></th>
-<th><a>Thursday</a></th>
-<th><a>Friday</a></th>
-<th><a>Saturday</a></th>
-</tr>"""
 
 indiv_tutor_template = """<header>
     <h2>{first_name} {last_name}</h2>
@@ -83,6 +86,8 @@ teacher_bio_template = """<aside>
     <a><strong class="tutor-link" id="{id}">Schedule Now</strong></a>
 </aside>
 """
+
+slider_html = document['clicky-slider'].html
 
 def deserialize(obj_str):
     return javascript.JSON.parse(obj_str)
@@ -129,7 +134,7 @@ def add_to_cart(vars):
     document[str(display_id)].html = "Added to Cart!"
 
 async def fetch_and_display_timeslot(id):
-    time_info = await fetch_api("/api/get-time", {"time_id": id})
+    time_info = await fetch_api("/api/get-time", {"time_id": id, "tz_offset": calculate_timezone_offset()})
     time_info['subjects'] = time_info['subjects'].replace("|", ", ")
     document['schedule-results'].html = timeslot_display_template.format(**time_info)
     document['back-button-div'].html = back_button_template
@@ -153,6 +158,11 @@ async def search_by_time(id=None):
     searches by time
     """
 
+    subject = document['chosen-subject'].html
+
+    if subject == "" or subject == "All Subjects":
+        subject = None
+
     if id is None:
         params = {"tz_offset": calculate_timezone_offset()}
         document['results'].html = time_template
@@ -160,6 +170,9 @@ async def search_by_time(id=None):
         params = {"tz_offset": calculate_timezone_offset(), "teacher_id": id}
         teacher = await fetch_api("/api/get-teacher", {'teacher_id': id})
         document['results'].html = time_template_for_tutor.format(**teacher)
+
+    if subject is not None:
+        params.update({"subject": subject})
 
     times = await fetch_api("/api/search-times", params=params)
     timeslots = generate_calendar_html(times)
@@ -177,18 +190,35 @@ def generate_calendar_html(times):
     """
     print("Times api", times, calculate_timezone_offset())
 
-    timeslots = ""
-    timeslots += timeslots_days_template
-    ids_list = []
-    for each_day in times.values():
+    # timeslots = ""
+    # timeslots += timeslots_days_template
+    # for each_day in times.values():
+    #     timeslots += "<tr>"
+    #     for each_session in each_day:
+    #         print("Each session", each_session)
+    #         timeslots += timeslots_template.format(**each_session)
+    #     timeslots += "</tr>"
+
+    timeslots = "<tr>"
+
+    for day_name, time_list in times:
+        timeslots += "<th><a>{day}</a></th>".format(day=day_name)
+
+    timeslots += "</tr>"
+
+    max_len = max([len(j) for i, j in times])
+    for time_num in range(max_len):
         timeslots += "<tr>"
-        for each_session in each_day:
-            ids_list.append(each_session.get('id'))
-            print("Each session", each_session)
-            timeslots += timeslots_template.format(**each_session)
+        for day_num in range(len(times)):
+            print(times[day_num])
+
+            if len(times[day_num][1]) > time_num:
+                timeslots += timeslots_template.format(**times[day_num][1][time_num])
+            else:
+                timeslots += "<td></td>"
+
         timeslots += "</tr>"
 
-    print(ids_list)
     return timeslots
 
 def display_tutor_times(vars):
@@ -276,5 +306,24 @@ def calculate_timezone_offset():
     date = javascript.Date.new()
     return int(date.getTimezoneOffset())
 
-document["switch-tutor"].bind("mousedown", toggle_bind)
-aio.run(search_by_time())
+def pick_subject(vars):
+    document['chosen-subject'].html = vars.target.id
+
+    document['clicky-slider'].html = slider_html
+    document["switch-tutor"].bind("mousedown", toggle_bind)
+
+    aio.run(search_by_time())
+
+def subject_chooser():
+    document['clicky-slider'].html = ""
+
+    document['results'].html = """<a href="#" onclick="return false;"><i class="subject-button" id="All Subjects">All Subjects</i></a>&nbsp&nbsp"""
+
+    for s in SUBJECTS:
+        document['results'].html += """<a href="#" onclick="return false;"><i class="subject-button" id="{subject}">{subject}</i></a>&nbsp&nbsp""".format(subject=s)
+
+    for d in document.select(".subject-button"):
+        d.bind("click", pick_subject)
+
+# document["switch-tutor"].bind("mousedown", toggle_bind)
+aio.run(subject_chooser())
