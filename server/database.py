@@ -307,7 +307,7 @@ class Database:
         """
         print_function_call(header=teacher_email)
 
-        start_time_unix = str(start_time.timestamp())
+        start_time_unix = str(int(start_time.timestamp()))
 
         log_info("Timestamp: " + str(start_time_unix), header=teacher_email)
 
