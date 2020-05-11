@@ -305,7 +305,11 @@ class Database:
         Returns:
             False if there was already a session in that time or the insert failed, otherwise True
         """
+        print_function_call(header=teacher_email)
+
         start_time_unix = start_time.timestamp()
+
+        log_info("Timestamp: " + str(start_time_unix), header=teacher_email)
 
         data = {'teacher_email': teacher_email,
                 'start_time': start_time_unix,
