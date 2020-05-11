@@ -299,11 +299,16 @@ def api_create_time():
         date_str = request.args.get('datepicker', "", str) + " " + request.args.get('time-datepicker', "", str)
         timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
 
+        log_info("Date String: " + date_str)
+        log_info("Timezone Offset: " + str(timezone_offset))
+
         try:
             d = pytz.utc.localize(datetime.strptime(date_str, '%m/%d/%Y %I:%M %p')) + timezone_offset
         except ValueError:
             log_info(date_str + " failed to serialize")
             return flask.abort(400)
+
+        log_info("Serialized Date (UTC): " + str(d))
 
         db = database.Database()
         db.init_db_connection()

@@ -696,6 +696,8 @@ class Database:
         Finds token by email. If the token does not exist, return False.
         """
         entry = self._db['auth'].find_one(email=str(email))
+        if entry is None:
+            return False
         token = entry.get('token')
         if token and self.possible_token(token):
             return token
