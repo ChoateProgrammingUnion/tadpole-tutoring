@@ -317,6 +317,8 @@ class Database:
                 'claimed': False,
                 'student': ''}
 
+        log_info("Inserting " + str(data), header=teacher_email)
+
         return self._transactional_insert("times", data)
 
     def claim_time(self, student_email: str, time_id: int) -> bool:
@@ -466,6 +468,8 @@ class Database:
                 continue
 
             if string_time_offset is not None:
+                log_info("Converting " + str(t))
+
                 time_obj = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
                 t['start_time'] = (time_obj - string_time_offset).strftime("%I:%M %p")
 
