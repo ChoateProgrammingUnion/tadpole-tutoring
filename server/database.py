@@ -376,6 +376,14 @@ class Database:
 
         return self._transactional_upsert("times", updated_time, ['id'])
 
+    def remove_time(self, id: int, email: str) -> bool:
+        t = self.get_time_by_id(id)
+
+        if t['teacher_email'] == email:
+            return self._db['times'].delete(id=id)
+
+        return False
+
     def unclaim_time(self, student_email: str, time_id: int) -> bool:
         """
         Unclaim a time in the database. Intended to be used by a student once they have logged in. It is assumed that they
