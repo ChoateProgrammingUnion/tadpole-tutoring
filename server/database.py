@@ -307,7 +307,7 @@ class Database:
         """
         print_function_call(header=teacher_email)
 
-        start_time_unix = int(start_time.timestamp())
+        start_time_unix = str(start_time.timestamp())
 
         log_info("Timestamp: " + str(start_time_unix), header=teacher_email)
 
@@ -366,7 +366,7 @@ class Database:
         updated_time = {"id": id}
 
         if start_time is not None:
-            updated_time.update({"start_time": start_time})
+            updated_time.update({"start_time": str(start_time)})
         if duration_type is not None:
             updated_time.update({"duration_type": duration_type})
         if claimed is not None:
@@ -439,7 +439,7 @@ class Database:
 
         for t in possible_times:
             try:
-                c_start = t['start_time']
+                c_start = int(t['start_time'])
                 c_claimed = t['claimed']
                 c_teacher_email = t['teacher_email']
                 c_student_email = t['student']
