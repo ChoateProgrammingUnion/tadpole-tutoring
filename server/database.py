@@ -419,7 +419,7 @@ class Database:
 
     def search_times(self, teacher_email: str = None, teacher_id: int = None, student_email: str = None,
                      subject: str = None, min_start_time: datetime = None, max_start_time: datetime = None,
-                     must_be_unclaimed: bool = False, insert_teacher_info=False,
+                     must_be_unclaimed: bool = False, insert_teacher_info=False, insert_bio: bool=True,
                      string_time_offset: timedelta = None) -> List[dict]:
         """
         Searches the database for tutoring sessions satisfying the search parameters
@@ -495,6 +495,8 @@ class Database:
                         continue
 
                     t_id = res['id']
+                    if not insert_bio:
+                        del teacher['bio']
                     res.update(teacher)
                     res['id'] = t_id
                     del res['email']
@@ -519,7 +521,7 @@ class Database:
 
         for day_num in range(num_days):
             today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24),
-                                               string_time_offset=timezone_offset, insert_teacher_info=True, **search_params)
+                                               string_time_offset=timezone_offset, insert_teacher_info=True, insert_bio=False, **search_params)
             schedule_dict.append(((midnight - timezone_offset).strftime("%A"), today_schedule))
             midnight += timedelta(hours=24)
 
