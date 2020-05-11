@@ -465,17 +465,17 @@ class Database:
             if student_email and student_email != c_student_email:
                 continue
 
-            t['start_time'] = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
+            if string_time_offset is not None:
+                time_obj = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
+                t['start_time'] = (time_obj - string_time_offset).strftime("%I:%M %p")
 
-            t['time_num'] = c_start
+                t['time_num'] = c_start
 
-            t['date_str'] = (t['start_time'] - string_time_offset).strftime("%b %d %Y")
+                t['date_str'] = (time_obj - string_time_offset).strftime("%b %d %Y")
+
+                log_info("Converted timestamp " + str(c_start) + " into " + str(time_obj) + " (" + t['start_time'] + t['date_str'] + ")")
 
             res = self.remove_quoted_name(t)
-
-            for key, value in res.items():
-                if string_time_offset is not None and type(value) == datetime:
-                    res[key] = (value.astimezone(pytz.utc) - string_time_offset).strftime("%I:%M %p")
 
             if insert_teacher_info:
                 if teacher := self.get_teacher(c_teacher_email):
