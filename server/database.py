@@ -527,7 +527,7 @@ class Database:
                     del time['email']
 
             if string_time_offset is not None:
-                time['start_time'] = datetime.fromtimestamp(time['start_time']).astimezone(pytz.utc) - string_time_offset
+                time['start_time'] = datetime.fromtimestamp(int(time['start_time'])).astimezone(pytz.utc) - string_time_offset
                 time['date_str'] = time['start_time'].strftime("%b %d %Y")
                 time['start_time'] = time['start_time'].strftime("%I:%M %p")
 
