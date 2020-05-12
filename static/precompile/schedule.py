@@ -3,6 +3,19 @@ import javascript
 
 URL = "https://api.tadpoletutoring.org"
 
+SUBJECTS = ['English',
+            'Elementary School Math',
+            'Middle School Math',
+            'Geometry',
+            'Algebra II',
+            'Pre-Calc',
+            'BC Calc',
+            'Introductory Computer Programming',
+            'AP Macroeconomics',
+            'AP Microeconomics',
+            'High School Chemistry',
+            'High School Physics']
+
 subject_card_template = """
 """
 

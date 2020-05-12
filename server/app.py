@@ -75,33 +75,33 @@ def check_login():
     else:
         return ""
 
-@app.route('/populate-index')
-def populate_index():
-    db = database.Database()
-
-    db.init_db_connection()
-
-    midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-
-    db.add_student('student1@email.com', "student1", "studentOne")
-    db.add_student('student2@email.com', "student2", "studentTwo")
-    db.add_student('student3@email.com', "student3", "studentThree")
-    db.add_student('student4butactuallyteacher@email.com', "student4", "studentFour")
-    db.make_teacher('student4butactuallyteacher@email.com', [], "", 0)
-    db.add_teacher("teacher1@email.com", "teacher1", "teacherOne", ["English"], "", 0)
-    db.add_teacher("teacher2@email.com", "teacher2", "teacherTwo", ["English", "Math"], "", 0)
-    db.add_teacher("teacher3@email.com", "teacher3", "teacherThree", ["Math"], "", 0)
-    db.add_time_for_tutoring("teacher1@email.com", midnight)
-    db.add_time_for_tutoring("teacher2@email.com", midnight + timedelta(days=1))
-    db.add_time_for_tutoring("teacher1@email.com", midnight + timedelta(days=2))
-    db.add_time_for_tutoring("teacher2@email.com", midnight + timedelta(days=3))
-
-    db.append_cart('student1@email.com', 1)
-    db.append_cart('student1@email.com', 2)
-
-    db.end_db_connection()
-
-    return "done"
+# @app.route('/populate-index')
+# def populate_index():
+#     db = database.Database()
+#
+#     db.init_db_connection()
+#
+#     midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+#
+#     db.add_student('student1@email.com', "student1", "studentOne")
+#     db.add_student('student2@email.com', "student2", "studentTwo")
+#     db.add_student('student3@email.com', "student3", "studentThree")
+#     db.add_student('student4butactuallyteacher@email.com', "student4", "studentFour")
+#     db.make_teacher('student4butactuallyteacher@email.com', [], "", 0)
+#     db.add_teacher("teacher1@email.com", "teacher1", "teacherOne", ["English"], "", 0)
+#     db.add_teacher("teacher2@email.com", "teacher2", "teacherTwo", ["English", "Math"], "", 0)
+#     db.add_teacher("teacher3@email.com", "teacher3", "teacherThree", ["Math"], "", 0)
+#     db.add_time_for_tutoring("teacher1@email.com", midnight)
+#     db.add_time_for_tutoring("teacher2@email.com", midnight + timedelta(days=1))
+#     db.add_time_for_tutoring("teacher1@email.com", midnight + timedelta(days=2))
+#     db.add_time_for_tutoring("teacher2@email.com", midnight + timedelta(days=3))
+#
+#     db.append_cart('student1@email.com', 1)
+#     db.append_cart('student1@email.com', 2)
+#
+#     db.end_db_connection()
+#
+#     return "done"
 
 @app.route('/callback')
 def callback():
@@ -256,13 +256,18 @@ def api_get_user_times():
     if email := auth.check_login(request):
         timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
 
+        is_teacher = auth.check_teacher(request)
+
         db = database.Database()
 
         db.init_db_connection()
-        times = db.search_times(student_email=email, string_time_offset=timezone_offset, insert_teacher_info=True)
+        if is_teacher:
+            times = db.search_times(teacher_email=email, string_time_offset=timezone_offset, insert_teacher_info=True)
+        else:
+            times = db.search_times(student_email=email, string_time_offset=timezone_offset, insert_teacher_info=True)
         db.end_db_connection()
 
-        return api.serialize(times)
+        return api.serialize([times, is_teacher])
 
     return flask.abort(405)
 
@@ -299,11 +304,16 @@ def api_create_time():
         date_str = request.args.get('datepicker', "", str) + " " + request.args.get('time-datepicker', "", str)
         timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
 
+        log_info("Date String: " + date_str)
+        log_info("Timezone Offset: " + str(timezone_offset))
+
         try:
             d = pytz.utc.localize(datetime.strptime(date_str, '%m/%d/%Y %I:%M %p')) + timezone_offset
         except ValueError:
             log_info(date_str + " failed to serialize")
             return flask.abort(400)
+
+        log_info("Serialized Date (UTC): " + str(d))
 
         db = database.Database()
         db.init_db_connection()
@@ -349,6 +359,25 @@ def api_remove_from_cart():
         db.end_db_connection()
 
         return api.serialize(list(cart))
+
+    log_info("Not logged in")
+    return flask.abort(500)
+
+@app.route('/api/remove-session')
+def api_remove_remove_session():
+    if email := auth.check_login(request):
+        time_id = request.args.get('time_id', None, int)
+
+        if time_id is None:
+            return flask.abort(400)
+
+        db = database.Database()
+
+        db.init_db_connection()
+        status = db.remove_time(time_id, email)
+        db.end_db_connection()
+
+        return status
 
     log_info("Not logged in")
     return flask.abort(500)

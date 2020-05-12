@@ -305,13 +305,19 @@ class Database:
         Returns:
             False if there was already a session in that time or the insert failed, otherwise True
         """
-        start_time_unix = start_time.timestamp()
+        print_function_call(header=teacher_email)
+
+        start_time_unix = str(int(start_time.timestamp()))
+
+        log_info("Timestamp: " + str(start_time_unix), header=teacher_email)
 
         data = {'teacher_email': teacher_email,
                 'start_time': start_time_unix,
                 'duration_type': duration_type,
                 'claimed': False,
                 'student': ''}
+
+        log_info("Inserting " + str(data), header=teacher_email)
 
         return self._transactional_insert("times", data)
 
@@ -360,7 +366,7 @@ class Database:
         updated_time = {"id": id}
 
         if start_time is not None:
-            updated_time.update({"start_time": start_time})
+            updated_time.update({"start_time": str(start_time)})
         if duration_type is not None:
             updated_time.update({"duration_type": duration_type})
         if claimed is not None:
@@ -369,6 +375,14 @@ class Database:
             updated_time.update({"student": student})
 
         return self._transactional_upsert("times", updated_time, ['id'])
+
+    def remove_time(self, id: int, email: str) -> bool:
+        t = self.get_time_by_id(id)
+
+        if t['teacher_email'] == email:
+            return self._db['times'].delete(id=id)
+
+        return False
 
     def unclaim_time(self, student_email: str, time_id: int) -> bool:
         """
@@ -405,7 +419,7 @@ class Database:
 
     def search_times(self, teacher_email: str = None, teacher_id: int = None, student_email: str = None,
                      subject: str = None, min_start_time: datetime = None, max_start_time: datetime = None,
-                     must_be_unclaimed: bool = False, insert_teacher_info=False,
+                     must_be_unclaimed: bool = False, insert_teacher_info=False, insert_bio: bool=True,
                      string_time_offset: timedelta = None) -> List[dict]:
         """
         Searches the database for tutoring sessions satisfying the search parameters
@@ -433,7 +447,7 @@ class Database:
 
         for t in possible_times:
             try:
-                c_start = t['start_time']
+                c_start = int(t['start_time'])
                 c_claimed = t['claimed']
                 c_teacher_email = t['teacher_email']
                 c_student_email = t['student']
@@ -461,17 +475,19 @@ class Database:
             if student_email and student_email != c_student_email:
                 continue
 
-            t['start_time'] = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
+            if string_time_offset is not None:
+                log_info("Converting " + str(t))
 
-            t['time_num'] = c_start
+                time_obj = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
+                t['start_time'] = (time_obj - string_time_offset).strftime("%I:%M %p")
 
-            t['date_str'] = (t['start_time'] - string_time_offset).strftime("%b %d %Y")
+                t['time_num'] = c_start
+
+                t['date_str'] = (time_obj - string_time_offset).strftime("%b %d %Y")
+
+                log_info("Converted timestamp " + str(c_start) + " into " + str(time_obj) + " (" + t['start_time'] + t['date_str'] + ")")
 
             res = self.remove_quoted_name(t)
-
-            for key, value in res.items():
-                if string_time_offset is not None and type(value) == datetime:
-                    res[key] = (value.astimezone(pytz.utc) - string_time_offset).strftime("%I:%M %p")
 
             if insert_teacher_info:
                 if teacher := self.get_teacher(c_teacher_email):
@@ -479,6 +495,8 @@ class Database:
                         continue
 
                     t_id = res['id']
+                    if not insert_bio:
+                        del teacher['bio']
                     res.update(teacher)
                     res['id'] = t_id
                     del res['email']
@@ -503,7 +521,7 @@ class Database:
 
         for day_num in range(num_days):
             today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24),
-                                               string_time_offset=timezone_offset, insert_teacher_info=True, **search_params)
+                                               string_time_offset=timezone_offset, insert_teacher_info=True, insert_bio=False, **search_params)
             schedule_dict.append(((midnight - timezone_offset).strftime("%A"), today_schedule))
             midnight += timedelta(hours=24)
 
@@ -519,7 +537,7 @@ class Database:
                     del time['email']
 
             if string_time_offset is not None:
-                time['start_time'] = datetime.fromtimestamp(time['start_time']).astimezone(pytz.utc) - string_time_offset
+                time['start_time'] = datetime.fromtimestamp(int(time['start_time'])).astimezone(pytz.utc) - string_time_offset
                 time['date_str'] = time['start_time'].strftime("%b %d %Y")
                 time['start_time'] = time['start_time'].strftime("%I:%M %p")
 
@@ -696,6 +714,8 @@ class Database:
         Finds token by email. If the token does not exist, return False.
         """
         entry = self._db['auth'].find_one(email=str(email))
+        if entry is None:
+            return False
         token = entry.get('token')
         if token and self.possible_token(token):
             return token
