@@ -470,9 +470,9 @@ class Database:
                 if teacher_email != t['teacher_email']:
                     continue
 
-            if subject and teacher_email is not None:
-                if c_teacher := self.get_teacher(teacher_email):
-                    if subject not in c_teacher['subjects'].split("|"):
+            if subject:
+                if t2 := self.get_teacher(t['teacher_email']):
+                    if subject not in t2['subjects'].split("|"):
                         continue
 
             if string_time_offset is not None:
@@ -518,9 +518,9 @@ class Database:
 
             if search_params.get('teacher_email') is not None: params.update({"teacher_email": search_params.get('teacher_email')})
             if search_params.get('student_email') is not None: params.update({"student": search_params.get('student_email')})
-            if search_params.get('must_be_unclaimed'): params.update({"claimed": 0})
+            params.update({"claimed": False})
 
-            possible_times = self._find('times')
+            possible_times = self._find('times', **params)
 
             today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24),
                                                string_time_offset=timezone_offset, insert_teacher_info=True, insert_bio=False,

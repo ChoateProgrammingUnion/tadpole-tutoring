@@ -42,14 +42,14 @@ empty_session_table_header_teacher = """
 
 session_table_entry_template_teacher = """
 <tr>
-    <td>{id}</td>
+    <td>{_id}</td>
     <td>{start_time}</td>
     <td>{date_str}</td>
     <td>{student}</td>
     <td>{remove-button}</td>
 </tr>"""
 
-remove_button_template = """<a class="remove" id="{id}" href="#" onclick="return false;">Remove Session</a>"""
+remove_button_template = """<a class="remove" id="{_id}" href="#" onclick="return false;">Remove Session</a>"""
 
 def calculate_timezone_offset():
     date = javascript.Date.new()
@@ -89,6 +89,7 @@ def add_template_to_table(params, is_teacher):
             params['remove-button'] = ''
         else:
             params['remove-button'] = remove_button_template.format(**params)
+
         template_html = session_table_entry_template_teacher.format(**params)
     else:
         template_html = session_table_entry_template.format(**params)
