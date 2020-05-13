@@ -1,7 +1,7 @@
 from browser import document, alert, aio, bind, window
 import javascript
 
-URL = "https://api.tadpoletutoring.org"
+URL = "https://73ei860vn9.execute-api.us-east-1.amazonaws.com/production"
 
 default_session_table_header = """
 <tr>
@@ -96,7 +96,7 @@ def add_template_to_table(params, is_teacher):
 
 
 def remove_session(vars):
-    remove_id = int(vars.target.id)
+    remove_id = str(vars.target.id)
     aio.run(remove_id_and_update(remove_id))
 
 async def remove_id_and_update(id):

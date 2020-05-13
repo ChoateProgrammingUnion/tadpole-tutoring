@@ -1,7 +1,7 @@
 from browser import document, alert, aio, window
 import javascript
 
-URL = "http://localhost:5000"
+URL = "https://73ei860vn9.execute-api.us-east-1.amazonaws.com/production"
 
 SUBJECTS = ['English',
 'Elementary School Math',

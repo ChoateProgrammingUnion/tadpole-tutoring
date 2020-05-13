@@ -1,0 +1,18 @@
+{
+    "dev": {
+        "app_function": "app.app",
+        "aws_region": "us-east-1",
+        "profile_name": "max",
+        "project_name": "tadpoletutoring",
+        "runtime": "python3.8",
+        "s3_bucket": "tadpoletutoring-zappa-dev"
+    },
+    "production": {
+        "app_function": "app.app",
+        "aws_region": "us-east-1",
+        "profile_name": "max",
+        "project_name": "tadpoletutoring",
+        "runtime": "python3.8",
+        "s3_bucket": "tadpoletutoring-zappa-prod"
+    }
+}

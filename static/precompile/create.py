@@ -1,7 +1,7 @@
 from browser import document, alert, aio, bind, window
 import javascript
 
-URL = "http://localhost:5000"
+URL = "https://73ei860vn9.execute-api.us-east-1.amazonaws.com/production"
 
 def calculate_timezone_offset():
     date = javascript.Date.new()

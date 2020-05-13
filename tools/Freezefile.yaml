@@ -1,0 +1,18 @@
+common:
+
+  database: "mysql+pymysql://root:zoom@mariadb/czc"
+  #prefix: 
+  format: json
+  wrap: false
+
+exports:
+  #- query: "SELECT * FROM students"
+    #filename: "students.json"
+  - query: "SELECT * FROM teachers"
+    filename: "teachers.json"
+  - query: "SELECT * FROM times"
+    filename: "times.json"
+  - query: "SELECT * FROM auth"
+    filename: "auth.json"
+  - query: "SELECT * FROM carts"
+    filename: "carts.json"

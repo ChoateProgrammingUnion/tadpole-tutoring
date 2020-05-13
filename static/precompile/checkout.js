@@ -45,7 +45,7 @@ var orderData = {
     currency: "usd"
 };
 
-let url = "http://localhost:5000";
+let url = "https://73ei860vn9.execute-api.us-east-1.amazonaws.com/production";
 
 // Disable the button until we have Stripe set up on the page
 // document.querySelector("button").disabled = true;
