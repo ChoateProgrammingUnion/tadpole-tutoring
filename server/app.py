@@ -15,7 +15,6 @@ import views
 from flask_cors import CORS
 
 from flask import Flask, redirect, url_for, request, make_response, session, render_template, Markup, jsonify
-from flask_dance.contrib.google import make_google_blueprint, google
 
 import auth
 from config import *
@@ -41,10 +40,6 @@ app.config["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "true"
 app.config['PREFERRED_URL_SCHEME'] = "https"
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "true"
 
-google_bp = make_google_blueprint(scope=["https://www.googleapis.com/auth/userinfo.profile",
-                                         "https://www.googleapis.com/auth/userinfo.email"], offline=True)
-
-app.register_blueprint(google_bp, url_prefix="/login")
 
 stripe.api_key = STRIPE_API_KEY
 
