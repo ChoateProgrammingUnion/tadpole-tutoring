@@ -477,6 +477,21 @@ def create_payment():
     log_info("Not logged in")
     return ""
 
+@app.route('/api/create-payment-intent-for-donate', methods=['POST'])
+def create_payment_intent_for_donate():
+    price = request.json.get('price')
+
+    intent = stripe.PaymentIntent.create(
+        amount=price,
+        currency='usd'
+    )
+
+    try:
+        # Send publishable key and PaymentIntent details to client
+        return jsonify({'publishableKey': STRIPE_PUBLISHABLE_KEY, 'clientSecret': intent.client_secret, 'intentId': intent.get('id')})
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+
 
 @app.route('/api/handle-payment')
 def handle_payment():

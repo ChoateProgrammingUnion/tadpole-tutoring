@@ -17,12 +17,14 @@ for each_file in files:
             imports.append(each_file)
 
 imports.append("checkout.js")
+imports.append("donate.js")
 imports.append("schedule.py")
 imports.append("cart.py")
 imports.append("sessions.py")
 imports.append("profile.py")
 imports.append("create.py")
 imports.append("config.py")
+imports.append("donate.py")
 
 args = {}
 for each_import in imports:
