@@ -13,6 +13,8 @@
         "profile_name": "max",
         "project_name": "tadpoletutoring",
         "runtime": "python3.8",
-        "s3_bucket": "tadpoletutoring-zappa-prod"
+        "s3_bucket": "tadpoletutoring-zappa-prod",
+        "certificate_arn": "arn:aws:acm:us-east-1:904707318932:certificate/19dc59bc-ef0b-4666-8379-351faf6740ea",
+        "domain": "api.tadpoletutoring.org"
     }
 }

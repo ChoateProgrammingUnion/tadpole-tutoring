@@ -1,7 +1,7 @@
 from browser import document, alert, aio, bind, window
 import javascript
 
-URL = "https://73ei860vn9.execute-api.us-east-1.amazonaws.com/production"
+URL = "https://api.tadpoletutoring.org"
 
 default_session_table_header = """
 <tr>
