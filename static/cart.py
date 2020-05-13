@@ -4,21 +4,17 @@ URL = "{URL}"
 
 cart_entry_template = """
 <tr>
-    <td>{id}</td>
     <td>{first_name} {last_name}</td>
     <td>{start_time}</td>
     <td>{date_str}</td>
-    <td>{subjects}</td>
-    <td><a class="remove" id="{id}" href="#" onclick="return false;">Remove From Cart</a></td>
+    <td><a class="remove" id="{_id}" href="#" onclick="return false;">Remove From Cart</a></td>
 </tr>"""
 
 default_cart_table_template = """
 <tr>
-    <th>Session ID</th>
     <th>Teacher</th>
     <th>Time</th>
     <th>Date</th>
-    <th>Subjects</th>
 </tr>"""
 
 empty_cart_table_template = """
@@ -91,7 +87,7 @@ async def fetch_api(endpoint="/api/search-times", params={}, get_response=True):
         return response
 
 def remove_from_cart(vars):
-    remove_id = int(vars.target.id)
+    remove_id = str(vars.target.id)
     aio.run(remove_id_and_update(remove_id))
 
 async def remove_id_and_update(id):
