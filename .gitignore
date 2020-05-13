@@ -2,6 +2,11 @@
 *.zip
 index.db
 config.py
+**/config.py
+**/node_modules
+**/.serverless
+**/activate/*
+notifications/activate
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
