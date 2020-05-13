@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{ header }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js"
+            integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="brython/brython_modules.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="/donate.js"></script>
+</head>
+<body onload="brython()">
+<script type="text/python" src="donate.py"></script>
+
+<header style="padding-top: 0; padding-bottom: 0;">
+    {{ navbar }}
+</header>
+<div style="text-align: center;">
+    <section id="payment-area">
+        <form id="payment-form" class="sr-payment-form">
+            <label for="amount">Donation Amount: </label>
+            <input type="text" id="amount" size="28" placeholder="0.00">
+
+
+
+            <div class="sr-combo-inputs-row">
+                <div class="sr-input sr-card-element" id="card-element"></div>
+            </div>
+            <div class="sr-field-error" id="card-errors" role="alert"></div>
+            <button id="submit">
+                <span id="button-text">Pay</span><span id="order-amount"></span>
+            </button>
+        </form>
+    </section>
+</div>
+</body>
+</html>
