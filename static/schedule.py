@@ -46,7 +46,7 @@ time_template_for_tutor = """<header>
 </section>
 """
 
-timeslots_template = """<td><a href="#" onclick="return false;"><i class="timeslot" id="{id}">{start_time}</i></a></td>"""
+timeslots_template = """<td><a href="#" onclick="return false;"><i class="timeslot" id="{_id}">{start_time}</i></a></td>"""
 
 back_button_template = """<a href="#" onclick="return false;"><i id="back-button">Schedule Another Appointment</i></a>"""
 
@@ -58,7 +58,19 @@ timeslot_display_template = """
         <b>Subjects: </b> {subjects} <br>
         <b>Time: </b>{start_time}, {date_str} <br>
         <b>Duration: </b>1hr <br>
-        <a href="#" onclick="return false;"><i class="add-to-cart" id="{id}">Add To Cart</i></a>
+        <a href="#" onclick="return false;"><i class="add-to-cart" id="{_id}">Add To Cart</i></a>
+    </i>
+</td></tr>"""
+
+timeslot_display_template_not_logged_in = """
+<tr><th><a>Tutoring Session Info</a></th></tr>
+<tr><td>
+    <i>
+        <b>Teacher: </b>{first_name} {last_name} <br>
+        <b>Subjects: </b> {subjects} <br>
+        <b>Time: </b>{start_time}, {date_str} <br>
+        <b>Duration: </b>1hr <br>
+        <a href="#" onclick="window.location.reload()"><i>Log in to Reserve a Session</i></a>
     </i>
 </td></tr>"""
 
@@ -76,14 +88,14 @@ indiv_tutor_template = """<header>
 
 teacher_bio_template = """<aside>
     <center>
-        <img alt="Profile Picture" src="https://github.com/identicons/jasonlong.png" height="150">
+        <img alt="Profile Picture" src="{icon}" height="150">
         <h3>{first_name} {last_name}</h3>
     </center>
     <p><b>Studies at: </b>Choate Rosemary Hall</p>
     <p><b>Subjects Teaching: </b>{subjects}</p>
     <p><b>Email: </b><span>{email}</span></p>
     <p>{bio}</p>
-    <a><strong class="tutor-link" id="{id}">Schedule Now</strong></a>
+    <a><strong class="tutor-link" id="{_id}">Schedule Now</strong></a>
 </aside>
 """
 
@@ -129,14 +141,19 @@ def update_view(event):
         aio.run(search_by_time())
 
 def add_to_cart(vars):
-    display_id = int(vars.target.id)
+    display_id = str(vars.target.id)
     aio.run(fetch_api("/api/add-to-cart", {"time_id": display_id}))
     document[str(display_id)].html = "Added to Cart!"
 
 async def fetch_and_display_timeslot(id):
     time_info = await fetch_api("/api/get-time", {"time_id": id, "tz_offset": calculate_timezone_offset()})
     time_info['subjects'] = time_info['subjects'].replace("|", ", ")
-    document['schedule-results'].html = timeslot_display_template.format(**time_info)
+
+    if "@" in document.cookie:
+        document['schedule-results'].html = timeslot_display_template.format(**time_info)
+    else:
+        document['schedule-results'].html = timeslot_display_template_not_logged_in.format(**time_info)
+
     document['back-button-div'].html = back_button_template
     document["back-button"].bind("mousedown", update_view)
 
@@ -149,7 +166,7 @@ async def fetch_and_display_timeslot(id):
             d.bind("click", add_to_cart)
 
 def display_timeslot(vars):
-    display_id = int(vars.target.id)
+    display_id = str(vars.target.id)
     aio.run(fetch_and_display_timeslot(display_id))
 
 
@@ -222,7 +239,7 @@ def generate_calendar_html(times):
     return timeslots
 
 def display_tutor_times(vars):
-    id = int(vars.target.id)
+    id = str(vars.target.id)
     aio.run(search_by_time(id))
 
     document['back-button-div'].html = back_button_template
@@ -273,6 +290,10 @@ def render_tutor_bios(vars):
     for count, each_var in enumerate(vars):
         # each_var["id"] = str(count)
         each_var['subjects'] = each_var['subjects'].replace("|", ", ")
+
+        if not 'icon' in each_var:
+            each_var['icon'] = "https://github.com/identicons/jasonlong.png"
+
         html += teacher_bio_template.format(**each_var)
 
     return len(vars), html

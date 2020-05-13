@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 
 import msgpack
 
+from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 import pytz
 import validators
@@ -12,11 +14,12 @@ import string
 from typing import *
 
 from utils.log import *
-from config import DB
+from config import DB, MONGO_DATABASE
 
 import pickle
 import codecs
 
+MONGO_DB = MongoClient(DB)
 
 def pickle_str(obj):
     return codecs.encode(pickle.dumps(obj), "base64").decode()
@@ -100,9 +103,7 @@ class Database:
     """
 
     def __init__(self):
-        self._db = None
-        self.init_db_connection()
-        self.end_db_connection()
+        pass
 
     # Check for entries in database
 
@@ -116,7 +117,7 @@ class Database:
         Returns:
             True if the student was added to the database or was already there, False if something went wrong
         """
-        return bool(self._db['students'].find_one(email=email))
+        return bool(self._find_one('students', email=email))
 
     def check_teacher(self, email: str) -> bool:
         """
@@ -128,7 +129,7 @@ class Database:
         Returns:
             True if the teacher was added to the database or was already there, False if something went wrong
         """
-        return bool(self._db['teachers'].find_one(email=email))
+        return bool(self._find_one('teachers', email=email))
 
     # Add entries to the database
 
@@ -149,7 +150,7 @@ class Database:
         """
         data = {"email": email, "first_name": first_name, "last_name": last_name, "subjects": "|".join(subjects),
                 "bio": bio, "zoom_id": zoom_id}
-        return self._transactional_upsert("teachers", data, ["email"])
+        return self._upsert("teachers", data, ["email"])
 
     def add_student(self, email: str, first_name: str, last_name: str) -> bool:
         # def add_student(self, email: str, first_name: str, last_name: str) -> bool:
@@ -162,7 +163,7 @@ class Database:
             last_name: The student's last name
         """
         data = {"email": email, "first_name": first_name, "last_name": last_name}
-        return self._transactional_upsert("students", data, ["email"])
+        return self._upsert("students", data, ["email"])
 
     # Teacher database retrieval/manipulation
 
@@ -176,23 +177,24 @@ class Database:
         Returns:
             Everything about the teacher as a dict. Returns an empty dict if no teacher was found.
         """
-        if teacher := self._db['teachers'].find_one(email=teacher_email):
-            return self.remove_quoted_name(teacher)
+        if teacher := self._find_one('teachers', email=teacher_email):
+            return teacher
         return {}
 
-    def edit_teacher(self, teacher_email: str, subjects: str, zoom_id: int, bio: str, first_name: str, last_name: str) -> bool:
-        if teacher := self._db['teachers'].find_one(email=teacher_email):
+    def edit_teacher(self, teacher_email: str, subjects: str, zoom_id: int, bio: str, first_name: str, last_name: str, icon: str) -> bool:
+        if teacher := self._find_one('teachers', email=teacher_email):
             if subjects is not None: teacher['subjects'] = subjects
             if zoom_id is not None: teacher['zoom_id'] = zoom_id
             if bio is not None: teacher['bio'] = bio
             if first_name is not None: teacher['first_name'] = first_name
             if last_name is not None: teacher['last_name'] = last_name
+            if icon is not None: teacher['icon'] = icon
 
-            return self._transactional_upsert('teachers', teacher, ['id'])
+            return self._upsert('teachers', teacher)
 
         return False
 
-    def get_teacher_by_id(self, teacher_id: int) -> dict:
+    def get_teacher_by_id(self, teacher_id: str) -> dict:
         """
         Gets everything for a given teacher
 
@@ -202,8 +204,8 @@ class Database:
         Returns:
             Everything about the teacher as a dict. Returns an empty dict if no teacher was found.
         """
-        if teacher := self._db['teachers'].find_one(id=teacher_id):
-            return self.remove_quoted_name(teacher)
+        if teacher := self._find_one('teachers', _id=teacher_id):
+            return teacher
         return {}
 
     def make_teacher(self, email: str, subjects: List[str], bio: str, zoom_id: int) -> bool:
@@ -222,7 +224,7 @@ class Database:
 
         # if student := self.get_student(email):
         if self.add_teacher(email, "", "", subjects, bio, zoom_id):
-            self._db['students'].delete(email=email)
+            self._delete('students', email=email)
             return True
 
         return False
@@ -236,9 +238,9 @@ class Database:
         """
 
         if subject is None:
-            return [self.remove_quoted_name(i) for i in self._db['teachers'].all()]
+            return self._all('teachers')
 
-        return [self.remove_quoted_name(i) for i in self._db['teachers'].all() if subject in i['subjects'].split('|')]
+        return [i for i in self._all('teachers') if subject in i['subjects'].split('|')]
 
     # Student database retrieval/manipulation
 
@@ -252,7 +254,7 @@ class Database:
         Returns:
             The notes as a string. Returns an empty string if no student was found or if the student has no notes
         """
-        if student := self._db['students'].find_one(email=student_email):
+        if student := self._find_one('students', email=student_email):
             if notes := student.get('notes'):
                 return notes
 
@@ -268,8 +270,8 @@ class Database:
         Returns:
             Everything about the student as a dict. Returns an empty dict if no student was found.
         """
-        if student := self._db['students'].find_one(email=student_email):
-            return self.remove_quoted_name(student)
+        if student := self._find_one('students', email=student_email):
+            return student
         return {}
 
     def set_student_notes(self, student_email: str, notes: str) -> bool:
@@ -283,10 +285,10 @@ class Database:
         Returns:
             True if the student is in the database and the notes were set, otherwise False
         """
-        if student := self._db['students'].find_one(email=student_email):
+        if student := self._find_one('students', email=student_email):
             student['notes'] = notes
 
-            return self._transactional_upsert('students', student, ['id'])
+            return self._upsert('students', student)
 
         return False
 
@@ -319,9 +321,9 @@ class Database:
 
         log_info("Inserting " + str(data), header=teacher_email)
 
-        return self._transactional_insert("times", data)
+        return self._insert("times", data)
 
-    def claim_time(self, student_email: str, time_id: int) -> bool:
+    def claim_time(self, student_email: str, time_id: str) -> bool:
         """
         Claim a time in the database. Intended to be used by a student once they have logged in. It is assumed that they
         are already authorized.
@@ -333,7 +335,7 @@ class Database:
         Returns:
             False if the time was already claimed or there wasn't a time with the specified id, True if the time was successfully claimed
         """
-        time_to_claim: dict = self._db['times'].find_one(id=time_id)
+        time_to_claim: dict = self._find_one('times', _id=time_id)
 
         if time_to_claim:
             if time_to_claim.get('claimed'):
@@ -343,12 +345,12 @@ class Database:
             time_to_claim['claimed'] = True
             time_to_claim['student'] = student_email
 
-            return self._transactional_upsert('times', time_to_claim, ["id"])
+            return self._upsert('times', time_to_claim)
 
         log_info("Unable to find time with id " + str(time_id), header=student_email)
         return False
 
-    def edit_time(self, id: int, start_time: int = None, duration_type: int = None, claimed: bool = None,
+    def edit_time(self, id: str, start_time: int = None, duration_type: int = None, claimed: bool = None,
                   student: str = None) -> bool:
         """
         Edits an already existing time.
@@ -363,7 +365,7 @@ class Database:
         Returns:
             True if the update succeeded, otherwise False
         """
-        updated_time = {"id": id}
+        updated_time = {"_id": id}
 
         if start_time is not None:
             updated_time.update({"start_time": str(start_time)})
@@ -374,17 +376,17 @@ class Database:
         if student is not None:
             updated_time.update({"student": student})
 
-        return self._transactional_upsert("times", updated_time, ['id'])
+        return self._upsert("times", updated_time)
 
-    def remove_time(self, id: int, email: str) -> bool:
+    def remove_time(self, id: str, email: str) -> bool:
         t = self.get_time_by_id(id)
 
         if t['teacher_email'] == email:
-            return self._db['times'].delete(id=id)
+            return self._delete('times', _id=id)
 
         return False
 
-    def unclaim_time(self, student_email: str, time_id: int) -> bool:
+    def unclaim_time(self, student_email: str, time_id: str) -> bool:
         """
         Unclaim a time in the database. Intended to be used by a student once they have logged in. It is assumed that they
         are already authorized.
@@ -396,7 +398,7 @@ class Database:
         Returns:
             False if the time was claimed by someone else or there wasn't a time with the specified id, True if the time was successfully unclaimed
         """
-        time_to_unclaim: dict = self._db['times'].find_one(id=time_id)
+        time_to_unclaim: dict = self._find_one('times', _id=time_id)
 
         if time_to_unclaim:
             if not time_to_unclaim.get('claimed'):
@@ -412,15 +414,15 @@ class Database:
 
             time_to_unclaim['claimed'] = False
 
-            return self._transactional_upsert('times', time_to_unclaim, ["id"])
+            return self._upsert('times', time_to_unclaim)
 
         log_info("Unable to find time with id " + str(time_id), header=student_email)
         return False
 
-    def search_times(self, teacher_email: str = None, teacher_id: int = None, student_email: str = None,
+    def search_times(self, teacher_email: str = None, teacher_id: str = None, student_email: str = None,
                      subject: str = None, min_start_time: datetime = None, max_start_time: datetime = None,
                      must_be_unclaimed: bool = False, insert_teacher_info=False, insert_bio: bool=True,
-                     string_time_offset: timedelta = None) -> List[dict]:
+                     string_time_offset: timedelta = None, possible_times: List[dict] = None) -> List[dict]:
         """
         Searches the database for tutoring sessions satisfying the search parameters
 
@@ -441,27 +443,20 @@ class Database:
         Returns:
             The list of dicts
         """
-        possible_times = self._db['times'].all()
+
+        if possible_times is None:
+            search_params = dict()
+
+            if teacher_email is not None: search_params.update({"teacher_email": teacher_email})
+            if student_email is not None: search_params.update({"student": student_email})
+            if must_be_unclaimed: search_params.update({"claimed": 0})
+
+            possible_times = self._find('times')
 
         results: List[dict] = []
 
         for t in possible_times:
-            try:
-                c_start = int(t['start_time'])
-                c_claimed = t['claimed']
-                c_teacher_email = t['teacher_email']
-                c_student_email = t['student']
-            except KeyError:
-                log_error("Invalid time: " + str(t))
-                continue
-
-            if subject:
-                if c_teacher := self._db['teachers'].find_one(email=c_teacher_email):
-                    if subject not in c_teacher['subjects']:
-                        continue
-
-            if must_be_unclaimed and c_claimed:
-                continue
+            c_start = int(t['start_time'])
 
             if min_start_time and datetime.fromtimestamp(c_start).astimezone(pytz.utc) < pytz.utc.localize(min_start_time):
                 continue
@@ -469,43 +464,38 @@ class Database:
             if max_start_time and datetime.fromtimestamp(c_start).astimezone(pytz.utc) >= pytz.utc.localize(max_start_time):
                 continue
 
-            if teacher_email and teacher_email != c_teacher_email:
-                continue
+            c_teacher = None
 
-            if student_email and student_email != c_student_email:
-                continue
-
-            if string_time_offset is not None:
-                log_info("Converting " + str(t))
-
-                time_obj = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
-                t['start_time'] = (time_obj - string_time_offset).strftime("%I:%M %p")
-
-                t['time_num'] = c_start
-
-                t['date_str'] = (time_obj - string_time_offset).strftime("%b %d %Y")
-
-                log_info("Converted timestamp " + str(c_start) + " into " + str(time_obj) + " (" + t['start_time'] + t['date_str'] + ")")
-
-            res = self.remove_quoted_name(t)
-
-            if insert_teacher_info:
-                if teacher := self.get_teacher(c_teacher_email):
-                    if teacher_id is not None and teacher['id'] != teacher_id:
+            if subject and teacher_email is not None:
+                if c_teacher := self.get_teacher(teacher_email):
+                    if subject not in c_teacher['subjects'].split("|"):
                         continue
 
-                    t_id = res['id']
-                    if not insert_bio:
-                        del teacher['bio']
-                    res.update(teacher)
-                    res['id'] = t_id
-                    del res['email']
+            if string_time_offset is not None:
+                time_obj = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
+                t['start_time'] = (time_obj - string_time_offset).strftime("%I:%M %p")
+                t['time_num'] = c_start
+                t['date_str'] = (time_obj - string_time_offset).strftime("%b %d %Y")
 
-            results.append(res)
+            if insert_teacher_info and teacher_email is not None:
+                if c_teacher is None:
+                    c_teacher = self.get_teacher(teacher_email)
+
+                if teacher_id is not None and str(c_teacher['_id']) != teacher_id:
+                    continue
+
+                t_id = t['_id']
+                if not insert_bio:
+                    del c_teacher['bio']
+                t.update(c_teacher)
+                t['_id'] = t_id
+                del t['email']
+
+            results.append(t)
 
         return sorted(results, key=lambda x: x['time_num'])
 
-    def get_time_schedule(self, timezone_offset: timedelta = None, num_days: int = 7, search_params: dict = None) -> List[Tuple[str, List[dict]]]:
+    def get_time_schedule(self, timezone_offset: timedelta = None, time_offset: timedelta = None, num_days: int = 7, search_params: dict = None) -> List[Tuple[str, List[dict]]]:
         if timezone_offset is None:
             timezone_offset = timedelta(minutes=0)
 
@@ -517,23 +507,48 @@ class Database:
         if midnight > datetime.utcnow():
             midnight -= timedelta(hours=24)
 
+        if time_offset is not None:
+            midnight += time_offset
+
         schedule_dict = []
 
         for day_num in range(num_days):
+            params = dict()
+
+            if search_params.get('teacher_email') is not None: params.update({"teacher_email": search_params.get('teacher_email')})
+            if search_params.get('student_email') is not None: params.update({"student": search_params.get('student_email')})
+            if search_params.get('must_be_unclaimed'): params.update({"claimed": 0})
+
+            possible_times = self._find('times')
+
             today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24),
-                                               string_time_offset=timezone_offset, insert_teacher_info=True, insert_bio=False, **search_params)
-            schedule_dict.append(((midnight - timezone_offset).strftime("%A"), today_schedule))
+                                               string_time_offset=timezone_offset, insert_teacher_info=True, insert_bio=False,
+                                               possible_times=possible_times, **search_params)
+
+            # TODO
+            # for t in today_schedule:
+            #     if not self.get_teacher(t['teacher_email'])['hours_left'] > 0:
+            #         del t
+
+            for t in today_schedule:
+                del t['teacher_email']
+                del t['time_num']
+                del t['duration_type']
+                del t['claimed']
+                del t['student']
+
+            schedule_dict.append(((midnight - timezone_offset).strftime("%A<br>(%b %d %Y)"), today_schedule))
             midnight += timedelta(hours=24)
 
         return schedule_dict
 
-    def get_time_by_id(self, time_id: int, string_time_offset: timedelta = None, insert_teacher_info=False) -> dict:
-        if time := self._db['times'].find_one(id=time_id):
+    def get_time_by_id(self, time_id: str, string_time_offset: timedelta = None, insert_teacher_info=False) -> dict:
+        if time := self._find_one('times', _id=time_id):
             if insert_teacher_info:
                 if teacher := self.get_teacher(time['teacher_email']):
-                    t_id = time['id']
+                    t_id = time['_id']
                     time.update(teacher)
-                    time['id'] = t_id
+                    time['_id'] = t_id
                     del time['email']
 
             if string_time_offset is not None:
@@ -541,20 +556,20 @@ class Database:
                 time['date_str'] = time['start_time'].strftime("%b %d %Y")
                 time['start_time'] = time['start_time'].strftime("%I:%M %p")
 
-            return self.remove_quoted_name(time)
+            return time
 
     # Cart database retrieval/manipulation
 
-    def get_cart(self, email: str) -> Tuple[Set[int], str]:
-        cart = self._db['carts'].find_one(email=email)
+    def get_cart(self, email: str) -> Tuple[Set[str], str]:
+        cart = self._find_one('carts', email=email)
 
         if cart is None:
             return set(), ""
 
         return pickle_decode(cart.get('cart')), cart.get('intent')
 
-    def set_cart(self, email: str, cart: Set[int]) -> bool:
-        return self._transactional_upsert('carts', {"email": email, "cart": pickle_str(cart), "intent": ""}, ['email'])
+    def set_cart(self, email: str, cart: Set[str]) -> bool:
+        return self._upsert('carts', {"email": email, "cart": pickle_str(cart), "intent": ""}, ['email'])
 
     def verify_cart(self, email: str, change=True):
         cart_set, intent = self.get_cart(email)
@@ -576,10 +591,10 @@ class Database:
 
     def set_intent(self, email: str, intent: str) -> bool:
         cart, _ = self.get_cart(email)
-        return self._transactional_upsert('carts', {"email": email, "cart": pickle_str(cart), "intent": intent},
-                                          ['email'])
+        return self._upsert('carts', {"email": email, "cart": pickle_str(cart), "intent": intent},
+                            ['email'])
 
-    def append_cart(self, email: str, session_id: int) -> bool:
+    def append_cart(self, email: str, session_id: str) -> bool:
         old_cart, _ = self.get_cart(email)
         old_cart.add(session_id)
         return self.set_cart(email, old_cart)
@@ -593,28 +608,15 @@ class Database:
         Args:
             attempt: The attempt number to initialize the database connection (for recursion)
         """
-        try:
-            self._db = dataset.connect(DB, engine_kwargs={'pool_recycle': 3600, 'pool_pre_ping': True})
-            # log_info("New Database Connection")
-        except ConnectionResetError as e:
-            log_info("ConnectionResetError " + str(e) + ", attempt: " + str(attempt))
-            if attempt <= 3:
-                self._db.close()
-                self.init_db_connection(attempt=attempt + 1)
-        except AttributeError as e:
-            log_info("AttributeError " + str(e) + ", attempt: " + str(attempt))
-            if attempt <= 3:
-                self._db.close()
-                self.init_db_connection(attempt=attempt + 1)
+        pass
 
     def end_db_connection(self):
         """
         Closes the database connection
         """
-        self._db.close()
-        # log_info("Disconnected From Database")
+        pass
 
-    def _transactional_upsert(self, table: str, data: dict, key: list, attempt=0) -> bool:
+    def _upsert(self, table: str, data: dict, key=None) -> bool:
         """
         Upserts a dict into a specified database table
 
@@ -627,22 +629,19 @@ class Database:
         Returns:
             True if the upsert succeeded, otherwise False
         """
-        if attempt <= 3:
-            self._db.begin()
-            try:
-                self._db[str(table)].upsert(dict(copy.deepcopy(data)), list(key))
-                self._db.commit()
-                return True
-            except:
-                self._db.rollback()
-                log_info("Exception caught with DB, rolling back and trying again " + str((table, data, key, attempt)))
-                return self._transactional_upsert(table, data, key, attempt=attempt + 1)
-        else:
-            log_info("Automatic re-trying failed with these args: " + str((table, data, key, attempt)))
 
-        return False
+        if '_id' in data:
+            data['_id'] = ObjectId(data['_id'])
 
-    def _transactional_insert(self, table: str, data: dict, attempt=0) -> bool:
+        if key is None:
+            key = ['_id']
+
+        f = {a: b for a, b in [(i, data[i]) for i in key]}
+        MONGO_DB[MONGO_DATABASE][table].update_one(f, {'$set': data}, True)
+
+        return True
+
+    def _insert(self, table: str, data: dict) -> bool:
         """
         Inserts a dict into a specified database table
 
@@ -654,29 +653,44 @@ class Database:
         Returns:
             True if the insert succeeded, otherwise False
         """
-        if attempt <= 3:
-            self._db.begin()
-            try:
-                self._db[str(table)].insert(dict(copy.deepcopy(data)))
-                self._db.commit()
-                return True
-            except:
-                self._db.rollback()
-                log_info("Exception caught with DB, rolling back and trying again " + str((table, data, attempt)))
-                return self._transactional_insert(table, data, attempt=attempt + 1)
-        else:
-            log_info("Automatic re-trying failed with these args: " + str((table, data, attempt)))
 
-        return False
+        MONGO_DB[MONGO_DATABASE][table].insert_one(data)
+        return True
 
-    @staticmethod
-    def remove_quoted_name(d):
-        res = dict()
+    def _find_one(self, table: str, **kwargs) -> dict:
+        if '_id' in kwargs:
+            kwargs['_id'] = ObjectId(kwargs['_id'])
 
-        for key, value in d.items():
-            res.update({str(key): value})
+        result = MONGO_DB[MONGO_DATABASE][table].find_one(filter=kwargs)
 
-        return res
+        if result is None:
+            return result
+
+        if '_id' in result:
+            result['_id'] = str(result['_id'])
+
+        return dict(result)
+
+    def _find(self, table: str, **kwargs) -> List[dict]:
+        if '_id' in kwargs:
+            kwargs['_id'] = ObjectId(kwargs['_id'])
+
+        result = list(MONGO_DB[MONGO_DATABASE][table].find(filter=kwargs))
+
+        for i in range(len(result)):
+            if '_id' in result[i]:
+                result[i]['_id'] = str(result[i]['_id'])
+
+        return result
+
+    def _delete(self, table: str, **kwargs) -> bool:
+        if '_id' in kwargs:
+            kwargs['_id'] = ObjectId(kwargs['_id'])
+
+        return MONGO_DB[MONGO_DATABASE][table].delete_many(kwargs)
+
+    def _all(self, table: str) -> List[dict]:
+        return self._find(table)
 
     # Auth functions
 
@@ -688,7 +702,7 @@ class Database:
         token = secrets.token_hex(16)
         user = {"email": str(email), "token": token}
         if validators.email(email):
-            if self._transactional_upsert("auth", user, ["email"]):
+            if self._upsert("auth", user, ["email"]):
                 return token
             else:
                 log_info("Error creating token for " + str(email))
@@ -713,7 +727,7 @@ class Database:
         """
         Finds token by email. If the token does not exist, return False.
         """
-        entry = self._db['auth'].find_one(email=str(email))
+        entry = self._find_one('auth', email=str(email))
         if entry is None:
             return False
         token = entry.get('token')

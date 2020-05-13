@@ -159,7 +159,7 @@ def api_fetch_teachers():
 
 @app.route('/api/get-teacher')
 def api_get_teacher():
-    teacher_id = request.args.get("teacher_id", None, int)
+    teacher_id = request.args.get("teacher_id", None, str)
 
     if teacher_id is None:
         return flask.abort(400)
@@ -192,6 +192,7 @@ def api_edit_teacher():
     if email := auth.check_login(request):
         subjects = request.args.get("subjects", None, str)
         zoom_id = request.args.get("zoom_id", None, int)
+        icon = request.args.get("icon", None, str)
         bio = request.args.get("bio", None, str)
         first_name = request.args.get("first_name", None, str)
         last_name = request.args.get("last_name", None, str)
@@ -199,7 +200,7 @@ def api_edit_teacher():
         db = database.Database()
 
         db.init_db_connection()
-        db.edit_teacher(email, subjects, zoom_id, bio, first_name, last_name)
+        db.edit_teacher(email, subjects, zoom_id, bio, first_name, last_name, icon)
         db.end_db_connection()
 
         return api.serialize(True)
@@ -215,7 +216,7 @@ def api_search_times():
     timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
 
     teacher_email = request.args.get("teacher_email", None, str)
-    teacher_id = request.args.get("teacher_id", None, int)
+    teacher_id = request.args.get("teacher_id", None, str)
     subject = request.args.get("subject", None, str)
     must_be_unclaimed = request.args.get("must_be_unclaimed", True, bool)
 
@@ -229,7 +230,7 @@ def api_search_times():
     db = database.Database()
 
     db.init_db_connection()
-    times = db.get_time_schedule(timezone_offset, search_params=search_params)
+    times = db.get_time_schedule(timezone_offset=timezone_offset, search_params=search_params)
     db.end_db_connection()
 
     return api.serialize(times)
@@ -238,7 +239,7 @@ def api_search_times():
 def api_get_time():
     timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
 
-    time_id = request.args.get("time_id", None, int)
+    time_id = request.args.get("time_id", None, str)
 
     if time_id is None:
         return flask.abort(400)
@@ -281,7 +282,7 @@ def api_update_time():
 @app.route('/api/add-to-cart')
 def api_add_to_cart():
     if email := auth.check_login(request):
-        time_id = request.args.get('time_id', None, int)
+        time_id = request.args.get('time_id', None, str)
 
         if time_id is None:
             return flask.abort(400)
@@ -342,7 +343,7 @@ def api_verify_cart():
 @app.route('/api/remove-from-cart')
 def api_remove_from_cart():
     if email := auth.check_login(request):
-        time_id = request.args.get('time_id', None, int)
+        time_id = request.args.get('time_id', None, str)
 
         if time_id is None:
             return flask.abort(400)
@@ -366,7 +367,7 @@ def api_remove_from_cart():
 @app.route('/api/remove-session')
 def api_remove_remove_session():
     if email := auth.check_login(request):
-        time_id = request.args.get('time_id', None, int)
+        time_id = request.args.get('time_id', None, str)
 
         if time_id is None:
             return flask.abort(400)

@@ -1,7 +1,7 @@
 from browser import document, alert, aio, window
 import javascript
 
-URL = "https://api.tadpoletutoring.org"
+URL = "http://localhost:5000"
 
 SUBJECTS = ['English',
 'Elementary School Math',
@@ -33,6 +33,9 @@ teacher_profile_form_start = """
 
     <label for="hours">Zoom link:</label>
     <input type="text" id="zoom" name="zoom" size="28" placeholder="https://zoom.us/j/{zoom_id}">
+
+    <label for="hours">Link to a Photo of You:</label>
+    <input type="text" id="icon" name="icon" size="28" placeholder="https://github.com/identicons/jasonlong.png">
 
     <label>Subjects:</label>
 </form>
@@ -136,6 +139,8 @@ async def submit_form():
 
     zoom_str = document['zoom'].value
 
+    icon = document['icon'].value
+
     zoom_str_int = ""
 
     for c in zoom_str:
@@ -149,6 +154,7 @@ async def submit_form():
     if first_name != "": params.update({"first_name": first_name})
     if last_name != "": params.update({"last_name": last_name})
     if bio != "": params.update({"bio": bio})
+    if icon != "": params.update({"icon": icon})
 
     await fetch_api("/api/edit-teacher", params)
 
