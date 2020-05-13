@@ -448,7 +448,7 @@ class Database:
             if student_email is not None: search_params.update({"student": student_email})
             if must_be_unclaimed: search_params.update({"claimed": 0})
 
-            possible_times = self._find('times')
+            possible_times = self._find('times', **search_params)
 
         if teacher_id is not None:
             teacher_email = self.get_teacher_by_id(teacher_id)['email']
