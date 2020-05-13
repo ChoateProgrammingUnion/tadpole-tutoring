@@ -1,7 +1,7 @@
 from browser import document, alert, aio
 import javascript
 
-URL = "http://localhost:5000"
+URL = "https://api.tadpoletutoring.org"
 
 SUBJECTS = ['English',
             'Elementary School Math',
@@ -21,7 +21,7 @@ subject_card_template = """
 
 tutor_template = """<header>
     <h2>Our Tutors</h2>
-    <p>Our team of tutors is small and tight-knit. Each tutor here is hand-picked to help ensure that you can learn well.</p>
+    <p>We’re super excited to meet and start working with you! Enjoy browsing our comprehensive community of tutors, mentors, and partners.</p>
 </header>
 <section id="schedule-results">
 </section>
@@ -29,7 +29,7 @@ tutor_template = """<header>
 
 time_template = """<header>
     <h2>Search by Time</h2>
-    <p>Our team of tutors is small and tight-knit. Each tutor here is hand-picked to help ensure that you can learn well.</p>
+    <p>We’re super excited to meet and start working with you! Enjoy browsing our comprehensive community of tutors, mentors, and partners.</p>
 </header>
 <section>
 <table id="schedule-results">

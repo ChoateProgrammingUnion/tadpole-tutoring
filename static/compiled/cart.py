@@ -33,7 +33,7 @@ empty_checkout_table_template = """"""
 
 checkout_table_entry_template = """
 <tr>
-    <td>Tutoring Session #{id}</td>
+    <td>Tutoring Session #{_id}</td>
     <td>$25.00</td>
 </tr>"""
 
