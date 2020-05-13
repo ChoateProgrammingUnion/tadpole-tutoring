@@ -524,14 +524,35 @@ def handle_payment():
                     session = db.get_time_by_id(t_id)
                     time = datetime.fromtimestamp(int(session['start_time'])).astimezone(pytz.utc)
                     times.append(time.strftime("%I:%M%p UTC on %B %d, %Y"))
-                    sender.send(session['teacher_email'], "Tadpole Tutoring Student Registration", "Dear Tutor,\n A student has signed up for your class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe student's name is " + session['student'])
+                    sender.send(session['teacher_email'], "Tadpole Tutoring Student Registration", "Dear Tutor,\n\nA student has signed up for your class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe student's name is " + session['student'] + ".\n\n\nFrom, Tadpole Tutoring")
+                    for i in [12, 1]:
+                        db._insert("notifications", {
+                            "email": {
+                                "address": session['teacher_email'], 
+                                "subject": str(i) + " Hour Reminder: Tadpole Tutoring Session", 
+                                "msg": "Dear Tutor,\n\nThis is a reminder that a student has signed up for your class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe student's name is " + session['student'] + ".\n\n\nFrom, Tadpole Tutoring"
+                                },
+                            "sent": False,
+                            "time": time - timedelta(hours=i)
+                            }
+                        )
+                        db._insert("notifications", {
+                            "email": {
+                                "address": email, 
+                                "subject": str(i) + " Hour Reminder: Tadpole Tutoring Session", 
+                                "msg": "Dear Student,\n\nThis is a reminder that you have signed up for a class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe teacher's email address is " + session['teacher_email'] + ".\n\n\nFrom, Tadpole Tutoring"
+                                },
+                            "sent": False,
+                            "time": time - timedelta(hours=i)
+                            }
+                        )
 
 
                 db.set_cart(email, set())
                 db.end_db_connection()
                 log_info("Times claimed")
 
-                sender.send(email, "Tadpole Tutoring Payment Confirmation", "Thanks for scheduling a teaching session with us! This is a confirmation that you have signed up for " + str(len(cart)) + " session(s) on the following dates:\n" + "\n".join(times) + "\n\nFrom, Tadpole Tutoring")
+                sender.send(email, "Tadpole Tutoring Payment Confirmation", "Dear Student, \n\nThanks for scheduling a teaching session with us! This is a confirmation that you have signed up for " + str(len(cart)) + " session(s) on the following dates:\n" + "\n".join(times) + "\n\n\nFrom, Tadpole Tutoring")
                 return api.serialize(True)
 
         return api.serialize(False)
