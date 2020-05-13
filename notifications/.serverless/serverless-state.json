@@ -107,7 +107,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/notifications/dev/1589396535699-2020-05-13T19:02:15.699Z/notifications.zip"
+                "S3Key": "serverless/notifications/dev/1589397307124-2020-05-13T19:15:07.124Z/notifications.zip"
               },
               "FunctionName": "notifications-dev-hello",
               "Handler": "poll.poll",
@@ -145,7 +145,7 @@
           "HelloEventsRuleSchedule1": {
             "Type": "AWS::Events::Rule",
             "Properties": {
-              "ScheduleExpression": "rate(5 minutes)",
+              "ScheduleExpression": "rate(1 minute)",
               "State": "ENABLED",
               "Targets": [
                 {
@@ -241,7 +241,7 @@
         "handler": "poll.poll",
         "events": [
           {
-            "schedule": "rate(5 minutes)"
+            "schedule": "rate(1 minute)"
           }
         ],
         "tags": {
@@ -258,7 +258,7 @@
     "artifact": "/Users/max/git/tadpole-tutoring/notifications/.serverless/notifications.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/notifications/dev/1589396535699-2020-05-13T19:02:15.699Z",
+    "artifactDirectoryName": "serverless/notifications/dev/1589397307124-2020-05-13T19:15:07.124Z",
     "artifact": "notifications.zip"
   }
 }
