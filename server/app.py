@@ -516,13 +516,16 @@ def handle_payment():
             if intent_id == intent:
                 log_info("Server cart matches intent cart, claiming times...")
                 db.init_db_connection()
+                email = notify.Email()
                 for t_id in cart:
+                    # email.send(teacher_email, "Tadpole Tutoring Payment Confirmation", "This is a confirmation that you have signed up for ")
                     db.claim_time(email, t_id)
 
                 db.set_cart(email, set())
                 db.end_db_connection()
                 log_info("Times claimed")
 
+                email.send(email, "Tadpole Tutoring Payment Confirmation", "Thanks for scheduling a teaching session with us! This is a confirmation that you have signed up for " + str(len(cart)) + " sessions.\nFrom, Tadpole Tutoring") 
                 return api.serialize(True)
 
         return api.serialize(False)

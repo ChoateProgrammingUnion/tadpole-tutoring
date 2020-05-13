@@ -56,6 +56,7 @@ def get_user_info(token: dict) -> dict:
     if response.status_code == 200:
         return json.loads(response.content)
     else:
+        print(headers, response)
         raise ValueError("oauth not working!") # add some more logging in this case
 
 def get_login_url():
