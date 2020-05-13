@@ -27,15 +27,15 @@ DEFAULT_LOGGING = {
         'console':  {'class': 'logging.StreamHandler',
                      'formatter': "standard",
                      'level': 'DEBUG',
-                     'stream': sys.stdout},
-        'file':     {'class': 'logging.FileHandler',
-                     'formatter': "standard",
-                     'level': 'DEBUG',
-                     'filename': 'live_detector.log','mode': 'w'}
+                     'stream': sys.stdout}
+        # 'file':     {'class': 'logging.FileHandler',
+        #              'formatter': "standard",
+        #              'level': 'DEBUG',
+        #              'filename': 'live_detector.log','mode': 'w'}
     },
     'loggers': {
         __name__:   {'level': 'INFO',
-                     'handlers': ['console', 'file'],
+                     'handlers': ['console'],
                      'propagate': False },
     }
 }

@@ -453,6 +453,9 @@ class Database:
 
             possible_times = self._find('times')
 
+        if teacher_id is not None:
+            teacher_email = self.get_teacher_by_id(teacher_id)['email']
+
         results: List[dict] = []
 
         for t in possible_times:
@@ -465,6 +468,10 @@ class Database:
                 continue
 
             c_teacher = None
+
+            if teacher_id is not None:
+                if teacher_email != t['teacher_email']:
+                    continue
 
             if subject and teacher_email is not None:
                 if c_teacher := self.get_teacher(teacher_email):
@@ -480,9 +487,6 @@ class Database:
             if insert_teacher_info and teacher_email is not None:
                 if c_teacher is None:
                     c_teacher = self.get_teacher(teacher_email)
-
-                if teacher_id is not None and str(c_teacher['_id']) != teacher_id:
-                    continue
 
                 t_id = t['_id']
                 if not insert_bio:
