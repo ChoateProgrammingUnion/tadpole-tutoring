@@ -1,4 +1,5 @@
 .idea
+*.zip
 index.db
 config.py
 
