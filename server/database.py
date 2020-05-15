@@ -260,7 +260,7 @@ class Database:
         available_teachers = []
 
         max_hours = self._find('teachers', **{'email': {"$in": list(teacher_emails)}}, projection={'email': True, 'max_hours': True})
-        max_hours = {a['email']: defaultdict(int, a)['max_hours'] for a in max_hours}
+        max_hours = {a['email']: defaultdict(lambda: 1, a)['max_hours'] for a in max_hours}
 
         for email in teacher_emails:
             if max_hours[email] > hour_dict[email]:
@@ -290,7 +290,7 @@ class Database:
         available_teachers = []
 
         max_hours = self._find('teachers', **{'email': {"$in": list(teacher_emails)}}, projection={'email': True, 'max_hours': True})
-        max_hours = {a['email']: defaultdict(int, a)['max_hours'] for a in max_hours}
+        max_hours = {a['email']: defaultdict(lambda: 1, a)['max_hours'] for a in max_hours}
 
         for email in teacher_emails:
             if max_hours[email] > hour_dict[email]:
