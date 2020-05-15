@@ -337,7 +337,7 @@ def calculate_timezone_offset():
 
 def pick_subject(vars):
     document['chosen-subject'].html = vars.target.id
-    document['back-to-subject'].html = """<a href="/schedule.html">Pick Another Subject</a>"""
+    document['back-to-subject'].html = """<a href="/schedule.html"><i>Back</i></a>"""
 
     document['clicky-slider'].html = slider_html
     document["switch-tutor"].bind("mousedown", toggle_bind)
