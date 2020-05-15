@@ -16,9 +16,7 @@ def register_student(request):
     email = auth.check_login(request)
     if email:
         db = database.Database()
-        db.init_db_connection()
         db.add_student(email, "", "")
-        db.end_db_connection()
         return True
     return False
 
@@ -38,18 +36,13 @@ def get_person(request):
     if validators.email(email) and (email_requester := auth.check_teacher(request)):
         if email_requester and validators.email(email_requester):
             db = database.Database()
-            db.init_db_connection()
             student = db.get_student(email)
-            db.end_db_connection()
         return dict(student)
 
     elif validators.email(email) and (email_requester := auth.check_login(request)):
         if email_requester and validators.email(email_requester) and email == email_requester:
             db = database.Database()
-            db.init_db_connection()
             student = db.get_student(email)
-            db.end_db_connection()
-
             if 'notes' in student:
                 del student['notes']
 
@@ -62,13 +55,10 @@ def get_person(request):
 def fetch_teachers(subject):
     db = database.Database()
 
-    db.init_db_connection()
     if subject is not None:
         all_teachers = db.all_teachers(subject)
     else:
         all_teachers = db.all_teachers()
-    db.end_db_connection()
-
     return all_teachers
 
 def update_time(request):
@@ -81,10 +71,7 @@ def update_time(request):
     if id:
         db = database.Database()
 
-        db.init_db_connection()
         edited = db.edit_time(id, start_time, duration_type, claimed, student)
-        db.end_db_connection()
-
         return edited
 
     log_info("update_time was called, but no id was specified")
@@ -97,10 +84,7 @@ def make_teacher(request):
     if student_email:
         db = database.Database()
 
-        db.init_db_connection()
         succeeded = db.make_teacher(student_email, [])
-        db.end_db_connection()
-
         return succeeded
 
     log_info("confirm_teacher was called, but no student email was specified")
@@ -113,10 +97,7 @@ def claim_time(request):
     if student_email and time_id:
         db = database.Database()
 
-        db.init_db_connection()
         succeeded = db.claim_time(student_email, time_id)
-        db.end_db_connection()
-
         return succeeded
 
     log_info("claim_time was called, student_email and time_id weren't specified")

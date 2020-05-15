@@ -55,48 +55,6 @@ class Database:
             - "``email``": The account's email address with items in the cart.
             - "``cart``: The cart (a base 64 pickled string).
             - "``intent``: Intent id of the current card ("" if there isn't one).
-
-    Examples:
-        **Handle a teacher login (call this once you know the teacher's email address)**::
-
-            db.init_db_connection()
-            if not db.check_teacher("ateacher@choate.edu"):
-                # Teacher isn't in the database
-                # Get the teacher to specify their name and the subjects they teach, then call the following:
-                db.add_teacher("ateacher@choate.edu", "A", "Teacher", ["Math", "English"])
-            db.end_db_connection()
-
-        **Handle a student login**::
-
-            db.init_db_connection()
-            db.add_student("astudent@choate.edu", "A", "Student")
-            db.end_db_connection()
-
-        **Add a tutoring time (from teacher acct)**::
-
-            db.init_db_connection()
-            # 0 at the end means is is a 1hr session, 1 would be 1.5 hr
-            db.add_time_for_tutoring("ateacher@choate.edu", datetime.datetime(2020, 4, 14, 10, 00), 0)
-            db.end_db_connection()
-
-        **Claim an available math tutoring time (from student acct)**::
-
-            db.init_db_connection()
-            possible_times = db.search_times(subject="Math", min_start_time=datetime.datetime.now(), must_be_unclaimed=True)
-            db.claim_time("astudent@choate.edu", time_id=possible_times[0]['id'])
-            db.end_db_connection()
-
-        **Get student notes (from teacher acct)**::
-
-            db.init_db_connection()
-            notes = db.get_student_notes("astudent@choate.edu")
-            db.end_db_connection()
-
-        **Change student notes (from teacher acct)**::
-
-            db.init_db_connection()
-            db.set_student_notes("astudent@choate.edu", "A Student is a very good student...")
-            db.end_db_connection()
     """
 
     def __init__(self):
@@ -239,6 +197,52 @@ class Database:
 
         return [i for i in self._all('teachers') if subject in i['subjects'].split('|')]
 
+    def get_teacher_max_hours(self, teacher_email: str = None, teacher_id: str = None) -> Optional[int]:
+        t = None
+
+        if teacher_id is not None:
+            t = self._find_one("teachers", _id=teacher_id)
+
+        elif teacher_email is not None:
+            t = self._find_one("teachers", email=teacher_email)
+
+        if t is None:
+            return None
+
+        if hours := t.get('max_hours'):
+            return hours
+
+        return 3
+
+    def get_teacher_current_hours(self, start_time: datetime, end_time: datetime,
+                                  teacher_email: str = None, teacher_id: str = None) -> Optional[int]:
+        teacher_times = None
+
+        if teacher_email is not None:
+            teacher_times = self.search_times(teacher_email=teacher_email,
+                                              min_start_time=start_time,
+                                              max_start_time=end_time,
+                                              must_be_unclaimed=False)
+
+        elif teacher_id is not None:
+            teacher_times = self.search_times(teacher_id=teacher_id,
+                                              min_start_time=start_time,
+                                              max_start_time=end_time,
+                                              must_be_unclaimed=False)
+
+        cumulative_hours = 0
+
+        for current_time in teacher_times:
+            if current_time['claimed']:
+                cumulative_hours += 1
+
+        return cumulative_hours
+
+    def check_teacher_availability(self, start_time: datetime, end_time: datetime, teacher_email: str = None, teacher_id: str = None) -> Optional[bool]:
+        if current_hours := self.get_teacher_current_hours(start_time, end_time, teacher_email, teacher_id):
+            if max_hours := self.get_teacher_max_hours(teacher_email, teacher_id):
+                return current_hours < max_hours
+
     # Student database retrieval/manipulation
 
     def get_student_notes(self, student_email: str) -> str:
@@ -306,7 +310,7 @@ class Database:
         """
         print_function_call(header=teacher_email)
 
-        start_time_unix = str(int(start_time.timestamp()))
+        start_time_unix = int(start_time.timestamp())
 
         log_info("Timestamp: " + str(start_time_unix), header=teacher_email)
 
@@ -419,7 +423,7 @@ class Database:
     def search_times(self, teacher_email: str = None, teacher_id: str = None, student_email: str = None,
                      subject: str = None, min_start_time: datetime = None, max_start_time: datetime = None,
                      must_be_unclaimed: bool = False, insert_teacher_info=False, insert_bio: bool=True,
-                     string_time_offset: timedelta = None, possible_times: List[dict] = None) -> List[dict]:
+                     string_time_offset: timedelta = None) -> List[dict]:
         """
         Searches the database for tutoring sessions satisfying the search parameters
 
@@ -441,39 +445,39 @@ class Database:
             The list of dicts
         """
 
-        if possible_times is None:
-            search_params = dict()
+        search_params = dict()
 
-            if teacher_email is not None: search_params.update({"teacher_email": teacher_email})
-            if student_email is not None: search_params.update({"student": student_email})
-            if must_be_unclaimed: search_params.update({"claimed": 0})
-
-            possible_times = self._find('times', **search_params)
-
-        if teacher_id is not None:
+        if teacher_id is not None and teacher_email is None:
             teacher_email = self.get_teacher_by_id(teacher_id)['email']
+
+        if teacher_email is not None:
+            search_params.update({"teacher_email": teacher_email})
+        elif subject is not None:
+            teacher_emails_in_subject = [i['email'] for i in self.all_teachers(subject)]
+            search_params.update({"teacher_email": {"$in": teacher_emails_in_subject}})
+
+        if student_email is not None:
+            search_params.update({"student": student_email})
+
+        if must_be_unclaimed:
+            search_params.update({"claimed": False})
+
+        if min_start_time is not None or max_start_time is not None:
+            search_params.update({"start_time": {}})
+
+            if min_start_time is not None:
+                search_params['start_time'].update({"$gte": min_start_time.timestamp()})
+
+            if max_start_time is not None:
+                search_params['start_time'].update({"$lt": max_start_time.timestamp()})
+
+
+        possible_times = self._find('times', **search_params)
 
         results: List[dict] = []
 
         for t in possible_times:
             c_start = int(t['start_time'])
-
-            if min_start_time and datetime.fromtimestamp(c_start).astimezone(pytz.utc) < pytz.utc.localize(min_start_time):
-                continue
-
-            if max_start_time and datetime.fromtimestamp(c_start).astimezone(pytz.utc) >= pytz.utc.localize(max_start_time):
-                continue
-
-            c_teacher = None
-
-            if teacher_id is not None:
-                if teacher_email != t['teacher_email']:
-                    continue
-
-            if subject:
-                if t2 := self.get_teacher(t['teacher_email']):
-                    if subject not in t2['subjects'].split("|"):
-                        continue
 
             if string_time_offset is not None:
                 time_obj = datetime.fromtimestamp(c_start).astimezone(pytz.utc)
@@ -482,8 +486,7 @@ class Database:
                 t['date_str'] = (time_obj - string_time_offset).strftime("%b %d %Y")
 
             if insert_teacher_info and teacher_email is not None:
-                if c_teacher is None:
-                    c_teacher = self.get_teacher(teacher_email)
+                c_teacher = self.get_teacher(teacher_email)
 
                 t_id = t['_id']
                 if not insert_bio:
@@ -514,17 +517,8 @@ class Database:
         schedule_dict = []
 
         for day_num in range(num_days):
-            params = dict()
-
-            if search_params.get('teacher_email') is not None: params.update({"teacher_email": search_params.get('teacher_email')})
-            if search_params.get('student_email') is not None: params.update({"student": search_params.get('student_email')})
-            params.update({"claimed": False})
-
-            possible_times = self._find('times', **params)
-
             today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24),
-                                               string_time_offset=timezone_offset, insert_teacher_info=True, insert_bio=False,
-                                               possible_times=possible_times, **search_params)
+                                               string_time_offset=timezone_offset, insert_teacher_info=True, insert_bio=False, **search_params)
 
             # TODO
             # for t in today_schedule:
@@ -602,21 +596,6 @@ class Database:
 
     # Database tools
 
-    def init_db_connection(self, attempt=0):
-        """
-        Initializes the database connection.
-
-        Args:
-            attempt: The attempt number to initialize the database connection (for recursion)
-        """
-        pass
-
-    def end_db_connection(self):
-        """
-        Closes the database connection
-        """
-        pass
-
     def _upsert(self, table: str, data: dict, key=None) -> bool:
         """
         Upserts a dict into a specified database table
@@ -658,7 +637,7 @@ class Database:
         MONGO_DB[MONGO_DATABASE][table].insert_one(data)
         return True
 
-    def _find_one(self, table: str, **kwargs) -> dict:
+    def _find_one(self, table: str, **kwargs) -> Optional[dict]:
         if '_id' in kwargs:
             kwargs['_id'] = ObjectId(kwargs['_id'])
 

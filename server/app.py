@@ -74,8 +74,7 @@ def check_login():
 # def populate_index():
 #     db = database.Database()
 #
-#     db.init_db_connection()
-#
+#     #
 #     midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 #
 #     db.add_student('student1@email.com', "student1", "studentOne")
@@ -94,8 +93,7 @@ def check_login():
 #     db.append_cart('student1@email.com', 1)
 #     db.append_cart('student1@email.com', 2)
 #
-#     db.end_db_connection()
-#
+#     #
 #     return "done"
 
 @app.route('/callback')
@@ -161,10 +159,7 @@ def api_get_teacher():
 
     db = database.Database()
 
-    db.init_db_connection()
     teacher = db.get_teacher_by_id(teacher_id)
-    db.end_db_connection()
-
     return api.serialize(teacher)
 
 @app.route('/api/get-teacher-by-email')
@@ -176,10 +171,7 @@ def api_get_teacher_by_email():
 
     db = database.Database()
 
-    db.init_db_connection()
     teacher = db.get_teacher(teacher_email)
-    db.end_db_connection()
-
     return api.serialize(teacher)
 
 @app.route('/api/edit-teacher')
@@ -194,10 +186,7 @@ def api_edit_teacher():
 
         db = database.Database()
 
-        db.init_db_connection()
         db.edit_teacher(email, subjects, zoom_id, bio, first_name, last_name, icon)
-        db.end_db_connection()
-
         return api.serialize(True)
 
     return api.serialize(False)
@@ -224,10 +213,7 @@ def api_search_times():
 
     db = database.Database()
 
-    db.init_db_connection()
     times = db.get_time_schedule(timezone_offset=timezone_offset, search_params=search_params)
-    db.end_db_connection()
-
     return api.serialize(times)
 
 @app.route('/api/get-time')
@@ -241,10 +227,7 @@ def api_get_time():
 
     db = database.Database()
 
-    db.init_db_connection()
     times = db.get_time_by_id(time_id, timezone_offset, True)
-    db.end_db_connection()
-
     return api.serialize(times)
 
 @app.route('/api/get-user-times')
@@ -256,13 +239,10 @@ def api_get_user_times():
 
         db = database.Database()
 
-        db.init_db_connection()
         if is_teacher:
             times = db.search_times(teacher_email=email, string_time_offset=timezone_offset, insert_teacher_info=True)
         else:
             times = db.search_times(student_email=email, string_time_offset=timezone_offset, insert_teacher_info=True)
-        db.end_db_connection()
-
         return api.serialize([times, is_teacher])
 
     return flask.abort(405)
@@ -284,11 +264,8 @@ def api_add_to_cart():
 
         db = database.Database()
 
-        db.init_db_connection()
         db.append_cart(email, time_id)
         cart, _ = db.get_cart(email)
-        db.end_db_connection()
-
         return api.serialize(list(cart))
 
     log_info("Not logged in")
@@ -312,10 +289,7 @@ def api_create_time():
         log_info("Serialized Date (UTC): " + str(d))
 
         db = database.Database()
-        db.init_db_connection()
         db.add_time_for_tutoring(email, d)
-        db.end_db_connection()
-
         return ""
 
     log_info("Not logged in")
@@ -326,10 +300,7 @@ def api_verify_cart():
     if email := auth.check_login(request):
         db = database.Database()
 
-        db.init_db_connection()
         verified = db.verify_cart(email)
-        db.end_db_connection()
-
         return api.serialize(verified)
 
     log_info("Not logged in")
@@ -345,15 +316,12 @@ def api_remove_from_cart():
 
         db = database.Database()
 
-        db.init_db_connection()
         cart, _ = db.get_cart(email)
         try:
             cart.remove(time_id)
         except KeyError:
             log_info("Key " + str(time_id) + " not in " + str(cart))
         db.set_cart(email, cart)
-        db.end_db_connection()
-
         return api.serialize(list(cart))
 
     log_info("Not logged in")
@@ -369,10 +337,7 @@ def api_remove_remove_session():
 
         db = database.Database()
 
-        db.init_db_connection()
         status = db.remove_time(time_id, email)
-        db.end_db_connection()
-
         return status
 
     log_info("Not logged in")
@@ -383,15 +348,12 @@ def api_get_cart():
     if email := auth.check_login(request):
         db = database.Database()
 
-        db.init_db_connection()
         cart, _ = db.get_cart(email)
 
         cart_list = []
 
         for i in cart:
             cart_list.append(db.get_time_by_id(i, timedelta(minutes=request.args.get("tz_offset", 0, int)), True))
-        db.end_db_connection()
-
         return api.serialize(list(cart_list))
 
     log_info("Not logged in")
@@ -402,10 +364,7 @@ def api_get_cart_numbers():
     if email := auth.check_login(request):
         db = database.Database()
 
-        db.init_db_connection()
         cart, _ = db.get_cart(email)
-        db.end_db_connection()
-
         return api.serialize(list(cart))
 
     log_info("Not logged in")
@@ -417,10 +376,7 @@ def api_make_teacher():
         if email := auth.check_login(request):
             db = database.Database()
 
-            db.init_db_connection()
             db.make_teacher(email, [], "", 0)
-            db.end_db_connection()
-
             return api.serialize(True)
 
     return api.serialize(False)
@@ -437,10 +393,7 @@ def create_payment():
     if email := auth.check_login(request):
         db = database.Database()
 
-        db.init_db_connection()
         cart, intent = db.get_cart(email)
-        db.end_db_connection()
-
         # if intent != "":
         #     log_info("Intent " + intent + " already created. Aborting.")
         #     return flask.abort(500)
@@ -464,10 +417,7 @@ def create_payment():
             currency='usd'
         )
 
-        db.init_db_connection()
         db.set_intent(email, intent.get('id'))
-        db.end_db_connection()
-
         try:
             # Send publishable key and PaymentIntent details to client
             return jsonify({'publishableKey': STRIPE_PUBLISHABLE_KEY, 'clientSecret': intent.client_secret, 'intentId': intent.get('id')})
@@ -509,13 +459,9 @@ def handle_payment():
         if intent['amount_received'] >= intent['amount']:
             db = database.Database()
 
-            db.init_db_connection()
             cart, intent = db.get_cart(email)
-            db.end_db_connection()
-
             if intent_id == intent:
                 log_info("Server cart matches intent cart, claiming times...")
-                db.init_db_connection()
                 sender = notify.Email()
                 times = []
                 for t_id in cart:
@@ -549,7 +495,6 @@ def handle_payment():
 
 
                 db.set_cart(email, set())
-                db.end_db_connection()
                 log_info("Times claimed")
 
                 sender.send(email, "Tadpole Tutoring Payment Confirmation", "Dear Student, \n\nThanks for scheduling a teaching session with us! This is a confirmation that you have signed up for " + str(len(cart)) + " session(s) on the following dates:\n" + "\n".join(times) + "\n\n\nFrom, Tadpole Tutoring")
