@@ -35,7 +35,10 @@ teacher_profile_form_start = """
     <input type="text" id="zoom" name="zoom" size="28" placeholder="https://zoom.us/j/{zoom_id}">
 
     <label for="hours">Link to a Photo of You:</label>
-    <input type="text" id="icon" name="icon" size="28" placeholder="https://github.com/identicons/jasonlong.png">
+    <input type="text" id="icon" name="icon" size="28" placeholder="{icon}">
+
+    <label for="hours">Maximum Hours Per Week:</label>
+    <input type="text" id="max_hours" name="max_hours" size="28" placeholder="{max_hours}">
 
     <label>Subjects:</label>
 </form>
@@ -141,6 +144,11 @@ async def submit_form():
 
     icon = document['icon'].value
 
+    try:
+        max_hours = int(document['max_hours'].value)
+    except:
+        max_hours = 0
+
     zoom_str_int = ""
 
     for c in zoom_str:
@@ -155,6 +163,7 @@ async def submit_form():
     if last_name != "": params.update({"last_name": last_name})
     if bio != "": params.update({"bio": bio})
     if icon != "": params.update({"icon": icon})
+    if max_hours != "": params.update({"max_hours": max_hours})
 
     await fetch_api("/api/edit-teacher", params)
 
@@ -171,6 +180,13 @@ async def load_settings_page():
     # is_teacher = check_teacher()
     if is_teacher:
         teacher_details = await fetch_api('/api/get-teacher-by-email')
+
+        if 'icon' not in teacher_details:
+            teacher_details['icon'] = 'https://github.com/identicons/jasonlong.png'
+
+        if 'max_hours' not in teacher_details:
+            teacher_details['max_hours'] = 0
+
         document['user-settings'].html = teacher_profile_form_start.format(**teacher_details)
         teacher_subjects = teacher_details['subjects'].split("|")
 
