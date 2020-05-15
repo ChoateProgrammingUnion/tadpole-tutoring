@@ -163,7 +163,7 @@ async def submit_form():
     if last_name != "": params.update({"last_name": last_name})
     if bio != "": params.update({"bio": bio})
     if icon != "": params.update({"icon": icon})
-    if max_hours != "": params.update({"max_hours": max_hours})
+    if document['max_hours'].value != "": params.update({"max_hours": max_hours})
 
     await fetch_api("/api/edit-teacher", params)
 
