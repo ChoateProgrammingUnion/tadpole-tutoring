@@ -155,6 +155,10 @@ async def fetch_and_display_timeslot(id):
         document['schedule-results'].html = timeslot_display_template_not_logged_in.format(**time_info)
 
     document['back-button-div'].html = back_button_template
+    try:
+        document['back-to-subject'].html = ""
+    except:
+        pass
     document["back-button"].bind("mousedown", update_view)
 
     user_cart = await fetch_api("/api/get-cart-numbers")
@@ -243,6 +247,10 @@ def display_tutor_times(vars):
     aio.run(search_by_time(id))
 
     document['back-button-div'].html = back_button_template
+    try:
+        document['back-to-subject'].html = ""
+    except:
+        pass
     document["back-button"].bind("mousedown", update_view)
 
 async def search_by_tutor():
