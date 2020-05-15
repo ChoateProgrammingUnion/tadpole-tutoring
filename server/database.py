@@ -214,7 +214,7 @@ class Database:
         if hours := t.get('max_hours'):
             return hours
 
-        return 0
+        return 1
 
     def get_teacher_current_hours(self, start_time: datetime, end_time: datetime,
                                   teacher_email: str = None, teacher_id: str = None) -> Optional[int]:
