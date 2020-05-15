@@ -241,9 +241,9 @@ def api_get_user_times():
         db = database.Database()
 
         if is_teacher:
-            times = db.search_times(teacher_email=email, string_time_offset=timezone_offset, insert_teacher_info=True)
+            times = db.search_times(teacher_email=email, string_time_offset=timezone_offset, insert_teacher_info=True, teacher_must_be_available=False)
         else:
-            times = db.search_times(student_email=email, string_time_offset=timezone_offset, insert_teacher_info=True)
+            times = db.search_times(student_email=email, string_time_offset=timezone_offset, insert_teacher_info=True, teacher_must_be_available=False)
         return api.serialize([times, is_teacher])
 
     return flask.abort(405)
