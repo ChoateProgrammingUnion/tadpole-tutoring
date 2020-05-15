@@ -521,7 +521,8 @@ class Database:
 
             if teacher_must_be_available:
                 teacher_emails_in_subject = self.get_available_teacher_emails(week_start_time, week_end_time, teacher_emails_in_subject)
-                search_params.update({"teacher_email": {"$in": teacher_emails_in_subject}})
+
+            search_params.update({"teacher_email": {"$in": teacher_emails_in_subject}})
         else:
             if teacher_must_be_available:
                 teacher_emails = self.get_available_teacher_emails(week_start_time, week_end_time)
