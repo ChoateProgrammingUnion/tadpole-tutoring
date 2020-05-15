@@ -250,7 +250,7 @@ async def search_by_tutor():
     total_count, tutor_bio_html = render_tutor_bios(response_dict)
 
     if total_count == 0:
-        tutor_bio_html = '<h2>All tutors for your chosen subject are booked. <a href="/schedule.html">Pick Another Subject</a></h2>'
+        tutor_bio_html = '<h2>All tutors for your chosen subject are booked. <a href="/schedule.html"><i>Back</i></a></h2>'
 
     document['schedule-results'].html = tutor_bio_html
 
