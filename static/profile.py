@@ -185,7 +185,7 @@ async def load_settings_page():
             teacher_details['icon'] = 'https://github.com/identicons/jasonlong.png'
 
         if 'max_hours' not in teacher_details:
-            teacher_details['max_hours'] = 0
+            teacher_details['max_hours'] = 1
 
         document['user-settings'].html = teacher_profile_form_start.format(**teacher_details)
         teacher_subjects = teacher_details['subjects'].split("|")
