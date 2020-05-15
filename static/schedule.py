@@ -111,16 +111,16 @@ def toggle_bind(event):
     value = bool(document['switch-tutor-value'].text.rstrip())
 
     if not value:
-        document['results'].html = tutor_template
+        document['results'].html = time_template
         document['switch-tutor-value'].text = "True"
 
-        aio.run(search_by_tutor())
+        aio.run(search_by_time())
 
     else:
-        document['results'].html = time_template
+        document['results'].html = tutor_template
         document['switch-tutor-value'].text = ""
 
-        aio.run(search_by_time())
+        aio.run(search_by_tutor())
 
 def update_view(event):
     """
@@ -340,7 +340,11 @@ def pick_subject(vars):
     document['clicky-slider'].html = slider_html
     document["switch-tutor"].bind("mousedown", toggle_bind)
 
-    aio.run(search_by_time())
+    document["switch-tutor"].click()
+
+    document['results'].html = tutor_template
+    aio.run(search_by_tutor())
+    # toggle_bind()
 
 def subject_chooser():
     document['clicky-slider'].html = ""
