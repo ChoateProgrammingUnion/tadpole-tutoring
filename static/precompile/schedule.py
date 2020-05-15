@@ -48,7 +48,7 @@ time_template_for_tutor = """<header>
 
 timeslots_template = """<td><a href="#" onclick="return false;"><i class="timeslot" id="{_id}">{start_time}</i></a></td>"""
 
-back_button_template = """<a href="#" onclick="return false;"><i id="back-button">Schedule Another Appointment</i></a>"""
+back_button_template = """<a href="#" onclick="return false;"><i id="back-button">Back</i></a>"""
 
 timeslot_display_template = """
 <tr><th><a>Tutoring Session Info</a></th></tr>
@@ -128,7 +128,7 @@ def update_view(event):
     """
 
     document['back-button-div'].html = ""
-    value = bool(document['switch-tutor-value'].text.rstrip())
+    value = not bool(document['switch-tutor-value'].text.rstrip())
 
     if value:
         document['results'].html = tutor_template
@@ -249,11 +249,13 @@ async def search_by_tutor():
     response_dict = await fetch_teachers()
     total_count, tutor_bio_html = render_tutor_bios(response_dict)
 
+    if total_count == 0:
+        tutor_bio_html = '<h2>All tutors for your chosen subject are booked. <a href="/schedule.html">Pick Another Subject</a></h2>'
+
     document['schedule-results'].html = tutor_bio_html
 
     for d in document.select(".tutor-link"):
         d.bind("click", display_tutor_times)
-
 
 async def render_tutor(ev=""):
     print("ev.target.id", ev.target.id)

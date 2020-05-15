@@ -180,13 +180,14 @@ def api_edit_teacher():
         subjects = request.args.get("subjects", None, str)
         zoom_id = request.args.get("zoom_id", None, int)
         icon = request.args.get("icon", None, str)
+        max_hours = request.args.get("max_hours", None, int)
         bio = request.args.get("bio", None, str)
         first_name = request.args.get("first_name", None, str)
         last_name = request.args.get("last_name", None, str)
 
         db = database.Database()
 
-        db.edit_teacher(email, subjects, zoom_id, bio, first_name, last_name, icon)
+        db.edit_teacher(email, subjects, zoom_id, bio, first_name, last_name, icon, max_hours)
         return api.serialize(True)
 
     return api.serialize(False)

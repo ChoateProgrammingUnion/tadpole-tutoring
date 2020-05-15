@@ -1,4 +1,5 @@
 import copy
+from collections import defaultdict
 from datetime import datetime, timedelta
 
 from pymongo import MongoClient
@@ -136,7 +137,7 @@ class Database:
             return teacher
         return {}
 
-    def edit_teacher(self, teacher_email: str, subjects: str, zoom_id: int, bio: str, first_name: str, last_name: str, icon: str) -> bool:
+    def edit_teacher(self, teacher_email: str, subjects: str, zoom_id: int, bio: str, first_name: str, last_name: str, icon: str, max_hours: int) -> bool:
         if teacher := self._find_one('teachers', email=teacher_email):
             if subjects is not None: teacher['subjects'] = subjects
             if zoom_id is not None: teacher['zoom_id'] = zoom_id
@@ -144,6 +145,7 @@ class Database:
             if first_name is not None: teacher['first_name'] = first_name
             if last_name is not None: teacher['last_name'] = last_name
             if icon is not None: teacher['icon'] = icon
+            if max_hours is not None: teacher['max_hours'] = max_hours
 
             return self._upsert('teachers', teacher)
 
@@ -201,10 +203,10 @@ class Database:
         t = None
 
         if teacher_id is not None:
-            t = self._find_one("teachers", _id=teacher_id)
+            t = self._find_one("teachers", {"max_hours": True}, _id=teacher_id)
 
         elif teacher_email is not None:
-            t = self._find_one("teachers", email=teacher_email)
+            t = self._find_one("teachers", {"max_hours": True}, email=teacher_email)
 
         if t is None:
             return None
@@ -212,36 +214,89 @@ class Database:
         if hours := t.get('max_hours'):
             return hours
 
-        return 3
+        return 0
 
     def get_teacher_current_hours(self, start_time: datetime, end_time: datetime,
                                   teacher_email: str = None, teacher_id: str = None) -> Optional[int]:
-        teacher_times = None
+        if teacher_id is None and teacher_email is None:
+            return None
 
-        if teacher_email is not None:
-            teacher_times = self.search_times(teacher_email=teacher_email,
-                                              min_start_time=start_time,
-                                              max_start_time=end_time,
-                                              must_be_unclaimed=False)
+        if teacher_id is not None:
+            teacher_email = self.get_teacher_by_id(teacher_id)['email']
 
-        elif teacher_id is not None:
-            teacher_times = self.search_times(teacher_id=teacher_id,
-                                              min_start_time=start_time,
-                                              max_start_time=end_time,
-                                              must_be_unclaimed=False)
+        search_params = {"teacher_email": teacher_email,
+                         "start_time": {
+                             "$gte": start_time.timestamp(),
+                             "$lt": end_time.timestamp()},
+                         "claimed": True}
 
-        cumulative_hours = 0
-
-        for current_time in teacher_times:
-            if current_time['claimed']:
-                cumulative_hours += 1
-
-        return cumulative_hours
+        return self._count('times', search_params)
 
     def check_teacher_availability(self, start_time: datetime, end_time: datetime, teacher_email: str = None, teacher_id: str = None) -> Optional[bool]:
-        if current_hours := self.get_teacher_current_hours(start_time, end_time, teacher_email, teacher_id):
-            if max_hours := self.get_teacher_max_hours(teacher_email, teacher_id):
-                return current_hours < max_hours
+        current_hours = self.get_teacher_current_hours(start_time, end_time, teacher_email, teacher_id)
+        max_hours = self.get_teacher_max_hours(teacher_email, teacher_id)
+
+        if current_hours is not None and max_hours is not None:
+            return current_hours < max_hours
+
+    def get_available_teacher_emails(self, start_time: datetime, end_time: datetime, teacher_emails: List[str] = None) -> List[str]:
+        search_params = {"start_time":
+                             {"$gte": start_time.timestamp(), "$lt": end_time.timestamp()}}
+
+        if teacher_emails is not None:
+            search_params.update({"teacher_email": {"$in": teacher_emails}})
+
+        possible_times = self._find('times', {"teacher_email": True, "claimed": True}, **search_params)
+
+        hour_dict = defaultdict(int)
+        teacher_emails = set()
+
+        for t in possible_times:
+            teacher_emails.add(t['teacher_email'])
+
+            if t['claimed']:
+                hour_dict[t['teacher_email']] += 1
+
+        available_teachers = []
+
+        max_hours = self._find('teachers', **{'email': {"$in": list(teacher_emails)}}, projection={'email': True, 'max_hours': True})
+        max_hours = {a['email']: defaultdict(int, a)['max_hours'] for a in max_hours}
+
+        for email in teacher_emails:
+            if max_hours[email] > hour_dict[email]:
+                available_teachers.append(email)
+
+        return available_teachers
+
+    def get_available_teachers(self, start_time: datetime, end_time: datetime, subject: str = None) -> List[dict]:
+        search_params = {"start_time":
+                             {"$gte": start_time.timestamp(), "$lt": end_time.timestamp()}}
+
+        if subject is not None:
+            teacher_emails = [a['email'] for a in self.all_teachers(subject)]
+            search_params.update({"teacher_email": {"$in": teacher_emails}})
+
+        possible_times = self._find('times', {"teacher_email": True, "claimed": True}, **search_params)
+
+        hour_dict = defaultdict(int)
+        teacher_emails = set()
+
+        for t in possible_times:
+            teacher_emails.add(t['teacher_email'])
+
+            if t['claimed']:
+                hour_dict[t['teacher_email']] += 1
+
+        available_teachers = []
+
+        max_hours = self._find('teachers', **{'email': {"$in": list(teacher_emails)}}, projection={'email': True, 'max_hours': True})
+        max_hours = {a['email']: defaultdict(int, a)['max_hours'] for a in max_hours}
+
+        for email in teacher_emails:
+            if max_hours[email] > hour_dict[email]:
+                available_teachers.append(self.get_teacher(email))
+
+        return available_teachers
 
     # Student database retrieval/manipulation
 
@@ -423,7 +478,8 @@ class Database:
     def search_times(self, teacher_email: str = None, teacher_id: str = None, student_email: str = None,
                      subject: str = None, min_start_time: datetime = None, max_start_time: datetime = None,
                      must_be_unclaimed: bool = False, insert_teacher_info=False, insert_bio: bool=True,
-                     string_time_offset: timedelta = None) -> List[dict]:
+                     string_time_offset: timedelta = None, teacher_must_be_available: bool = True,
+                     week_start_time: datetime = None, week_end_time: datetime = None) -> List[dict]:
         """
         Searches the database for tutoring sessions satisfying the search parameters
 
@@ -447,14 +503,30 @@ class Database:
 
         search_params = dict()
 
+        if week_start_time is None or week_end_time is None:
+            midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+            week_start_time = midnight - timedelta(days=midnight.weekday())
+            week_end_time = week_start_time + timedelta(days=7)
+
         if teacher_id is not None and teacher_email is None:
             teacher_email = self.get_teacher_by_id(teacher_id)['email']
 
         if teacher_email is not None:
+            if teacher_must_be_available and not self.check_teacher_availability(week_start_time, week_end_time, teacher_email):
+                return []
+
             search_params.update({"teacher_email": teacher_email})
         elif subject is not None:
             teacher_emails_in_subject = [i['email'] for i in self.all_teachers(subject)]
+
+            if teacher_must_be_available:
+                teacher_emails_in_subject = self.get_available_teacher_emails(week_start_time, week_end_time, teacher_emails_in_subject)
+
             search_params.update({"teacher_email": {"$in": teacher_emails_in_subject}})
+        else:
+            if teacher_must_be_available:
+                teacher_emails = self.get_available_teacher_emails(week_start_time, week_end_time)
+                search_params.update({"teacher_email": {"$in": teacher_emails}})
 
         if student_email is not None:
             search_params.update({"student": student_email})
@@ -506,7 +578,11 @@ class Database:
         if search_params is None:
             search_params = {}
 
-        midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0) + timezone_offset
+        midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = midnight - timedelta(days=midnight.weekday())
+        week_end = midnight + timedelta(days=7)
+
+        midnight += timezone_offset
 
         if midnight > datetime.utcnow():
             midnight -= timedelta(hours=24)
@@ -518,7 +594,8 @@ class Database:
 
         for day_num in range(num_days):
             today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24),
-                                               string_time_offset=timezone_offset, insert_teacher_info=True, insert_bio=False, **search_params)
+                                               string_time_offset=timezone_offset, insert_teacher_info=True, insert_bio=False,
+                                               week_start_time=week_start, week_end_time=week_end, **search_params)
 
             # TODO
             # for t in today_schedule:
@@ -637,11 +714,14 @@ class Database:
         MONGO_DB[MONGO_DATABASE][table].insert_one(data)
         return True
 
-    def _find_one(self, table: str, **kwargs) -> Optional[dict]:
+    def _find_one(self, table: str, projection=None, **kwargs) -> Optional[dict]:
         if '_id' in kwargs:
             kwargs['_id'] = ObjectId(kwargs['_id'])
 
-        result = MONGO_DB[MONGO_DATABASE][table].find_one(filter=kwargs)
+        if projection is not None:
+            result = MONGO_DB[MONGO_DATABASE][table].find_one(kwargs)
+        else:
+            result = MONGO_DB[MONGO_DATABASE][table].find_one(kwargs, projection)
 
         if result is None:
             return result
@@ -651,11 +731,14 @@ class Database:
 
         return dict(result)
 
-    def _find(self, table: str, **kwargs) -> List[dict]:
+    def _find(self, table: str, projection=None, **kwargs) -> List[dict]:
         if '_id' in kwargs:
             kwargs['_id'] = ObjectId(kwargs['_id'])
 
-        result = list(MONGO_DB[MONGO_DATABASE][table].find(filter=kwargs))
+        if projection is not None:
+            result = list(MONGO_DB[MONGO_DATABASE][table].find(kwargs, projection))
+        else:
+            result = list(MONGO_DB[MONGO_DATABASE][table].find(kwargs))
 
         for i in range(len(result)):
             if '_id' in result[i]:
@@ -671,6 +754,9 @@ class Database:
 
     def _all(self, table: str) -> List[dict]:
         return self._find(table)
+
+    def _count(self, table: str, filter: dict) -> int:
+        return MONGO_DB[MONGO_DATABASE][table].count_documents(filter)
 
     # Auth functions
 

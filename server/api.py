@@ -5,6 +5,8 @@ import codecs
 # import pickle
 import json
 
+from datetime import datetime, timedelta
+
 from utils.log import *
 
 
@@ -55,11 +57,11 @@ def get_person(request):
 def fetch_teachers(subject):
     db = database.Database()
 
-    if subject is not None:
-        all_teachers = db.all_teachers(subject)
-    else:
-        all_teachers = db.all_teachers()
-    return all_teachers
+    midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    week_start = midnight - timedelta(days=midnight.weekday())
+    week_end = week_start + timedelta(days=7)
+
+    return db.get_available_teachers(week_start, week_end, subject)
 
 def update_time(request):
     id = request.args.get("id", None, int)
