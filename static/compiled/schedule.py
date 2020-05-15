@@ -126,8 +126,7 @@ def update_view(event):
     """
     Binds to the toggle and figures out what to do
     """
-
-    document['back-button-div'].html = ""
+    document['back-button-div'].html = "<a href='schedule.html'><i>Back</i></a>"
     value = not bool(document['switch-tutor-value'].text.rstrip())
 
     if value:
