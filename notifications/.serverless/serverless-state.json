@@ -107,7 +107,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/notifications/dev/1589397307124-2020-05-13T19:15:07.124Z/notifications.zip"
+                "S3Key": "serverless/notifications/dev/1589518399918-2020-05-15T04:53:19.918Z/notifications.zip"
               },
               "FunctionName": "notifications-dev-hello",
               "Handler": "poll.poll",
@@ -132,20 +132,20 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "HelloLambdaVersionjixsW6ZUxiJm56W5pNH3P72tx7eoTsSlxACgHgVzY6M": {
+          "HelloLambdaVersionM1n9rCBQ4d58BXKtTlaqsWmk3XtzF8dvjHZ9N5hkjg": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "HelloLambdaFunction"
               },
-              "CodeSha256": "7wDtWoSWnMKfC+fF1kbJ6ucn8YomD2zZhCx+lf1ox3o="
+              "CodeSha256": "qzbazK7tjCioXrx0cS/WBi7kRYxHnKA+BAsGeF51TYU="
             }
           },
           "HelloEventsRuleSchedule1": {
             "Type": "AWS::Events::Rule",
             "Properties": {
-              "ScheduleExpression": "rate(1 minute)",
+              "ScheduleExpression": "rate(5 minutes)",
               "State": "ENABLED",
               "Targets": [
                 {
@@ -199,7 +199,7 @@
           "HelloLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "HelloLambdaVersionjixsW6ZUxiJm56W5pNH3P72tx7eoTsSlxACgHgVzY6M"
+              "Ref": "HelloLambdaVersionM1n9rCBQ4d58BXKtTlaqsWmk3XtzF8dvjHZ9N5hkjg"
             }
           }
         }
@@ -241,7 +241,7 @@
         "handler": "poll.poll",
         "events": [
           {
-            "schedule": "rate(1 minute)"
+            "schedule": "rate(5 minutes)"
           }
         ],
         "tags": {
@@ -258,7 +258,7 @@
     "artifact": "/Users/max/git/tadpole-tutoring/notifications/.serverless/notifications.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/notifications/dev/1589397307124-2020-05-13T19:15:07.124Z",
+    "artifactDirectoryName": "serverless/notifications/dev/1589518399918-2020-05-15T04:53:19.918Z",
     "artifact": "notifications.zip"
   }
 }

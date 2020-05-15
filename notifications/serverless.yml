@@ -57,7 +57,7 @@ functions:
   hello:
     handler: poll.poll
     events:
-      - schedule: rate(1 minute)
+      - schedule: rate(5 minutes)
     tags:
       purpose: tadpoletutoring
 

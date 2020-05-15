@@ -3,7 +3,12 @@ import datetime
 import config
 import notify
 
+
 def poll(*null):
+    email()
+
+
+def email():
     client = pymongo.MongoClient(host=config.DB)
 
     sender = notify.Email()
