@@ -499,7 +499,13 @@ def handle_payment():
                     time = datetime.fromtimestamp(int(session['start_time'])).astimezone(pytz.utc)
                     times.append(time.strftime("%I:%M%p UTC on %B %d, %Y"))
                     sender.send(session['teacher_email'], "Tadpole Tutoring Student Registration", "Dear Tutor,\n\nA student has signed up for your class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe student's name is " + session['student'] + ".\n\n\nFrom, Tadpole Tutoring")
-                    for i in [12, 1]:
+
+                    if time - timedelta(hours=i) < datetime.datetime.now():
+                        email_times = [1]
+                    else:
+                        email_times = [12, 1]
+                        
+                    for i in email_times:
                         db._insert("notifications", {
                             "email": {
                                 "address": session['teacher_email'], 

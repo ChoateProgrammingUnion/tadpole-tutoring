@@ -143,9 +143,9 @@ def rename_teacher_run(vars):
     aio.run(rename_teacher())
 
 def document_get(value):
-    if value in document:
+    try:
         return document['value']
-    else:
+    except:
         return ""
 
 async def submit_form():

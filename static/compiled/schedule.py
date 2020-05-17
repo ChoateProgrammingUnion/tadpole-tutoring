@@ -93,14 +93,15 @@ teacher_bio_template = """<aside>
     </center>
     <p><b>Studies at: </b>Choate Rosemary Hall</p>
     <p><b>Subjects Teaching: </b>{subjects}</p>
-    <p><b>Email: </b><span>{email}</span></p>
+    <p><b>Email: </b><span><a href="mailto:{email}">{email}</a></span></p>
     <details>
-    <summary>Read more</summary>
+    <summary>Display Bio</summary>
     <p>{bio}</p>
     </details>
     <a><strong class="tutor-link" id="{_id}">Schedule Now</strong></a>
 </aside>
 """
+
 
 slider_html = document['clicky-slider'].html
 

@@ -45,7 +45,7 @@ var orderData = {
     currency: "usd"
 };
 
-let url = "http://localhost:5000";
+let url = "https://api.tadpoletutoring.org";
 
 // Disable the button until we have Stripe set up on the page
 // document.querySelector("button").disabled = true;
