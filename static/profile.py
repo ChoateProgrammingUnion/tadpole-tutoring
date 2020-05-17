@@ -155,17 +155,17 @@ async def submit_form():
 
     params.update({"subjects": subjects_str})
 
-    bio = document['bio'].value
+    bio = document.get('bio').value
 
-    first_name = document['first_name'].value
-    last_name = document['last_name'].value
+    first_name = document.get('first_name').value
+    last_name = document.get('last_name').value
 
-    wechat = document['wechat'].value
-    phone_number = document['phone_number'].value
+    wechat = document.get('wechat').value
+    phone_number = document.get('phone_number').value
 
-    zoom_str = document['zoom'].value
+    zoom_str = document.get('zoom').value
 
-    icon = document['icon'].value
+    icon = document.get('icon').value
 
     try:
         max_hours = int(document['max_hours'].value)
