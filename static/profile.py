@@ -142,6 +142,12 @@ async def rename_teacher():
 def rename_teacher_run(vars):
     aio.run(rename_teacher())
 
+def document_get(value):
+    if value in document:
+        return document['value']
+    else:
+        return ""
+
 async def submit_form():
     subjects_str = ""
 
@@ -155,17 +161,17 @@ async def submit_form():
 
     params.update({"subjects": subjects_str})
 
-    bio = document.get('bio').value
+    bio = document_get('bio').value
 
-    first_name = document.get('first_name').value
-    last_name = document.get('last_name').value
+    first_name = document_get('first_name').value
+    last_name = document_get('last_name').value
 
-    wechat = document.get('wechat').value
-    phone_number = document.get('phone_number').value
+    wechat = document_get('wechat').value
+    phone_number = document_get('phone_number').value
 
-    zoom_str = document.get('zoom').value
+    zoom_str = document_get('zoom').value
 
-    icon = document.get('icon').value
+    icon = document_get('icon').value
 
     try:
         max_hours = int(document['max_hours'].value)
