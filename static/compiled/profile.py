@@ -52,6 +52,9 @@ teacher_profile_form_start = """
 
     <label for="hours">Last Name:</label>
     <input type="text" id="last_name" name="last_name" size="28" placeholder="{last_name}">
+    
+    <label for="hours">Phone Number:</label>
+    <input type="text" id="phone_number" name="phone_number" size="28" placeholder="{phone_number}">
 
     <label for="hours">Zoom link:</label>
     <input type="text" id="zoom" name="zoom" size="28" placeholder="https://zoom.us/j/{zoom_id}">
@@ -171,6 +174,7 @@ async def submit_form():
         params.update({"subjects": subjects_str})
 
         bio = document['bio'].value
+        phone_number = document['phone_number'].value
 
         first_name = document['first_name'].value
         last_name = document['last_name'].value
@@ -198,6 +202,7 @@ async def submit_form():
         if first_name != "": params.update({"first_name": first_name})
         if last_name != "": params.update({"last_name": last_name})
         if bio != "": params.update({"bio": bio})
+        if phone_number != "": params.update({"phone_number": phone_number})
         if icon != "": params.update({"icon": icon})
 
         await fetch_api("/api/edit-teacher", params)
@@ -236,6 +241,9 @@ async def load_settings_page():
 
         if 'max_hours' not in teacher_details:
             teacher_details['max_hours'] = 1
+
+        if 'phone_number' not in teacher_details:
+            teacher_details['phone_number'] = '000-000-0000'
 
         document['user-settings'].html = teacher_profile_form_start.format(**teacher_details)
         teacher_subjects = teacher_details['subjects'].split("|")

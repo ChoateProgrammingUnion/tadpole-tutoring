@@ -94,7 +94,7 @@ teacher_bio_template = """<aside>
     <p><b>Studies at: </b>Choate Rosemary Hall</p>
     <p><b>Subjects Teaching: </b>{subjects}</p>
     <p><b>Email: </b><span><a href="mailto:{email}">{email}</a></span></p>
-    <p><b>Email: </b><span><a href="">Zoom Link (ID: {zoom_id})</a></span></p>
+    <p><span><a href="https://zoom.us/j/{zoom_id}?pwd=0000">Zoom Link (ID: {zoom_id})</a></span></p>
     <details>
     <summary>Display Bio</summary>
     <p>{bio}</p>
@@ -137,12 +137,14 @@ def update_view(event, back=True):
     value = not bool(document['switch-tutor-value'].text.rstrip())
 
     if value:
-        document['results'].html = tutor_template
+        if back:
+            document['results'].html = tutor_template
 
         aio.run(search_by_tutor())
 
     else:
-        document['results'].html = time_template
+        if back:
+            document['results'].html = time_template
 
         aio.run(search_by_time())
 
@@ -180,10 +182,18 @@ def display_timeslot(vars):
     aio.run(fetch_and_display_timeslot(display_id))
 
 
-async def search_by_time(id=None):
+async def search_by_time(id=None, update_view=True):
     """
     searches by time
     """
+
+    if id == "":
+        id = None
+
+    if id is None:
+        document['teacher-id'].html = ""
+    else:
+        document['teacher-id'].html = id
 
     subject = document['chosen-subject'].html
 
@@ -192,11 +202,15 @@ async def search_by_time(id=None):
 
     if id is None:
         params = {"tz_offset": calculate_timezone_offset()}
-        document['results'].html = time_template
+
+        if update_view:
+            document['results'].html = time_template
     else:
         params = {"tz_offset": calculate_timezone_offset(), "teacher_id": id}
-        teacher = await fetch_api("/api/get-teacher", {'teacher_id': id})
-        document['results'].html = time_template_for_tutor.format(**teacher)
+
+        if update_view:
+            teacher = await fetch_api("/api/get-teacher", {'teacher_id': id})
+            document['results'].html = time_template_for_tutor.format(**teacher)
 
     if subject is not None:
         params.update({"subject": subject})
@@ -209,6 +223,7 @@ async def search_by_time(id=None):
 
     document['left-arrow'].bind("click", left_arrow)
     document['right-arrow'].bind("click", right_arrow)
+    document['this-week'].bind("click", this_week)
 
     for d in document.select(".timeslot"):
         d.bind("click", display_timeslot)
@@ -230,10 +245,18 @@ def generate_calendar_html(times):
     #         timeslots += timeslots_template.format(**each_session)
     #     timeslots += "</tr>"
 
-    timeslots = """
-    <a href="#" onclick="return false;" id="left-arrow"><i>&larr;</i></a>
-    <a style="float: right" href="#" onclick="return false;" id="right-arrow"><i>&rarr;</i></a>
-    <tr>"""
+    if int(document['offset'].html) == 0:
+        timeslots = """
+        <a style="visibility: hidden" href="#" onclick="return false;" id="left-arrow"><i>&larr;</i></a>
+        <a style="margin: 0 auto; visibility: hidden" href="#" onclick="return false;" id="this-week"><i>This Week</i></a>
+        <a style="float: right" href="#" onclick="return false;" id="right-arrow"><i>&rarr;</i></a>
+        <tr>"""
+    else:
+        timeslots = """
+        <a href="#" onclick="return false;" id="left-arrow"><i>&larr;</i></a>
+        <a style="margin: 0 auto;" href="#" onclick="return false;" id="this-week"><i>This Week</i></a>
+        <a style="float: right" href="#" onclick="return false;" id="right-arrow"><i>&rarr;</i></a>
+        <tr>"""
 
     for day_name, time_list in times:
         timeslots += "<th><a>{day}</a></th>".format(day=day_name)
@@ -308,12 +331,19 @@ async def schedule_now():
         document['right-arrow'].bind("click", right_arrow)
 
 def left_arrow(vars):
+    document['left-arrow'].html = "<i>Loading...</i>"
     document['offset'].html = max(int(document['offset'].html) - 7, 0)
-    update_view(None, False)
+    aio.run(search_by_time(document['teacher-id'].html, False))
 
 def right_arrow(vars):
+    document['right-arrow'].html = "<i>Loading...</i>"
     document['offset'].html = int(document['offset'].html) + 7
-    update_view(None, False)
+    aio.run(search_by_time(document['teacher-id'].html, False))
+
+def this_week(vars):
+    document['this-week'].html = "<i>Loading...</i>"
+    document['offset'].html = 0
+    aio.run(search_by_time(document['teacher-id'].html, False))
 
 def render_tutor_bios(vars):
     """
@@ -391,4 +421,4 @@ def subject_chooser():
         d.bind("click", pick_subject)
 
 # document["switch-tutor"].bind("mousedown", toggle_bind)
-aio.run(subject_chooser())
+subject_chooser()
