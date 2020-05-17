@@ -158,13 +158,18 @@ async def handle_payment(intentId):
         alert("Your times have been claimed!")
     else:
         alert("An error has occurred")
+        document['button-text'].html = "Pay"
 
     await add_cart_to_table()
+
+def handle_error():
+    document['button-text'].html = "Pay"
 
 def verify_cart_run(pay):
     aio.run(verify_cart(pay))
 
 async def verify_cart(pay):
+    document['button-text'].html = "Processing..."
     verified = await fetch_api("/api/verify-cart")
 
     if verified:
