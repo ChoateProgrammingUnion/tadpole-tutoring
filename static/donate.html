@@ -15,21 +15,17 @@
     {{ navbar }}
 </header>
 <div style="text-align: center;">
-    <section id="payment-area">
-        <form id="payment-form" class="sr-payment-form">
-            <label for="amount">Donation Amount: </label>
-            <input type="text" id="amount" size="28" placeholder="0.00">
+    <section id="amount-selection">
+        <form action="javascript:void(0);">
+            <label for="amount" style="display: inline">Donation Amount (USD, Minimum $0.50):</label>
+            <input type="number" step="0.01" min="0.50" id="amount" size="28" placeholder="0.00">
 
-
-
-            <div class="sr-combo-inputs-row">
-                <div class="sr-input sr-card-element" id="card-element"></div>
-            </div>
-            <div class="sr-field-error" id="card-errors" role="alert"></div>
-            <button id="submit">
-                <span id="button-text">Pay</span><span id="order-amount"></span>
-            </button>
+            <button id="donate-button">Donate</button>
         </form>
+    </section>
+    <br>
+    <section id="payment-area">
+
     </section>
 </div>
 </body>

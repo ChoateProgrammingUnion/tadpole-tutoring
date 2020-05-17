@@ -433,7 +433,7 @@ def create_payment_intent_for_donate():
     price = request.json.get('price')
 
     intent = stripe.PaymentIntent.create(
-        amount=price,
+        amount=int(price * 100),
         currency='usd'
     )
 

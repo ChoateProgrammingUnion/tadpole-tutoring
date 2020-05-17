@@ -2,15 +2,9 @@
 var stripe;
 
 function setupPayment(price) {
-    tempData = {"price": price};
+    tempData = {};
     Object.assign(tempData, orderData);
-
-    cookie_list = document.cookie.split('; ');
-
-    for (var i = 0; i < cookie_list.length; i++) {
-        cookie_tuple = cookie_list[i].split('=');
-        tempData[cookie_tuple[0]] = cookie_tuple[1].replace('"', '').replace('"', '')
-    }
+    tempData['price'] = price;
 
     fetch(url + "/api/create-payment-intent-for-donate", {
         method: "POST",
@@ -35,7 +29,7 @@ function setupPayment(price) {
                 // Initiate payment when the submit button is clicked
                 var lambda = function() {pay(stripe, card, clientSecret, intentId);};
 
-                window.verify_cart(lambda);
+                window.handle_payment_request(lambda);
             });
         });
 }
@@ -45,7 +39,7 @@ var orderData = {
     currency: "usd"
 };
 
-let url = "https://api.tadpoletutoring.org";
+let url = "http://localhost:5000";
 
 // Disable the button until we have Stripe set up on the page
 // document.querySelector("button").disabled = true;
@@ -100,6 +94,7 @@ var pay = function(stripe, card, clientSecret, intentId) {
             if (result.error) {
                 // Show error to your customer
                 showError(result.error.message);
+                handle_error()
             } else {
                 // The payment has been processed!
                 // orderComplete(clientSecret, intentId);
