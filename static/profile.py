@@ -22,16 +22,16 @@ student_profile_form = """
     <h2><u>Account Settings</u></h2>
 
     <label for="hours">First Name:</label>
-    <input type="text" id="first_name" name="first_name" size="28" placeholder="{first_name}">
+    <input maxlength="100" type="text" id="first_name" name="first_name" size="28" placeholder="{first_name}">
 
     <label for="hours">Last Name:</label>
-    <input type="text" id="last_name" name="last_name" size="28" placeholder="{last_name}">
+    <input maxlength="100" type="text" id="last_name" name="last_name" size="28" placeholder="{last_name}">
 
     <label for="hours">Phone Number:</label>
-    <input type="text" id="phone_number" name="phone_number" size="28" placeholder="{phone_number}">
+    <input maxlength="100" type="text" id="phone_number" name="phone_number" size="28" placeholder="{phone_number}">
 
     <label for="hours">WeChat Account:</label>
-    <input type="text" id="wechat" name="wechat" size="28" placeholder="{wechat}">
+    <input maxlength="100" type="text" id="wechat" name="wechat" size="28" placeholder="{wechat}">
     
     <button id="save-settings">Save</button>
 </form>
@@ -252,7 +252,7 @@ async def load_settings_page():
     else:
         student_details = await fetch_api('/api/get-student-by-email')
 
-        alert(student_details)
+        # alert(student_details)
 
         if 'first_name' not in student_details:
             student_details['first_name'] = ""

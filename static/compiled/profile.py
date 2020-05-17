@@ -16,22 +16,24 @@ SUBJECTS = ['English',
 'High School Chemistry',
 'High School Physics']
 
-student_profile_form_start = """
+student_profile_form = """
 <section>
 <form action="javascript:void(0);" id='inner-form'>
     <h2><u>Account Settings</u></h2>
 
     <label for="hours">First Name:</label>
-    <input type="text" id="first_name" name="first_name" size="28" placeholder="{first_name}">
+    <input maxlength="100" type="text" id="first_name" name="first_name" size="28" placeholder="{first_name}">
 
     <label for="hours">Last Name:</label>
-    <input type="text" id="last_name" name="last_name" size="28" placeholder="{last_name}">
+    <input maxlength="100" type="text" id="last_name" name="last_name" size="28" placeholder="{last_name}">
 
     <label for="hours">Phone Number:</label>
-    <input type="text" id="zoom" name="phone_number" size="28" placeholder="{phone_number}">
+    <input maxlength="100" type="text" id="phone_number" name="phone_number" size="28" placeholder="{phone_number}">
 
     <label for="hours">WeChat Account:</label>
-    <input type="text" id="zoom" name="wechat" size="28" placeholder="{wechat}">
+    <input maxlength="100" type="text" id="wechat" name="wechat" size="28" placeholder="{wechat}">
+    
+    <button id="save-settings">Save</button>
 </form>
 </section>
 """
@@ -90,9 +92,13 @@ null = """
 """
 
 claim_teacher_button = """
+<br><br>
+<center>
 <button id="claim-teacher">I am a teacher</button>
 <input type="text" id="teacher-secret" size="28" placeholder="Teacher Secret Password">
+</center>
 """
+
 def get_cookies():
     cookie_list = document.cookie.split('; ')
     cookie_dict = dict()
@@ -144,61 +150,71 @@ def rename_teacher_run(vars):
 
 def document_get(value):
     try:
-        return document['value']
+        return document[value]
     except:
         return ""
 
 async def submit_form():
-    subjects_str = ""
+    is_teacher = await check_teacher()
 
-    params = dict()
+    if is_teacher:
+        subjects_str = ""
 
-    for d in document.select(".form-checkbox"):
-        if d.checked:
-            subjects_str += d.value + "|"
+        params = dict()
 
-    subjects_str = subjects_str[:-1]
+        for d in document.select(".form-checkbox"):
+            if d.checked:
+                subjects_str += d.value + "|"
 
-    params.update({"subjects": subjects_str})
+        subjects_str = subjects_str[:-1]
 
-    bio = document_get('bio').value
+        params.update({"subjects": subjects_str})
 
-    first_name = document_get('first_name').value
-    last_name = document_get('last_name').value
+        bio = document['bio'].value
 
-    wechat = document_get('wechat').value
-    phone_number = document_get('phone_number').value
+        first_name = document['first_name'].value
+        last_name = document['last_name'].value
 
-    zoom_str = document_get('zoom').value
+        zoom_str = document['zoom'].value
 
-    icon = document_get('icon').value
+        icon = document['icon'].value
 
-    try:
-        max_hours = int(document['max_hours'].value)
-        if document['max_hours'].value != "": params.update({"max_hours": max_hours})
-    except:
-        pass
+        try:
+            max_hours = int(document['max_hours'].value)
+            if document['max_hours'].value != "": params.update({"max_hours": max_hours})
+        except:
+            pass
 
-    zoom_str_int = ""
+        zoom_str_int = ""
 
-    for c in zoom_str:
-        if c in "0123456789":
-            zoom_str_int += c
+        for c in zoom_str:
+            if c in "0123456789":
+                zoom_str_int += c
 
-    if zoom_str_int != "":
-        zoom = int(zoom_str_int)
-        params.update({"zoom_id": zoom})
+        if zoom_str_int != "":
+            zoom = int(zoom_str_int)
+            params.update({"zoom_id": zoom})
 
-    if first_name != "": params.update({"first_name": first_name})
-    if last_name != "": params.update({"last_name": last_name})
-    if bio != "": params.update({"bio": bio})
-    if icon != "": params.update({"icon": icon})
-    if wechat != "": params.update({"wechat": wechat})
-    if phone_number != "": params.update({"phone_number": phone_number})
+        if first_name != "": params.update({"first_name": first_name})
+        if last_name != "": params.update({"last_name": last_name})
+        if bio != "": params.update({"bio": bio})
+        if icon != "": params.update({"icon": icon})
 
-    if await check_teacher():
         await fetch_api("/api/edit-teacher", params)
     else:
+        params = dict()
+
+        first_name = document['first_name'].value
+        last_name = document['last_name'].value
+
+        wechat = document['wechat'].value
+        phone_number = document['phone_number'].value
+
+        if first_name != "": params.update({"first_name": first_name})
+        if last_name != "": params.update({"last_name": last_name})
+        if wechat != "": params.update({"wechat": wechat})
+        if phone_number != "": params.update({"phone_number": phone_number})
+
         await fetch_api("/api/edit-student", params)
 
     alert("Your profile has been updated!")
@@ -235,7 +251,19 @@ async def load_settings_page():
         document['save-settings'].bind("mousedown", submit_form_run)
     else:
         student_details = await fetch_api('/api/get-student-by-email')
-        document['user-settings'].html = student_profile_form_start.format(**student_details)
+
+        # alert(student_details)
+
+        if 'first_name' not in student_details:
+            student_details['first_name'] = ""
+        if 'last_name' not in student_details:
+            student_details['last_name'] = ""
+        if 'phone_number' not in student_details:
+            student_details['phone_number'] = ""
+        if 'wechat' not in student_details:
+            student_details['wechat'] = ""
+
+        document['user-settings'].html = student_profile_form.format(**student_details)
         document['user-settings'].html += claim_teacher_button
         document['save-settings'].bind("mousedown", submit_form_run)
 

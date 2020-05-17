@@ -293,7 +293,7 @@
         border-radius: var(--border-radius);
         color: var(--color);
         display: inline-block;
-        padding: 1rem 2rem;
+        padding: 1rem 1rem;
     }
 
     /* Images */
@@ -557,7 +557,7 @@
   <script>
     $(document).ready(function(){
         $('#time-datepicker').timepicker({});
-        $("#datepicker").datepicker();
+        // $("#datepicker").datepicker();
     });
   </script>
     <style>
@@ -810,7 +810,7 @@
 </header>
 <main>
     <form action="javascript:void(0);">
-        <p>Date: <input autocomplete="off" class="form-textbox" type="text" id="datepicker" name="datepicker"></p>
+        <p>Date: <input autocomplete="off" class="form-textbox" type="date" id="datepicker" name="datepicker"></p>
         <p>Time: <input autocomplete="off" class="form-textbox" type="text" id="time-datepicker" name="time-datepicker"></p>
         <button id="submit-button">Submit</button>
     </form>
