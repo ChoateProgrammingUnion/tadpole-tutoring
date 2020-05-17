@@ -284,7 +284,7 @@ class Database:
         max_hours = {a['email']: defaultdict(lambda: 1, a)['max_hours'] for a in max_hours}
 
         for email in teacher_emails:
-            if email in max_hours and email in hour_dict:
+            if email in max_hours:
                 if max_hours[email] > hour_dict[email]:
                     available_teachers.append(email)
 

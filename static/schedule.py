@@ -126,11 +126,13 @@ def toggle_bind(event):
 
         aio.run(search_by_tutor())
 
-def update_view(event):
+def update_view(event, back=True):
     """
     Binds to the toggle and figures out what to do
     """
-    document['back-button-div'].html = "<a href='schedule.html'><i>Back</i></a>"
+    if back:
+        document['back-button-div'].html = "<a href='schedule.html'><i>Back</i></a>"
+
     value = not bool(document['switch-tutor-value'].text.rstrip())
 
     if value:
@@ -198,10 +200,14 @@ async def search_by_time(id=None):
     if subject is not None:
         params.update({"subject": subject})
 
+    params.update({"offset": int(document['offset'].html)})
     times = await fetch_api("/api/search-times", params=params)
     timeslots = generate_calendar_html(times)
 
     document['schedule-results'].html = timeslots
+
+    document['left-arrow'].bind("click", left_arrow)
+    document['right-arrow'].bind("click", right_arrow)
 
     for d in document.select(".timeslot"):
         d.bind("click", display_timeslot)
@@ -224,8 +230,8 @@ def generate_calendar_html(times):
     #     timeslots += "</tr>"
 
     timeslots = """
-    <a href="#" id="left-arrow"><i>&larr;</i></a>
-    <a style="float: right" href="#" id="right-arrow"><i>&rarr;</i></a>
+    <a href="#" onclick="return false;" id="left-arrow"><i>&larr;</i></a>
+    <a style="float: right" href="#" onclick="return false;" id="right-arrow"><i>&rarr;</i></a>
     <tr>"""
 
     for day_name, time_list in times:
@@ -297,6 +303,16 @@ async def schedule_now():
         calendar_template = generate_calendar_html(response)
         document['schedule-results'].html = calendar_template
 
+        document['left-arrow'].bind("click", left_arrow)
+        document['right-arrow'].bind("click", right_arrow)
+
+def left_arrow(vars):
+    document['offset'].html = max(int(document['offset'].html) - 7, 0)
+    update_view(None, False)
+
+def right_arrow(vars):
+    document['offset'].html = int(document['offset'].html) + 7
+    update_view(None, False)
 
 def render_tutor_bios(vars):
     """

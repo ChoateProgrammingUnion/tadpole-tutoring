@@ -232,6 +232,8 @@ def api_search_times():
     subject = request.args.get("subject", None, str)
     must_be_unclaimed = request.args.get("must_be_unclaimed", True, bool)
 
+    offset = request.args.get("offset", 0, int)
+
     search_params = {
         "teacher_email": teacher_email,
         "teacher_id": teacher_id,
@@ -241,7 +243,7 @@ def api_search_times():
 
     db = database.Database()
 
-    times = db.get_time_schedule(timezone_offset=timezone_offset, search_params=search_params)
+    times = db.get_time_schedule(timezone_offset=timezone_offset, time_offset=timedelta(days=offset), search_params=search_params)
     return api.serialize(times)
 
 @app.route('/api/get-time')
