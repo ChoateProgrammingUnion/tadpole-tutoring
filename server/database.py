@@ -609,6 +609,8 @@ class Database:
         if midnight > datetime.utcnow():
             midnight -= timedelta(hours=24)
 
+        today_midnight = midnight
+
         if time_offset is not None:
             midnight += time_offset
 
@@ -631,7 +633,11 @@ class Database:
                 del t['claimed']
                 del t['student']
 
-            schedule_dict.append(((midnight - timezone_offset).strftime("%A<br>(%b %d %Y)"), today_schedule))
+            if midnight == today_midnight:
+                schedule_dict.append(((midnight - timezone_offset).strftime("%A<br>(%b %d %Y)<br>(Today)"), today_schedule))
+            else:
+                schedule_dict.append(((midnight - timezone_offset).strftime("%A<br>(%b %d %Y)"), today_schedule))
+
             midnight += timedelta(hours=24)
 
         return schedule_dict
