@@ -516,11 +516,12 @@ def handle_payment():
                             "time": time - timedelta(hours=i)
                             }
                         )
+                        zoom_id = db.get_teacher(session['teacher_email']).get('zoom_id')
                         db._insert("notifications", {
                             "email": {
                                 "address": email, 
                                 "subject": str(i) + " Hour Reminder: Tadpole Tutoring Session", 
-                                "msg": "Dear Student,\n\nThis is a reminder that you have signed up for a class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe teacher's email address is " + session['teacher_email'] + ".\n\n\nFrom, Tadpole Tutoring"
+                                "msg": "Dear Student,\n\nThis is a reminder that you have signed up for a class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe teacher's email address is " + session['teacher_email'] + ".\n\n Zoom: <a href='https://zoom.us/j/'" + zoom_id + "?pwd=0000>" + zoom_id + "</a>\n\nPassword: 0000\n\n\nFrom, Tadpole Tutoring"
                                 },
                             "sent": False,
                             "time": time - timedelta(hours=i)
