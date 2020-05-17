@@ -174,6 +174,18 @@ def api_get_teacher_by_email():
     teacher = db.get_teacher(teacher_email)
     return api.serialize(teacher)
 
+@app.route('/api/get-student-by-email')
+def api_get_student_by_email():
+    student_email = request.args.get("email", None, str)
+
+    if student_email is None:
+        return flask.abort(400)
+
+    db = database.Database()
+
+    teacher = db.get_student(student_email)
+    return api.serialize(teacher)
+
 @app.route('/api/edit-teacher')
 def api_edit_teacher():
     if email := auth.check_login(request):
@@ -188,6 +200,21 @@ def api_edit_teacher():
         db = database.Database()
 
         db.edit_teacher(email, subjects, zoom_id, bio, first_name, last_name, icon, max_hours)
+        return api.serialize(True)
+
+    return api.serialize(False)
+
+@app.route('/api/edit-student')
+def api_edit_student():
+    if email := auth.check_login(request):
+        first_name = request.args.get("first_name", None, str)
+        last_name = request.args.get("last_name", None, str)
+        phone_number = request.args.get("phone_number", None, str)
+        wechat = request.args.get("wechat", None, str)
+
+        db = database.Database()
+
+        db.edit_student(email, first_name, last_name, phone_number, wechat)
         return api.serialize(True)
 
     return api.serialize(False)

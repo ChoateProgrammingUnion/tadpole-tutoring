@@ -223,7 +223,10 @@ def generate_calendar_html(times):
     #         timeslots += timeslots_template.format(**each_session)
     #     timeslots += "</tr>"
 
-    timeslots = "<tr>"
+    timeslots = """
+    <a href="#" id="left-arrow"><i>&larr;</i></a>
+    <a style="float: right" href="#" id="right-arrow"><i>&rarr;</i></a>
+    <tr>"""
 
     for day_name, time_list in times:
         timeslots += "<th><a>{day}</a></th>".format(day=day_name)

@@ -151,6 +151,27 @@ class Database:
 
         return False
 
+    def edit_student(self, email: str, first_name: str, last_name: str, phone_number: str, wechat: str) -> bool:
+        student = self._find_one('students', email=email)
+
+        if student is None:
+            student = {"email": email}
+
+            if first_name is not None: student['first_name'] = first_name
+            if last_name is not None: student['last_name'] = last_name
+            if phone_number is not None: student['phone_number'] = phone_number
+            if wechat is not None: student['wechat'] = wechat
+
+            return self._insert('students', student)
+        else:
+            if first_name is not None: student['first_name'] = first_name
+            if last_name is not None: student['last_name'] = last_name
+            if first_name is not None: student['phone_number'] = phone_number
+            if last_name is not None: student['wechat'] = wechat
+
+
+            return self._upsert('students', student)
+
     def get_teacher_by_id(self, teacher_id: str) -> dict:
         """
         Gets everything for a given teacher
