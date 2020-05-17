@@ -502,12 +502,10 @@ def handle_payment():
                     times.append(time.strftime("%I:%M%p UTC on %B %d, %Y"))
                     sender.send(session['teacher_email'], "Tadpole Tutoring Student Registration", "Dear Tutor,\n\nA student has signed up for your class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe student's name is " + session['student'] + ".\n\n\nFrom, Tadpole Tutoring")
 
-                    if time - timedelta(hours=i) < datetime.datetime.now():
-                        email_times = [1]
-                    else:
-                        email_times = [12, 1]
                         
                     for i in email_times:
+                        if time - timedelta(hours=i) < datetime.datetime.now():
+                            continue
                         db._insert("notifications", {
                             "email": {
                                 "address": session['teacher_email'], 
@@ -519,16 +517,29 @@ def handle_payment():
                             }
                         )
                         zoom_id = db.get_teacher(session['teacher_email']).get('zoom_id')
-                        db._insert("notifications", {
-                            "email": {
-                                "address": email, 
-                                "subject": str(i) + " Hour Reminder: Tadpole Tutoring Session", 
-                                "msg": "Dear Student,\n\nThis is a reminder that you have signed up for a class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe teacher's email address is " + session['teacher_email'] + ".\n\n Zoom: <a href='https://zoom.us/j/'" + zoom_id + "?pwd=0000>" + zoom_id + "</a>\n\nPassword: 0000\n\n\nFrom, Tadpole Tutoring"
-                                },
-                            "sent": False,
-                            "time": time - timedelta(hours=i)
-                            }
-                        )
+                        phone_number = db.get_teacher(session['teacher_email']).get('phone_number')
+                        if phone_number:
+                            db._insert("notifications", {
+                                "email": {
+                                    "address": email, 
+                                    "subject": str(i) + " Hour Reminder: Tadpole Tutoring Session", 
+                                    "msg": "Dear Student,\n\nThis is a reminder that you have signed up for a class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe teacher's email address is " + session['teacher_email'] + ".\n\n Zoom: <a href='https://zoom.us/j/'" + zoom_id + "?pwd=0000>" + zoom_id + "</a>.\n\n" + "Phone Number: " + str(phone_number) + "\n\n\nPassword: 0000\n\n\nFrom, Tadpole Tutoring"
+                                    },
+                                "sent": False,
+                                "time": time - timedelta(hours=i)
+                                }
+                            )
+                        else:
+                            db._insert("notifications", {
+                                "email": {
+                                    "address": email, 
+                                    "subject": str(i) + " Hour Reminder: Tadpole Tutoring Session", 
+                                    "msg": "Dear Student,\n\nThis is a reminder that you have signed up for a class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe teacher's email address is " + session['teacher_email'] + ".\n\n Zoom: <a href='https://zoom.us/j/'" + zoom_id + "?pwd=0000>" + zoom_id + "</a>\n\nPassword: 0000\n\n\nFrom, Tadpole Tutoring"
+                                    },
+                                "sent": False,
+                                "time": time - timedelta(hours=i)
+                                }
+                            )
 
 
                 db.set_cart(email, set())
