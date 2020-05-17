@@ -545,7 +545,7 @@
 
     <script>
         if (! document.cookie.includes('@')) {
-            window.open("https://api.tadpoletutoring.org/login")
+            window.open("http://localhost:5000/login")
         }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js" integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
@@ -566,7 +566,7 @@
 <!--                &lt;!&ndash;<li><a href="schedule.html">Schedule</a>&ndash;&gt;-->
 <!--                <span id="cart-stuff">-->
 <!--                </span>-->
-<!--                <li id="login-state" onclick="window.open('https://api.tadpoletutoring.org/login')"><a onclick="window.open('https://api.tadpoletutoring.org/login')"><i onclick="window.open('https://api.tadpoletutoring.org/login')">Login</i></a></li>-->
+<!--                <li id="login-state" onclick="window.open('http://localhost:5000/login')"><a onclick="window.open('http://localhost:5000/login')"><i onclick="window.open('http://localhost:5000/login')">Login</i></a></li>-->
 <!--            </ul>-->
 <!--            </div>-->
 <!--        </nav>-->
@@ -578,8 +578,8 @@
 <!--                        document.getElementById("cart-stuff").innerHTML = "<li><a href='cart.html'>View Cart</a></li><li><a href='sessions.html'>Your Sessions</a></li>"-->
 <!--                    }-->
 <!--                } else {-->
-<!--                    if (document.getElementById("login-state").innerHTML != "<a><i onclick=\"window.open('https://api.tadpoletutoring.org/login')\">Login</i></a>") {-->
-<!--                        document.getElementById("login-state").innerHTML = "<a><i onclick=\"window.open('https://api.tadpoletutoring.org/login')\">Login</i></a>"-->
+<!--                    if (document.getElementById("login-state").innerHTML != "<a><i onclick=\"window.open('http://localhost:5000/login')\">Login</i></a>") {-->
+<!--                        document.getElementById("login-state").innerHTML = "<a><i onclick=\"window.open('http://localhost:5000/login')\">Login</i></a>"-->
 <!--                        document.getElementById("cart-stuff").innerHTML = ""-->
 <!--                    }-->
 <!--                }-->
@@ -729,7 +729,7 @@
 
 <script>
     function openwindow() {
-        window.open('https://api.tadpoletutoring.org/login')
+        window.open('http://localhost:5000/login')
     }
 
     function login() {
@@ -824,32 +824,10 @@
     <p>
         Email us at <a href="mailto:contact@tadpoletutoring.org">contact@tadpoletutoring.org</a> if you want to get in touch!
     </p>
-    <form style="all: unset;" action="https://www.paypal.com/cgi-bin/webscr" method="post">
 
-        <!-- Identify your business so that you can collect the payments. -->
-        <input type="hidden" name="business"
-            value="ashenouda50@gmail.com">
+    <a href="/donate.html"><i>Donate</i></a>
 
-        <!-- Specify a Donate button. -->
-        <input type="hidden" name="cmd" value="_donations">
-
-        <!-- Specify details about the contribution -->
-        <input type="hidden" name="item_name" value="Tadpole Tutoring">
-        <input type="hidden" name="item_number" value="Tadpole Tutoring General Donation">
-        <input type="hidden" name="currency_code" value="USD">
-
-        <!-- Display the payment button. -->
-        <input type="image" name="submit"
-               src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"
-               alt="Donate">
-<!--        <img type="img" name="submit" alt="Donate" src="">-->
-
-        <img alt="" width="1" height="1"
-        src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" >
-
-    </form>
-
-        <p><a href="https://github.com/ChoateProgrammingUnion/tadpole-tutoring">Open source</a> under the MIT license. Made by <a href="https://max.fan">Max Fan</a>, Ethan Chapman, Spencer Bowles, and HP Park.</p>
+    <p><a href="https://github.com/ChoateProgrammingUnion/tadpole-tutoring">Open source</a> under the MIT license. Made by <a href="https://max.fan">Max Fan</a>, Ethan Chapman, Spencer Bowles, and HP Park.</p>
 </footer>
 
 </body>
