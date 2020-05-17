@@ -252,7 +252,7 @@ async def load_settings_page():
     else:
         student_details = await fetch_api('/api/get-student-by-email')
 
-        alert(student_details)
+        # alert(student_details)
 
         if 'first_name' not in student_details:
             student_details['first_name'] = ""
