@@ -772,7 +772,8 @@ class Database:
         if '_id' in kwargs:
             kwargs['_id'] = ObjectId(kwargs['_id'])
 
-        return MONGO_DB[MONGO_DATABASE][table].delete_many(kwargs)
+        MONGO_DB[MONGO_DATABASE][table].delete_many(kwargs)
+        return True
 
     def _all(self, table: str) -> List[dict]:
         return self._find(table)

@@ -270,9 +270,9 @@ def api_get_user_times():
         db = database.Database()
 
         if is_teacher:
-            times = db.search_times(teacher_email=email, string_time_offset=timezone_offset, insert_teacher_info=True, teacher_must_be_available=False)
+            times = db.search_times(teacher_email=email, string_time_offset=timezone_offset, insert_teacher_info=True, teacher_must_be_available=False, must_be_unclaimed=False)
         else:
-            times = db.search_times(student_email=email, string_time_offset=timezone_offset, insert_teacher_info=True, teacher_must_be_available=False)
+            times = db.search_times(student_email=email, string_time_offset=timezone_offset, insert_teacher_info=True, teacher_must_be_available=False, must_be_unclaimed=False)
         return api.serialize([times, is_teacher])
 
     return flask.abort(405)
@@ -311,7 +311,7 @@ def api_create_time():
         log_info("Timezone Offset: " + str(timezone_offset))
 
         try:
-            d = pytz.utc.localize(datetime.strptime(date_str, '%m/%d/%Y %I:%M %p')) + timezone_offset
+            d = pytz.utc.localize(datetime.strptime(date_str, '%Y-%m-%d %I:%M %p')) + timezone_offset
         except ValueError:
             log_info(date_str + " failed to serialize")
             return flask.abort(400)
@@ -368,7 +368,7 @@ def api_remove_remove_session():
         db = database.Database()
 
         status = db.remove_time(time_id, email)
-        return status
+        return api.serialize(status)
 
     log_info("Not logged in")
     return flask.abort(500)
