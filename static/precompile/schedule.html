@@ -544,17 +544,18 @@
 <!-- Credit: Mostly adopted from the MVP.css quickstart template: https://github.com/andybrewer/mvp/ -->
 
     <script>
-        if (! document.cookie.includes('@')) {
+        if (!document.cookie.includes('@')) {
             window.open("https://api.tadpoletutoring.org/login")
         }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js" integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.8.8/brython.min.js"
+            integrity="sha256-o/getzwHeAq4xcWJ350CFg+70KNoYxxdK8ikIp76hIM=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="brython/brython_modules.js"></script>
 
 </head>
 <body onload="brython()">
-    <script type="text/python" src="schedule.py"></script>
-    <header style="padding-top: 0; padding-bottom: 0;">
+<script type="text/python" src="schedule.py"></script>
+<header style="padding-top: 0; padding-bottom: 0;">
     <!--        <nav id="navbar" style="margin-bottom: 0; overflow: hidden; background-color: #ffffff; width: 100%;">-->
 <!--            <a href="/"><img alt="Logo" src="logo-sideways.svg" height="70"></a>-->
 <!--            <div>-->
@@ -792,36 +793,40 @@
     }
 </script>
 
-    </header>
-    <header>
-        <h1>The Password for all Tutor Zoom Accounts is 0000</h1>
-    </header>
-    <main>
-        <a id="offset" style="visibility: hidden">0</a>
-        <a id="teacher-id" style="visibility: hidden"></a>
-        <h1 id="chosen-subject"></h1><h3 id="back-to-subject"></h3>
-        <div style="margin-left:80%" id="clicky-slider">
-            <div style="display: inline-block">
+</header>
+<header>
+    <h3>Having difficulty meeting our prices? Want to extend your session beyond an hour? Have any questions at all?
+        <strong style="all: unset; color: #0a721b; font-weight: 700;" onclick="location='directory.html'"><u>Contact our
+            co-founders here!</u></strong></h3>
+</header>
+<main>
+    <a id="offset" style="visibility: hidden">0</a>
+    <a id="teacher-id" style="visibility: hidden"></a>
+    <h1 id="chosen-subject"></h1>
+    <h3 id="back-to-subject"></h3>
+    <div style="margin-left:80%" id="clicky-slider">
+        <div style="display: inline-block">
             <span style="white-space: nowrap;">By Time</span>
             <label id="switch-tutor" class="switch">
                 <input type="checkbox">
-                <span class="slider round"></span> 
-            </label> 
+                <span class="slider round"></span>
+            </label>
             <span style="white-space: nowrap;">By Tutor</span>
             <span id="switch-tutor-value" style="visibility:hidden"></span>
-            </div>
         </div>
-        <div style="margin-right:80%">
-            <div style="display: inline-block" id="back-button-div">
-            </div>
+    </div>
+    <div style="margin-right:80%">
+        <div style="display: inline-block" id="back-button-div">
         </div>
-        <div id="results">
-        </div>
-        <section style="text-align: center; padding-top: 10%;">
-            <p>We’re super excited to meet and start working with you! Enjoy browsing our comprehensive community of tutors, mentors, and partners.</p>
-            <p><strong>100% of profits are donated to a variety of charitable causes.</strong></p>
-        </section>
-    </main>
+    </div>
+    <div id="results">
+    </div>
+    <section style="text-align: center; padding-top: 10%;">
+        <p>We’re super excited to meet and start working with you! Enjoy browsing our comprehensive community of tutors,
+            mentors, and partners.</p>
+        <p><strong>100% of profits are donated to a variety of charitable causes.</strong></p>
+    </section>
+</main>
 <footer>
     <hr>
     <p>
