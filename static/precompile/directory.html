@@ -563,7 +563,7 @@
 <!--                &lt;!&ndash;<li><a href="schedule.html">Schedule</a>&ndash;&gt;-->
 <!--                <span id="cart-stuff">-->
 <!--                </span>-->
-<!--                <li id="login-state" onclick="window.open('https://api.tadpoletutoring.org/login')"><a onclick="window.open('https://api.tadpoletutoring.org/login')"><i onclick="window.open('https://api.tadpoletutoring.org/login')">Login</i></a></li>-->
+<!--                <li id="login-state" onclick="window.open('http://localhost:5000/login')"><a onclick="window.open('http://localhost:5000/login')"><i onclick="window.open('http://localhost:5000/login')">Login</i></a></li>-->
 <!--            </ul>-->
 <!--            </div>-->
 <!--        </nav>-->
@@ -575,8 +575,8 @@
 <!--                        document.getElementById("cart-stuff").innerHTML = "<li><a href='cart.html'>View Cart</a></li><li><a href='sessions.html'>Your Sessions</a></li>"-->
 <!--                    }-->
 <!--                } else {-->
-<!--                    if (document.getElementById("login-state").innerHTML != "<a><i onclick=\"window.open('https://api.tadpoletutoring.org/login')\">Login</i></a>") {-->
-<!--                        document.getElementById("login-state").innerHTML = "<a><i onclick=\"window.open('https://api.tadpoletutoring.org/login')\">Login</i></a>"-->
+<!--                    if (document.getElementById("login-state").innerHTML != "<a><i onclick=\"window.open('http://localhost:5000/login')\">Login</i></a>") {-->
+<!--                        document.getElementById("login-state").innerHTML = "<a><i onclick=\"window.open('http://localhost:5000/login')\">Login</i></a>"-->
 <!--                        document.getElementById("cart-stuff").innerHTML = ""-->
 <!--                    }-->
 <!--                }-->
@@ -715,8 +715,9 @@
     <a id="profile" class="right" href="profile.html">Profile</a>
     <a id="cart" class="right" href='cart.html'>View Cart</a>
     <a id="sessions" class="right" href='sessions.html'>Your Sessions</a>
-    <a class="right" href="schedule.html">Schedule</a>
     <a class="right" href="pricing.html">Pricing</a>
+    <a class="right" href="schedule.html">Schedule</a>
+    <a class="right" href="tutors.html">Tutors</a>
     <a class="right" href="about.html">About</a>
     <span id="cart-stuff">
             </span>
@@ -726,7 +727,7 @@
 
 <script>
     function openwindow() {
-        window.open('https://api.tadpoletutoring.org/login')
+        window.open('http://localhost:5000/login')
     }
 
     function login() {
@@ -734,24 +735,24 @@
             if (document.getElementById("myTopnav").className === "topnav responsive") {
                 if (document.cookie.includes('@')) {
                     if (document.getElementById("profile").style.display !== "block") {
-                        document.getElementById("login").style.display = "none"
-                        document.getElementById("profile").style.display = "block"
-                        document.getElementById("cart").style.display = "block"
-                        document.getElementById("sessions").style.display = "block"
+                        document.getElementById("login").style.display = "none";
+                        document.getElementById("profile").style.display = "block";
+                        document.getElementById("cart").style.display = "block";
+                        document.getElementById("sessions").style.display = "block";
                     }
                 } else {
                     if (document.getElementById("login").style.display !== "block") {
-                        document.getElementById("login").style.display = "block"
-                        document.getElementById("profile").style.display = "none"
-                        document.getElementById("cart").style.display = "none"
-                        document.getElementById("sessions").style.display = "none"
+                        document.getElementById("login").style.display = "block";
+                        document.getElementById("profile").style.display = "none";
+                        document.getElementById("cart").style.display = "none";
+                        document.getElementById("sessions").style.display = "none";
                     }
                 }
             } else {
-                document.getElementById("login").style.display = "none"
-                document.getElementById("profile").style.display = "none"
-                document.getElementById("cart").style.display = "none"
-                document.getElementById("sessions").style.display = "none"
+                document.getElementById("login").style.display = "none";
+                document.getElementById("profile").style.display = "none";
+                document.getElementById("cart").style.display = "none";
+                document.getElementById("sessions").style.display = "none";
             }
 
         } else {

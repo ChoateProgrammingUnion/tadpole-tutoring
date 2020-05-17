@@ -54,14 +54,17 @@ def get_person(request):
     return None
 
 # @app.route('/api/teachers')
-def fetch_teachers(subject):
+def fetch_teachers(subject=None, available=True):
     db = database.Database()
 
-    midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-    week_start = midnight - timedelta(days=midnight.weekday())
-    week_end = week_start + timedelta(days=7)
+    if available:
+        midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = midnight - timedelta(days=midnight.weekday())
+        week_end = week_start + timedelta(days=7)
 
-    return db.get_available_teachers(week_start, week_end, subject)
+        return db.get_available_teachers(week_start, week_end, subject)
+    else:
+        return db.all_teachers(subject)
 
 def update_time(request):
     id = request.args.get("id", None, int)

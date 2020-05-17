@@ -25,6 +25,7 @@ imports.append("profile.py")
 imports.append("create.py")
 imports.append("config.py")
 imports.append("donate.py")
+imports.append("tutors.py")
 
 args = {}
 for each_import in imports:
