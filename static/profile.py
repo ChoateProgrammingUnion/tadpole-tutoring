@@ -16,6 +16,26 @@ SUBJECTS = ['English',
 'High School Chemistry',
 'High School Physics']
 
+student_profile_form_start = """
+<section>
+<form action="javascript:void(0);" id='inner-form'>
+    <h2><u>Account Settings</u></h2>
+
+    <label for="hours">First Name:</label>
+    <input type="text" id="first_name" name="first_name" size="28" placeholder="{first_name}">
+
+    <label for="hours">Last Name:</label>
+    <input type="text" id="last_name" name="last_name" size="28" placeholder="{last_name}">
+
+    <label for="hours">Phone Number:</label>
+    <input type="text" id="zoom" name="phone_number" size="28" placeholder="{phone_number}">
+
+    <label for="hours">WeChat Account:</label>
+    <input type="text" id="zoom" name="wechat" size="28" placeholder="{wechat}">
+</form>
+</section>
+"""
+
 teacher_profile_form_start = """
 <section>
 <a href="create.html"><i>Create Session</i></a>
@@ -140,6 +160,9 @@ async def submit_form():
     first_name = document['first_name'].value
     last_name = document['last_name'].value
 
+    wechat = document['wechat'].value
+    phone_number = document['phone_number'].value
+
     zoom_str = document['zoom'].value
 
     icon = document['icon'].value
@@ -164,8 +187,13 @@ async def submit_form():
     if last_name != "": params.update({"last_name": last_name})
     if bio != "": params.update({"bio": bio})
     if icon != "": params.update({"icon": icon})
+    if wechat != "": params.update({"wechat": wechat})
+    if phone_number != "": params.update({"phone_number": phone_number})
 
-    await fetch_api("/api/edit-teacher", params)
+    if await check_teacher():
+        await fetch_api("/api/edit-teacher", params)
+    else:
+        await fetch_api("/api/edit-student", params)
 
     alert("Your profile has been updated!")
 
@@ -200,7 +228,10 @@ async def load_settings_page():
 
         document['save-settings'].bind("mousedown", submit_form_run)
     else:
-        document['user-settings'].html = claim_teacher_button
+        student_details = await fetch_api('/api/get-student-by-email')
+        document['user-settings'].html = student_profile_form_start.format(**student_details)
+        document['user-settings'].html += claim_teacher_button
+        document['save-settings'].bind("mousedown", submit_form_run)
 
     document['claim-teacher'].bind("mousedown", rename_teacher_run)
 
