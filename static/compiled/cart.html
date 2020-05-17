@@ -716,8 +716,9 @@
     <a id="profile" class="right" href="profile.html">Profile</a>
     <a id="cart" class="right" href='cart.html'>View Cart</a>
     <a id="sessions" class="right" href='sessions.html'>Your Sessions</a>
-    <a class="right" href="schedule.html">Schedule</a>
     <a class="right" href="pricing.html">Pricing</a>
+    <a class="right" href="schedule.html">Schedule</a>
+    <a class="right" href="tutors.html">Tutors</a>
     <a class="right" href="about.html">About</a>
     <span id="cart-stuff">
             </span>
@@ -735,24 +736,24 @@
             if (document.getElementById("myTopnav").className === "topnav responsive") {
                 if (document.cookie.includes('@')) {
                     if (document.getElementById("profile").style.display !== "block") {
-                        document.getElementById("login").style.display = "none"
-                        document.getElementById("profile").style.display = "block"
-                        document.getElementById("cart").style.display = "block"
-                        document.getElementById("sessions").style.display = "block"
+                        document.getElementById("login").style.display = "none";
+                        document.getElementById("profile").style.display = "block";
+                        document.getElementById("cart").style.display = "block";
+                        document.getElementById("sessions").style.display = "block";
                     }
                 } else {
                     if (document.getElementById("login").style.display !== "block") {
-                        document.getElementById("login").style.display = "block"
-                        document.getElementById("profile").style.display = "none"
-                        document.getElementById("cart").style.display = "none"
-                        document.getElementById("sessions").style.display = "none"
+                        document.getElementById("login").style.display = "block";
+                        document.getElementById("profile").style.display = "none";
+                        document.getElementById("cart").style.display = "none";
+                        document.getElementById("sessions").style.display = "none";
                     }
                 }
             } else {
-                document.getElementById("login").style.display = "none"
-                document.getElementById("profile").style.display = "none"
-                document.getElementById("cart").style.display = "none"
-                document.getElementById("sessions").style.display = "none"
+                document.getElementById("login").style.display = "none";
+                document.getElementById("profile").style.display = "none";
+                document.getElementById("cart").style.display = "none";
+                document.getElementById("sessions").style.display = "none";
             }
 
         } else {
