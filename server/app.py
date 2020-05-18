@@ -190,7 +190,7 @@ def api_get_student_by_email():
 def api_edit_teacher():
     if email := auth.check_login(request):
         subjects = request.args.get("subjects", None, str)
-        zoom_id = request.args.get("zoom_id", None, int)
+        zoom_id = request.args.get("zoom_id", None, str)
         icon = request.args.get("icon", None, str)
         max_hours = request.args.get("max_hours", None, int)
         bio = request.args.get("bio", None, str)

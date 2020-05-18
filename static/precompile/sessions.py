@@ -1,7 +1,7 @@
 from browser import document, alert, aio, bind, window
 import javascript
 
-URL = "https://api.tadpoletutoring.org"
+URL = "http://localhost:5000"
 
 default_session_table_header = """
 <tr>
@@ -19,7 +19,7 @@ empty_session_table_header = """
 
 session_table_entry_template = """
 <tr>
-    <td>{id}</td>
+    <td>{_id}</td>
     <td>{first_name} {last_name}</td>
     <td>{start_time}</td>
     <td>{date_str}</td>
@@ -84,6 +84,8 @@ async def fetch_api(endpoint="/api/search-times", params={}, get_response=True):
 
 
 def add_template_to_table(params, is_teacher):
+    alert(params)
+
     if is_teacher:
         if params['claimed']:
             params['remove-button'] = ''
@@ -107,6 +109,8 @@ async def remove_id_and_update(id):
 
 async def add_sessions_to_table():
     user_sessions, is_teacher = await fetch_api("/api/get-user-times", {"tz_offset": calculate_timezone_offset()})
+
+    print(user_sessions)
 
     if is_teacher:
         document['session-table'].html = default_session_table_header_teacher

@@ -1,7 +1,7 @@
 from browser import document, alert, aio, window
 import javascript
 
-URL = "https://api.tadpoletutoring.org"
+URL = "http://localhost:5000"
 
 SUBJECTS = ['English',
 'Elementary School Math',
@@ -179,29 +179,14 @@ async def submit_form():
         first_name = document['first_name'].value
         last_name = document['last_name'].value
 
-        zoom_str = document['zoom'].value
+        zoom = document['zoom'].value
 
         icon = document['icon'].value
-
-        try:
-            max_hours = int(document['max_hours'].value)
-            if document['max_hours'].value != "": params.update({"max_hours": max_hours})
-        except:
-            pass
-
-        zoom_str_int = ""
-
-        for c in zoom_str:
-            if c in "0123456789":
-                zoom_str_int += c
-
-        if zoom_str_int != "":
-            zoom = int(zoom_str_int)
-            params.update({"zoom_id": zoom})
 
         if first_name != "": params.update({"first_name": first_name})
         if last_name != "": params.update({"last_name": last_name})
         if bio != "": params.update({"bio": bio})
+        if zoom != "": params.update({"zoom_id": zoom})
         if phone_number != "": params.update({"phone_number": phone_number})
         if icon != "": params.update({"icon": icon})
 

@@ -19,7 +19,7 @@ empty_session_table_header = """
 
 session_table_entry_template = """
 <tr>
-    <td>{id}</td>
+    <td>{_id}</td>
     <td>{first_name} {last_name}</td>
     <td>{start_time}</td>
     <td>{date_str}</td>

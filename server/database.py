@@ -137,7 +137,7 @@ class Database:
             return teacher
         return {}
 
-    def edit_teacher(self, teacher_email: str, subjects: str, zoom_id: int, bio: str, first_name: str, last_name: str, icon: str, max_hours: int, phone_number: str) -> bool:
+    def edit_teacher(self, teacher_email: str, subjects: str, zoom_id: str, bio: str, first_name: str, last_name: str, icon: str, max_hours: int, phone_number: str) -> bool:
         if teacher := self._find_one('teachers', email=teacher_email):
             if subjects is not None: teacher['subjects'] = subjects
             if zoom_id is not None: teacher['zoom_id'] = zoom_id
@@ -580,8 +580,8 @@ class Database:
                 t['time_num'] = c_start
                 t['date_str'] = (time_obj - string_time_offset).strftime("%b %d %Y")
 
-            if insert_teacher_info and teacher_email is not None:
-                c_teacher = self.get_teacher(teacher_email)
+            if insert_teacher_info:
+                c_teacher = self.get_teacher(t['teacher_email'])
 
                 t_id = t['_id']
                 if not insert_bio:
