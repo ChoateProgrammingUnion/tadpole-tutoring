@@ -314,7 +314,10 @@ def api_create_time():
             d = pytz.utc.localize(datetime.strptime(date_str, '%Y-%m-%d %I:%M %p')) + timezone_offset
         except ValueError:
             log_info(date_str + " failed to serialize")
-            return flask.abort(400)
+            try:
+                d = pytz.utc.localize(datetime.strptime(date_str, '%m/%d/%y %I:%M %p')) + timezone_offset
+            except:
+                return flask.abort(400)
 
         log_info("Serialized Date (UTC): " + str(d))
 
