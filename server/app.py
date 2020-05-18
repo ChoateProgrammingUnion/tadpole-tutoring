@@ -497,6 +497,7 @@ def handle_payment():
             if intent_id == intent:
                 log_info("Server cart matches intent cart, claiming times...")
                 sender = notify.Email()
+                email_times = [1, 12]
                 times = []
                 for t_id in cart:
                     # email.send(teacher_email, "Tadpole Tutoring Payment Confirmation", "This is a confirmation that you have signed up for ")
@@ -508,7 +509,7 @@ def handle_payment():
 
                         
                     for i in email_times:
-                        if time - timedelta(hours=i) < datetime.datetime.now():
+                        if time - timedelta(hours=i) < datetime.now().astimezone(pytz.utc) and i != 1:
                             continue
                         db._insert("notifications", {
                             "email": {
@@ -520,14 +521,14 @@ def handle_payment():
                             "time": time - timedelta(hours=i)
                             }
                         )
-                        zoom_id = db.get_teacher(session['teacher_email']).get('zoom_id')
-                        phone_number = db.get_teacher(session['teacher_email']).get('phone_number')
+                        zoom_id = str(db.get_teacher(session['teacher_email']).get('zoom_id'))
+                        phone_number = str(db.get_teacher(session['teacher_email']).get('phone_number'))
                         if phone_number:
                             db._insert("notifications", {
                                 "email": {
                                     "address": email, 
                                     "subject": str(i) + " Hour Reminder: Tadpole Tutoring Session", 
-                                    "msg": "Dear Student,\n\nThis is a reminder that you have signed up for a class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe teacher's email address is " + session['teacher_email'] + ".\n\n Zoom: <a href='https://zoom.us/j/'" + zoom_id + "?pwd=0000>" + zoom_id + "</a>.\n\n" + "Phone Number: " + str(phone_number) + "\n\n\nPassword: 0000\n\n\nFrom, Tadpole Tutoring"
+                                    "msg": "Dear Student,\n\nThis is a reminder that you have signed up for a class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe teacher's email address is " + session['teacher_email'] + ".\n\n Zoom: https://zoom.us/j/" + zoom_id + "?pwd=0000\n\n" + "Phone Number: " + str(phone_number) + "\n\n\nPassword: 0000\n\n\nFrom, Tadpole Tutoring"
                                     },
                                 "sent": False,
                                 "time": time - timedelta(hours=i)
