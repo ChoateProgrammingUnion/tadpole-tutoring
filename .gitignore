@@ -1,4 +1,6 @@
 .idea
+**/*.csv
+*.csv
 *.zip
 index.db
 config.py
