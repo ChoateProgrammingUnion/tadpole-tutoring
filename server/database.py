@@ -146,7 +146,6 @@ class Database:
             if last_name is not None: teacher['last_name'] = last_name
             if icon is not None: teacher['icon'] = icon
             if max_hours is not None: teacher['max_hours'] = max_hours
-
             if phone_number is not None: teacher['phone_number'] = phone_number
 
             return self._upsert('teachers', teacher)
