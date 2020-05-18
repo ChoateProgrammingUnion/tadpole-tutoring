@@ -196,10 +196,11 @@ def api_edit_teacher():
         bio = request.args.get("bio", None, str)
         first_name = request.args.get("first_name", None, str)
         last_name = request.args.get("last_name", None, str)
+        phone_number = request.args.get("phone_number", None, str)
 
         db = database.Database()
 
-        db.edit_teacher(email, subjects, zoom_id, bio, first_name, last_name, icon, max_hours)
+        db.edit_teacher(email, subjects, zoom_id, bio, first_name, last_name, icon, max_hours, phone_number)
         return api.serialize(True)
 
     return api.serialize(False)
