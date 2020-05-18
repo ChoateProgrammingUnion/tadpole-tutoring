@@ -619,7 +619,7 @@ class Database:
 
         for day_num in range(num_days):
             today_schedule = self.search_times(min_start_time=midnight, max_start_time=midnight + timedelta(hours=24),
-                                               string_time_offset=timezone_offset, insert_teacher_info=True, insert_bio=False,
+                                               string_time_offset=timezone_offset, insert_teacher_info=False, insert_bio=False,
                                                week_start_time=week_start, week_end_time=week_end, **search_params)
 
             # TODO

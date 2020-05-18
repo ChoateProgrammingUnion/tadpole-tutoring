@@ -94,12 +94,12 @@ teacher_bio_template = """<aside>
     <p><b>Studies at: </b>Choate Rosemary Hall</p>
     <p><b>Subjects Teaching: </b>{subjects}</p>
     <p><b>Email: </b><span><a href="mailto:{email}">{email}</a></span></p>
-    <p><span><a href="https://zoom.us/j/{zoom_id}?pwd=0000">Zoom Link (ID: {zoom_id})</a></span></p>
+    <p><span><a href="{zoom_id}">Zoom Link</a></span></p>
     <details>
     <summary>Display Bio</summary>
     <p>{bio}</p>
     </details>
-    <a><strong class="tutor-link" id="{_id}">Schedule Now</strong></a>
+    <a href="#" onclick="return false;"><strong class="tutor-link" id="{_id}">Schedule Now</strong></a>
 </aside>
 """
 
@@ -153,7 +153,7 @@ def add_to_cart(vars):
     aio.run(fetch_api("/api/add-to-cart", {"time_id": display_id}))
     document[str(display_id)].html = "Added to Cart!"
 
-async def fetch_and_display_timeslot(id):
+async def fetch_and_display_timeslot(id, main_screen=True):
     time_info = await fetch_api("/api/get-time", {"time_id": id, "tz_offset": calculate_timezone_offset()})
     time_info['subjects'] = time_info['subjects'].replace("|", ", ")
 
@@ -167,7 +167,11 @@ async def fetch_and_display_timeslot(id):
         document['back-to-subject'].html = ""
     except:
         pass
-    document["back-button"].bind("mousedown", update_view)
+
+    if main_screen:
+        document["back-button"].bind("mousedown", update_view)
+    else:
+        document["back-button"].bind("mousedown", back_to_tutor_time)
 
     user_cart = await fetch_api("/api/get-cart-numbers")
 
@@ -181,6 +185,19 @@ def display_timeslot(vars):
     display_id = str(vars.target.id)
     aio.run(fetch_and_display_timeslot(display_id))
 
+def display_timeslot_id(vars):
+    display_id = str(vars.target.id)
+    aio.run(fetch_and_display_timeslot(display_id, False))
+
+def back_to_tutor_time(vars):
+    aio.run(search_by_time(document['teacher-id'].html))
+
+    document['back-button-div'].html = back_button_template
+    try:
+        document['back-to-subject'].html = ""
+    except:
+        pass
+    document["back-button"].bind("mousedown", update_view)
 
 async def search_by_time(id=None, update_view=True):
     """
@@ -225,8 +242,12 @@ async def search_by_time(id=None, update_view=True):
     document['right-arrow'].bind("click", right_arrow)
     document['this-week'].bind("click", this_week)
 
-    for d in document.select(".timeslot"):
-        d.bind("click", display_timeslot)
+    if id is not None and id != "":
+        for d in document.select(".timeslot"):
+            d.bind("click", display_timeslot_id)
+    else:
+        for d in document.select(".timeslot"):
+            d.bind("click", display_timeslot)
 
     # document['schedule-results'].html = tutor_bio_html
 

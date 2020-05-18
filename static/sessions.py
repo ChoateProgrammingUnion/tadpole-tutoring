@@ -9,7 +9,7 @@ default_session_table_header = """
     <th>Teacher Name</th>
     <th>Start Time</th>
     <th>Date</th>
-    <th>Teacher's Subjects</th>
+    <th>Zoom Link</th>
 </tr>"""
 
 empty_session_table_header = """
@@ -22,8 +22,8 @@ session_table_entry_template = """
     <td>{_id}</td>
     <td>{first_name} {last_name}</td>
     <td>{start_time}</td>
-    <td>{date_str}</td>
-    <td>{subjects}</td>
+    <td>{date_str}</td> 
+    <td>{zoom_id}</td> 
 </tr>"""
 
 default_session_table_header_teacher = """
@@ -130,6 +130,8 @@ async def add_sessions_to_table():
         else:
             for session in user_sessions:
                 session['subjects'] = session['subjects'].replace("|", ", ")
+                if session['zoom_id'] != "":
+                    session['zoom_id'] = '<a href="{zoom_id}">{zoom_id}</a>'.format(**session)
                 add_template_to_table(session, is_teacher)
 
 aio.run(add_sessions_to_table())

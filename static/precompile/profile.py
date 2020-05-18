@@ -57,7 +57,7 @@ teacher_profile_form_start = """
     <input type="text" id="phone_number" name="phone_number" size="28" placeholder="{phone_number}">
 
     <label for="hours">Zoom link:</label>
-    <input type="text" id="zoom" name="zoom" size="28" placeholder="https://zoom.us/j/{zoom_id}">
+    <input type="text" id="zoom" name="zoom" size="28" placeholder="{zoom_id}">
 
     <label for="hours">Link to a Photo of You:</label>
     <input type="text" id="icon" name="icon" size="28" placeholder="{icon}">
@@ -180,6 +180,7 @@ async def submit_form():
         last_name = document['last_name'].value
 
         zoom = document['zoom'].value
+        max_hours = document['max_hours'].value
 
         icon = document['icon'].value
 
@@ -187,6 +188,7 @@ async def submit_form():
         if last_name != "": params.update({"last_name": last_name})
         if bio != "": params.update({"bio": bio})
         if zoom != "": params.update({"zoom_id": zoom})
+        if max_hours != "": params.update({"max_hours": int(max_hours)})
         if phone_number != "": params.update({"phone_number": phone_number})
         if icon != "": params.update({"icon": icon})
 

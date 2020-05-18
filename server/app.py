@@ -502,33 +502,52 @@ def handle_payment():
                 for t_id in cart:
                     # email.send(teacher_email, "Tadpole Tutoring Payment Confirmation", "This is a confirmation that you have signed up for ")
                     db.claim_time(email, t_id)
+                    # try:
                     session = db.get_time_by_id(t_id)
+                    teacher = db.get_teacher(session['teacher_email'])
                     time = datetime.fromtimestamp(int(session['start_time'])).astimezone(pytz.utc)
-                    times.append(time.strftime("%I:%M%p UTC on %B %d, %Y"))
-                    sender.send(session['teacher_email'], "Tadpole Tutoring Student Registration", "Dear Tutor,\n\nA student has signed up for your class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe student's name is " + session['student'] + ".\n\n\nFrom, Tadpole Tutoring")
+                    times.append(time.strftime("%I:%M%p UTC on %B %d, %Y") + " With " + teacher['first_name'] + " " + teacher['last_name'] + " (" + teacher['email'] + ", " + teacher['zoom_id'] + ")")
+                    sender.send(session['teacher_email'], "Tadpole Tutoring Student Registration",
+                                "Dear Tutor,\n\nA student has signed up for your class at " +
+                                time.strftime("%I:%M%p UTC on %B %d, %Y") +
+                                ".\nThe student's name is " + session['student'] +
+                                ".\n\nThese times are in Universal Coordinated Time (UTC). To view these times in your local timezone, click the link below."
+                                "\nhttps://tadpoletutoring.org/sessions.html\n\nFive minutes before the time of your scheduled session, open up your personal zoom meeting, "
+                                "ensure your password is set to 0000, enable your waiting room, and be prepared to admit the student!!! "
+                                "Congrats on your session!\n\nFrom, Tadpole Tutoring")
 
-                        
+
                     for i in email_times:
                         if time - timedelta(hours=i) < datetime.now().astimezone(pytz.utc) and i != 1:
                             continue
                         db._insert("notifications", {
                             "email": {
-                                "address": session['teacher_email'], 
-                                "subject": str(i) + " Hour Reminder: Tadpole Tutoring Session", 
-                                "msg": "Dear Tutor,\n\nThis is a reminder that a student has signed up for your class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe student's name is " + session['student'] + ".\n\n\nFrom, Tadpole Tutoring"
+                                "address": session['teacher_email'],
+                                "subject": str(i) + " Hour Reminder: Tadpole Tutoring Session",
+                                "msg": "Dear Tutor,\n\nThis is a reminder that a student has signed up for your class at " +
+                                       time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe student's name is " +
+                                       session['student'] +
+                                       ".\n\nFive minutes before the time of your scheduled session, open up your personal zoom meeting, "
+                                       "ensure your password is set to 0000, enable your waiting room, and be prepared to admit the student!!! "
+                                       "Congrats on your session! \n\nFrom, Tadpole Tutoring"
                                 },
                             "sent": False,
                             "time": time - timedelta(hours=i)
                             }
                         )
-                        zoom_id = str(db.get_teacher(session['teacher_email']).get('zoom_id'))
-                        phone_number = str(db.get_teacher(session['teacher_email']).get('phone_number'))
+                        zoom_id = str(teacher.get('zoom_id'))
+                        phone_number = str(teacher.get('phone_number'))
                         if phone_number:
                             db._insert("notifications", {
                                 "email": {
-                                    "address": email, 
-                                    "subject": str(i) + " Hour Reminder: Tadpole Tutoring Session", 
-                                    "msg": "Dear Student,\n\nThis is a reminder that you have signed up for a class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe teacher's email address is " + session['teacher_email'] + ".\n\n Zoom: https://zoom.us/j/" + zoom_id + "?pwd=0000\n\n" + "Phone Number: " + str(phone_number) + "\n\n\nPassword: 0000\n\n\nFrom, Tadpole Tutoring"
+                                    "address": email,
+                                    "subject": str(i) + " Hour Reminder: Tadpole Tutoring Session",
+                                    "msg": "Dear Student,\n\nThis is a reminder that you have signed up for a class at " +
+                                           time.strftime("%I:%M%p UTC on %B %d, %Y") +
+                                           ".\nThe teacher's email address is " + session['teacher_email'] +
+                                           ".\n\n Zoom: " + zoom_id +
+                                           "\n\nPhone Number: " + str(phone_number) +
+                                           "\n\n\nPassword: 0000\n\n\nFrom, Tadpole Tutoring"
                                     },
                                 "sent": False,
                                 "time": time - timedelta(hours=i)
@@ -537,20 +556,31 @@ def handle_payment():
                         else:
                             db._insert("notifications", {
                                 "email": {
-                                    "address": email, 
-                                    "subject": str(i) + " Hour Reminder: Tadpole Tutoring Session", 
-                                    "msg": "Dear Student,\n\nThis is a reminder that you have signed up for a class at " + time.strftime("%I:%M%p UTC on %B %d, %Y") + ".\nThe teacher's email address is " + session['teacher_email'] + ".\n\n Zoom: <a href='https://zoom.us/j/'" + zoom_id + "?pwd=0000>" + zoom_id + "</a>\n\nPassword: 0000\n\n\nFrom, Tadpole Tutoring"
+                                    "address": email,
+                                    "subject": str(i) + " Hour Reminder: Tadpole Tutoring Session",
+                                    "msg": "Dear Student,\n\nThis is a reminder that you have signed up for a class at " +
+                                           time.strftime("%I:%M%p UTC on %B %d, %Y") +
+                                           ".\nThe teacher's email address is " + session['teacher_email'] +
+                                           ".\n\n Zoom: " + zoom_id +
+                                           "\n\nPhone Number: " + str(phone_number) +
+                                           "\n\n\nPassword: 0000\n\n\nFrom, Tadpole Tutoring"
                                     },
                                 "sent": False,
                                 "time": time - timedelta(hours=i)
                                 }
                             )
+                    # except Exception:
+                    #     log_info("EMAIL FAILED")
 
 
                 db.set_cart(email, set())
                 log_info("Times claimed")
 
-                sender.send(email, "Tadpole Tutoring Payment Confirmation", "Dear Student, \n\nThanks for scheduling a teaching session with us! This is a confirmation that you have signed up for " + str(len(cart)) + " session(s) on the following dates:\n" + "\n".join(times) + "\n\n\nFrom, Tadpole Tutoring")
+                sender.send(email, "Tadpole Tutoring Payment Confirmation",
+                            "Dear Student, \n\nThanks for scheduling a teaching session with us! This is a confirmation that you have signed up for " +
+                            str(len(cart)) + " session(s) on the following dates:\n" + "\n".join(times) +
+                            "\n\nThese times are in Universal Coordinated Time (UTC). To view these times in your local timezone, click the link below."
+                            "\nhttps://tadpoletutoring.org/sessions.html\n\n\nFrom, Tadpole Tutoring")
                 return api.serialize(True)
 
         return api.serialize(False)
