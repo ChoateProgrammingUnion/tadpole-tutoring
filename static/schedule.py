@@ -94,7 +94,7 @@ teacher_bio_template = """<aside>
     <p><b>Studies at: </b>Choate Rosemary Hall</p>
     <p><b>Subjects Teaching: </b>{subjects}</p>
     <p><b>Email: </b><span><a href="mailto:{email}">{email}</a></span></p>
-    <p><span><a href="{zoom_id}">Zoom Link</a></span></p>
+    <p><span><a style="color: #0a721b;" href="{zoom_id}">Zoom Link</a></span></p>
     <details>
     <summary>Display Bio</summary>
     <p>{bio}</p>
