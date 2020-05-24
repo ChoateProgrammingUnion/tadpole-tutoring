@@ -60,6 +60,14 @@ payment_template = """
     </button>
 </form>"""
 
+discount_section = """
+<form action="javascript:void(0);">
+    <label for="code" style="display: inline">Discount Code:</label>
+    <input id="code" size="28">
+
+    <button id="submit-discount">Submit</button>
+</form>"""
+
 def deserialize(obj_str):
     return javascript.JSON.parse(obj_str)
 
@@ -136,8 +144,11 @@ async def add_cart_to_table():
     if len(cart_items) == 0:
         document['cart-table'].html = empty_cart_table_template
         document['payment-area'].html = ""
+        document['discount-section'].html = ""
     else:
         document['payment-area'].html = payment_template
+        document['discount-section'].html = discount_section
+        document['submit-discount'].bind("click", submit_discount_run)
         window.setupPayment()
         for entry in cart_items:
             entry['subjects'] = entry['subjects'].replace("|", ", ")
@@ -147,6 +158,21 @@ async def add_cart_to_table():
             d.bind("click", remove_from_cart)
 
     gen_checkout_table(cart_items)
+
+def submit_discount_run(vars):
+    aio.run(submit_discount())
+
+async def submit_discount():
+    code = document['code'].value
+    success = await fetch_api("/api/handle-payment-discount", {"discount-code": code})
+
+    if success:
+        alert("Your times have been claimed!")
+    else:
+        alert("An error has occurred")
+
+    await add_cart_to_table()
+
 
 def handle_payment_run(intentId):
     aio.run(handle_payment(intentId))
