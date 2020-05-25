@@ -503,8 +503,7 @@ def handle_payment():
 def handle_payment_discount():
     if email := auth.check_login(request):
         code = request.args.get("discount-code")
-        # TODO Check Code
-        if False:
+        if auth.check_discount(code): # will return true if it works
             return api.serialize(api.pay_for_session(email))
 
     return api.serialize(False)

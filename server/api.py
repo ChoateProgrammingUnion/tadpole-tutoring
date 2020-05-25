@@ -8,7 +8,8 @@ import pytz
 
 from datetime import datetime, timedelta
 
-from notifications import notify
+# from notifications import notify
+import notify
 from utils.log import *
 
 

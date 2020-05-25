@@ -1,4 +1,5 @@
 import database
+import secrets
 from utils.log import *
 
 
@@ -66,3 +67,24 @@ def check_teacher(request):
         return r
     return False
 
+def create_discount(n: int = 100):
+    discounts_db = database.Database()
+    with open("discounts.txt", "w") as f:
+        for i in range(n):
+            discounts_db._insert("discounts", 
+                                 {"key": secrets.token_hex(8), 
+                                  "used": False})
+
+def check_discount(key: str) -> bool:
+    """
+    Checks and discards a key
+    """
+    discounts_db = database.Database()
+    result = discounts_db._find_one("discounts", key=key.rstrip())
+    if result and secrets.compare_digest(result.get("key"), key) and result.get("used") is False:
+        discounts_db._upsert("discounts", 
+                             {"key": result.get("key"), 
+                              "_id": result.get("_id"),
+                              "used": True})
+        return True
+    return False
