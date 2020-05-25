@@ -614,6 +614,8 @@ class Database:
 
         if time_offset is not None:
             midnight += time_offset
+            week_start += time_offset
+            week_end += time_offset
 
         schedule_dict = []
 
