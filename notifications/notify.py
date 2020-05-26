@@ -8,7 +8,7 @@ class Email:
         self.smtp = smtplib.SMTP_SSL('smtp.mail.us-east-1.awsapps.com', port=465)
         self.smtp.login(config.EMAIL_USERNAME, config.EMAIL_PASSWORD)
 
-    def send(self, recipient: str, subject = "", msg = "", reminder = True, verbose=False):
+    def send(self, recipient: str, subject = "", msg = "", reminder = True):
         """
         Sends a message
         """
@@ -21,9 +21,8 @@ class Email:
             email['Subject'] = subject.rstrip()
             email['From'] = config.EMAIL_USERNAME
             email['To'] = recipient.rstrip()
+            email['BCC'] = "tadpoletutoring123@gmail.com"
             email.set_content(msg.rstrip())
-            if verbose:
-                print(email)
 
             self.smtp.send_message(email)
             # msg = "Subject: " + subject.rstrip() + "\n" + msg.rstrip()
