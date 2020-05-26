@@ -107,7 +107,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/notifications/dev/1589518399918-2020-05-15T04:53:19.918Z/notifications.zip"
+                "S3Key": "serverless/notifications/dev/1590455231640-2020-05-26T01:07:11.640Z/notifications.zip"
               },
               "FunctionName": "notifications-dev-hello",
               "Handler": "poll.poll",
@@ -132,14 +132,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "HelloLambdaVersionM1n9rCBQ4d58BXKtTlaqsWmk3XtzF8dvjHZ9N5hkjg": {
+          "HelloLambdaVersiondQbYscVLg8nbJEOsRxCqdOGDTPifCe530vwHwwVAdY": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "HelloLambdaFunction"
               },
-              "CodeSha256": "qzbazK7tjCioXrx0cS/WBi7kRYxHnKA+BAsGeF51TYU="
+              "CodeSha256": "PbsY19e7AUyrtTJEAJ214VzI6M3BxupMbU/7sOCq1Z8="
             }
           },
           "HelloEventsRuleSchedule1": {
@@ -199,7 +199,7 @@
           "HelloLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "HelloLambdaVersionM1n9rCBQ4d58BXKtTlaqsWmk3XtzF8dvjHZ9N5hkjg"
+              "Ref": "HelloLambdaVersiondQbYscVLg8nbJEOsRxCqdOGDTPifCe530vwHwwVAdY"
             }
           }
         }
@@ -258,7 +258,7 @@
     "artifact": "/Users/max/git/tadpole-tutoring/notifications/.serverless/notifications.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/notifications/dev/1589518399918-2020-05-15T04:53:19.918Z",
+    "artifactDirectoryName": "serverless/notifications/dev/1590455231640-2020-05-26T01:07:11.640Z",
     "artifact": "notifications.zip"
   }
 }
