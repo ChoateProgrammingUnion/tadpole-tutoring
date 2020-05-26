@@ -496,7 +496,32 @@ def handle_payment():
         return api.serialize(False)
 
     log_info("Not logged in")
-    return ""
+    return ""\
+
+@app.route('/api/handle-payment-donation')
+def handle_payment_donation():
+    intent_id = request.args.get("intentId", None, str)
+    name = request.args.get("name", "", str)
+
+    if not intent_id:
+        log_info("No intentId passed " + str(request.form))
+        return api.serialize(False)
+
+    intent = stripe.PaymentIntent.retrieve(intent_id)
+
+    log_info("Amount Paid: " + str(intent['amount_received']) + " cents")
+
+    if intent['amount_received'] >= intent['amount']:
+        log_info("Sending Donation Email...")
+        notify.Email().send("ethan.chapman@comcast.net", "New Donation",
+                            "A new donation was just received"
+                            "\n\nDonor Name: " + name +
+                            "\nDonation Amount: " + str(intent['amount_received']) + " cents" +
+                            "\nIntent ID: " + intent_id)
+        log_info("Email Sent!")
+        return api.serialize(True)
+
+    return api.serialize(False)
 
 
 @app.route('/api/handle-payment-discount')

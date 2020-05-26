@@ -1,6 +1,6 @@
 from browser import document, alert, aio, bind, window
 import javascript
-URL = "https://api.tadpoletutoring.org"
+URL = "http://localhost:5000"
 
 payment_template = """
 <form id="payment-form" class="sr-payment-form">
@@ -48,11 +48,12 @@ def set_price(price):
 
 def handle_payment_request(pay):
     document['button-text'].html = "Processing..."
-    pay()
+    pay(document['name'].value)
 
-def handle_payment(intent_id):
+def handle_payment(intent_id, name):
     document['payment-area'].html = ""
     document['donate-button'].html = "Donate"
+    aio.run(fetch_api("/api/handle-payment-donation", {"intentId": intent_id, "name": name}, False))
     alert("Thank you for your donation!")
 
 def handle_error():

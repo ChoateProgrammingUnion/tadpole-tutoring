@@ -27,7 +27,7 @@ function setupPayment(price) {
             form.addEventListener("submit", function (event) {
                 event.preventDefault();
                 // Initiate payment when the submit button is clicked
-                var lambda = function() {pay(stripe, card, clientSecret, intentId);};
+                var lambda = function(name) {pay(stripe, card, clientSecret, intentId, name);};
 
                 window.handle_payment_request(lambda);
             });
@@ -39,7 +39,7 @@ var orderData = {
     currency: "usd"
 };
 
-let url = "https://api.tadpoletutoring.org";
+let url = "http://localhost:5000";
 
 // Disable the button until we have Stripe set up on the page
 // document.querySelector("button").disabled = true;
@@ -81,7 +81,7 @@ var setupElements = function(data) {
  * Calls stripe.confirmCardPayment which creates a pop-up modal to
  * prompt the user to enter extra authentication details without leaving your page
  */
-var pay = function(stripe, card, clientSecret, intentId) {
+var pay = function(stripe, card, clientSecret, intentId, name) {
     changeLoadingState(true);
 
     stripe
@@ -98,7 +98,7 @@ var pay = function(stripe, card, clientSecret, intentId) {
             } else {
                 // The payment has been processed!
                 // orderComplete(clientSecret, intentId);
-                handle_payment(intentId)
+                handle_payment(intentId, name)
             }
         });
 };
