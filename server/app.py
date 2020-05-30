@@ -243,13 +243,14 @@ def api_is_teacher_available():
             log_info("No Time ID Specified!")
             return api.serialize(False)
 
-        midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-        week_start = midnight - timedelta(days=midnight.weekday())
-        week_end = week_start + timedelta(days=7)
-
         db = database.Database()
 
-        teacher_email = db.get_time_by_id(time_id)['teacher_email']
+        t = db.get_time_by_id(time_id)
+        teacher_email = t['teacher_email']
+
+        midnight = datetime.fromtimestamp(t['start_time']).astimezone(pytz.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = midnight - timedelta(days=midnight.weekday())
+        week_end = week_start + timedelta(days=7)
 
         return api.serialize(db.check_teacher_availability_for_student(week_start, week_end, teacher_email, email))
 

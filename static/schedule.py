@@ -166,14 +166,23 @@ def add_to_cart(vars):
     aio.run(fetch_api("/api/add-to-cart", {"time_id": display_id}))
     document[str(display_id)].html = "Added to Cart!"
 
+
 async def fetch_and_display_timeslot(id, main_screen=True):
     time_info = await fetch_api("/api/get-time", {"time_id": id, "tz_offset": calculate_timezone_offset()})
     time_info['subjects'] = time_info['subjects'].replace("|", ", ")
 
     if "@" in document.cookie:
+        user_cart = await fetch_api("/api/get-cart-numbers")
         teacher_is_available = await fetch_api("/api/is-teacher-available", {"time_id": id})
-        if teacher_is_available:
+
+        if teacher_is_available or id in user_cart:
             document['schedule-results'].html = timeslot_display_template.format(**time_info)
+
+            if id in user_cart:
+                document[str(id)].html = "Added to Cart!"
+            else:
+                for d in document.select(".add-to-cart"):
+                    d.bind("click", add_to_cart)
         else:
             document['schedule-results'].html = timeslot_display_template_already_booked.format(**time_info)
     else:
@@ -189,14 +198,6 @@ async def fetch_and_display_timeslot(id, main_screen=True):
         document["back-button"].bind("mousedown", update_view)
     else:
         document["back-button"].bind("mousedown", back_to_tutor_time)
-
-    user_cart = await fetch_api("/api/get-cart-numbers")
-
-    if id in user_cart:
-        document[str(id)].html = "Added to Cart!"
-    else:
-        for d in document.select(".add-to-cart"):
-            d.bind("click", add_to_cart)
 
 def display_timeslot(vars):
     display_id = str(vars.target.id)
