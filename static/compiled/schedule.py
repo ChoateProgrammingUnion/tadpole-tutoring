@@ -74,6 +74,19 @@ timeslot_display_template_not_logged_in = """
     </i>
 </td></tr>"""
 
+timeslot_display_template_already_booked = """
+<tr><th><a>Tutoring Session Info</a></th></tr>
+<tr><td>
+    <i>
+        <b>Teacher: </b>{first_name} {last_name} <br>
+        <b>Subjects: </b> {subjects} <br>
+        <b>Time: </b>{start_time}, {date_str} <br>
+        <b>Duration: </b>1hr <br>
+        <br>
+        This tutor has reached their hour limit for the week. Remove other sessions from your <a href="/cart.html">cart</a> to add this one.
+    </i>
+</td></tr>"""
+
 indiv_tutor_template = """<header>
     <h2>{first_name} {last_name}</h2>
     <p><b>Studies at: </b>Choate Rosemary Hall</p>
@@ -158,7 +171,11 @@ async def fetch_and_display_timeslot(id, main_screen=True):
     time_info['subjects'] = time_info['subjects'].replace("|", ", ")
 
     if "@" in document.cookie:
-        document['schedule-results'].html = timeslot_display_template.format(**time_info)
+        teacher_is_available = await fetch_api("/api/is-teacher-available", {"time_id": id})
+        if teacher_is_available:
+            document['schedule-results'].html = timeslot_display_template.format(**time_info)
+        else:
+            document['schedule-results'].html = timeslot_display_template_already_booked.format(**time_info)
     else:
         document['schedule-results'].html = timeslot_display_template_not_logged_in.format(**time_info)
 
