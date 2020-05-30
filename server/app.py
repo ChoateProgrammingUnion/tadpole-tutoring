@@ -40,17 +40,18 @@ app.config["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "true"
 app.config['PREFERRED_URL_SCHEME'] = "https"
 os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "true"
 
-
 stripe.api_key = STRIPE_API_KEY
+
 
 @app.route('/')
 def index():
     state = {}
-    email = auth.check_login(request) # do stuff with this
+    email = auth.check_login(request)  # do stuff with this
     if email:
         state['logged_in'] = True
     # return render_template("index.html", navbar=views.render_navbar(state))
     return render_template("index.html")
+
 
 @app.route('/login')
 def login():
@@ -63,12 +64,14 @@ def login():
         # url = request.headers.get("Referer")
         return render_template("index.html")
 
-@app.route('/check', methods = ['POST'])
+
+@app.route('/check', methods=['POST'])
 def check_login():
     if auth.check_login(request):
         return "Success!"
     else:
         return ""
+
 
 # @app.route('/populate-index')
 # def populate_index():
@@ -102,11 +105,12 @@ def callback():
     Processes callback from AWS Cognito
     """
     user_info = cognito.check_callback(request)
-    if user_info: # todo add more checks
+    if user_info:  # todo add more checks
         # response = make_response(render_template("index.html", navbar=views.render_navbar({})))
         response = make_response(render_template("index.html"))
 
     return auth.set_login(response, user_info)
+
 
 @app.route('/logout')
 def logout():
@@ -119,6 +123,7 @@ def logout():
     response.set_cookie("token", domain='tadpoletutoring.org', expires=0)
     return response
 
+
 @app.route('/api/register')
 def api_register_student():
     if api.register_student(request):
@@ -126,12 +131,14 @@ def api_register_student():
 
     return flask.abort(500)
 
+
 @app.route('/api/register-teacher')
 def api_register_teacher():
     if auth.check_teacher(request):
         pass
 
     return flask.abort(405)
+
 
 @app.route('/api/person')
 def api_get_person():
@@ -143,12 +150,14 @@ def api_get_person():
 
     # return flask.abort(500)
 
+
 @app.route('/api/teachers')
 def api_fetch_teachers():
     subject = request.args.get("subject", None, str)
 
     teachers = list(api.fetch_teachers(subject, False))
     return api.serialize(teachers)
+
 
 @app.route('/api/get-teacher')
 def api_get_teacher():
@@ -162,6 +171,7 @@ def api_get_teacher():
     teacher = db.get_teacher_by_id(teacher_id)
     return api.serialize(teacher)
 
+
 @app.route('/api/get-teacher-by-email')
 def api_get_teacher_by_email():
     teacher_email = request.args.get("email", None, str)
@@ -174,6 +184,7 @@ def api_get_teacher_by_email():
     teacher = db.get_teacher(teacher_email)
     return api.serialize(teacher)
 
+
 @app.route('/api/get-student-by-email')
 def api_get_student_by_email():
     student_email = request.args.get("email", None, str)
@@ -185,6 +196,7 @@ def api_get_student_by_email():
 
     teacher = db.get_student(student_email)
     return api.serialize(teacher)
+
 
 @app.route('/api/edit-teacher')
 def api_edit_teacher():
@@ -205,6 +217,7 @@ def api_edit_teacher():
 
     return api.serialize(False)
 
+
 @app.route('/api/edit-student')
 def api_edit_student():
     if email := auth.check_login(request):
@@ -220,9 +233,33 @@ def api_edit_student():
 
     return api.serialize(False)
 
+
+@app.route('/api/is-teacher-available')
+def api_is_teacher_available():
+    if email := auth.check_login(request):
+        time_id = request.args.get("time_id", None, str)
+
+        if time_id is None:
+            log_info("No Time ID Specified!")
+            return api.serialize(False)
+
+        midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = midnight - timedelta(days=midnight.weekday())
+        week_end = week_start + timedelta(days=7)
+
+        db = database.Database()
+
+        teacher_email = db.get_time_by_id(time_id)['teacher_email']
+
+        return api.serialize(db.check_teacher_availability_for_student(week_start, week_end, teacher_email, email))
+
+    return api.serialize(False)
+
+
 @app.route('/api/check-teacher')
 def api_check_teacher():
     return api.serialize(auth.check_teacher(request))
+
 
 @app.route('/api/search-times')
 def api_search_times():
@@ -244,8 +281,10 @@ def api_search_times():
 
     db = database.Database()
 
-    times = db.get_time_schedule(timezone_offset=timezone_offset, time_offset=timedelta(days=offset), search_params=search_params)
+    times = db.get_time_schedule(timezone_offset=timezone_offset, time_offset=timedelta(days=offset),
+                                 search_params=search_params)
     return api.serialize(times)
+
 
 @app.route('/api/get-time')
 def api_get_time():
@@ -261,6 +300,7 @@ def api_get_time():
     times = db.get_time_by_id(time_id, timezone_offset, True)
     return api.serialize(times)
 
+
 @app.route('/api/get-user-times')
 def api_get_user_times():
     if email := auth.check_login(request):
@@ -271,12 +311,15 @@ def api_get_user_times():
         db = database.Database()
 
         if is_teacher:
-            times = db.search_times(teacher_email=email, string_time_offset=timezone_offset, insert_teacher_info=True, teacher_must_be_available=False, must_be_unclaimed=False)
+            times = db.search_times(teacher_email=email, string_time_offset=timezone_offset, insert_teacher_info=True,
+                                    teacher_must_be_available=False, must_be_unclaimed=False)
         else:
-            times = db.search_times(student_email=email, string_time_offset=timezone_offset, insert_teacher_info=True, teacher_must_be_available=False, must_be_unclaimed=False)
+            times = db.search_times(student_email=email, string_time_offset=timezone_offset, insert_teacher_info=True,
+                                    teacher_must_be_available=False, must_be_unclaimed=False)
         return api.serialize([times, is_teacher])
 
     return flask.abort(405)
+
 
 @app.route('/api/update-time')
 def api_update_time():
@@ -284,6 +327,7 @@ def api_update_time():
         return api.serialize({})
 
     return flask.abort(500)
+
 
 @app.route('/api/add-to-cart')
 def api_add_to_cart():
@@ -301,6 +345,7 @@ def api_add_to_cart():
 
     log_info("Not logged in")
     return flask.abort(500)
+
 
 @app.route('/api/create-time')
 def api_create_time():
@@ -329,6 +374,7 @@ def api_create_time():
     log_info("Not logged in")
     return flask.abort(500)
 
+
 @app.route('/api/verify-cart')
 def api_verify_cart():
     if email := auth.check_login(request):
@@ -339,6 +385,7 @@ def api_verify_cart():
 
     log_info("Not logged in")
     return flask.abort(500)
+
 
 @app.route('/api/remove-from-cart')
 def api_remove_from_cart():
@@ -361,6 +408,7 @@ def api_remove_from_cart():
     log_info("Not logged in")
     return flask.abort(500)
 
+
 @app.route('/api/remove-session')
 def api_remove_remove_session():
     if email := auth.check_login(request):
@@ -376,6 +424,7 @@ def api_remove_remove_session():
 
     log_info("Not logged in")
     return flask.abort(500)
+
 
 @app.route('/api/get-cart')
 def api_get_cart():
@@ -393,6 +442,7 @@ def api_get_cart():
     log_info("Not logged in")
     return flask.abort(500)
 
+
 @app.route('/api/get-cart-numbers')
 def api_get_cart_numbers():
     if email := auth.check_login(request):
@@ -404,6 +454,7 @@ def api_get_cart_numbers():
     log_info("Not logged in")
     return flask.abort(500)
 
+
 @app.route('/api/make-teacher')
 def api_make_teacher():
     if secrets.compare_digest(request.args.get('pass').rstrip(), TEACHER_PASSWORD.rstrip()):
@@ -414,6 +465,7 @@ def api_make_teacher():
             return api.serialize(True)
 
     return api.serialize(False)
+
 
 # @app.route('/api/claim-time')
 # def api_claim_time():
@@ -454,12 +506,14 @@ def create_payment():
         db.set_intent(email, intent.get('id'))
         try:
             # Send publishable key and PaymentIntent details to client
-            return jsonify({'publishableKey': STRIPE_PUBLISHABLE_KEY, 'clientSecret': intent.client_secret, 'intentId': intent.get('id')})
+            return jsonify({'publishableKey': STRIPE_PUBLISHABLE_KEY, 'clientSecret': intent.client_secret,
+                            'intentId': intent.get('id')})
         except Exception as e:
             return jsonify(error=str(e)), 403
 
     log_info("Not logged in")
     return ""
+
 
 @app.route('/api/create-payment-intent-for-donate', methods=['POST'])
 def create_payment_intent_for_donate():
@@ -472,7 +526,8 @@ def create_payment_intent_for_donate():
 
     try:
         # Send publishable key and PaymentIntent details to client
-        return jsonify({'publishableKey': STRIPE_PUBLISHABLE_KEY, 'clientSecret': intent.client_secret, 'intentId': intent.get('id')})
+        return jsonify({'publishableKey': STRIPE_PUBLISHABLE_KEY, 'clientSecret': intent.client_secret,
+                        'intentId': intent.get('id')})
     except Exception as e:
         return jsonify(error=str(e)), 403
 
@@ -496,8 +551,9 @@ def handle_payment():
         return api.serialize(False)
 
     log_info("Not logged in")
-    return ""\
-
+    return "" \
+ \
+ \
 @app.route('/api/handle-payment-donation')
 def handle_payment_donation():
     intent_id = request.args.get("intentId", None, str)
@@ -528,10 +584,11 @@ def handle_payment_donation():
 def handle_payment_discount():
     if email := auth.check_login(request):
         code = request.args.get("discount-code")
-        if auth.check_discount(code): # will return true if it works
+        if auth.check_discount(code):  # will return true if it works
             return api.serialize(api.pay_for_session(email))
 
     return api.serialize(False)
+
 
 if __name__ == '__main__':
     app.run()

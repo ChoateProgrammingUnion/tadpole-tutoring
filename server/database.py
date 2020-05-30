@@ -261,6 +261,21 @@ class Database:
         if current_hours is not None and max_hours is not None:
             return current_hours < max_hours
 
+    def check_teacher_availability_for_student(self, start_time: datetime, end_time: datetime, teacher_email: str, student_email: str) -> Optional[bool]:
+        cart, _ = self.get_cart(student_email)
+
+        cart_times = 0
+
+        for time_id in cart:
+            if self.get_time_by_id(time_id)['teacher_email'] == teacher_email:
+                cart_times += 1
+
+        current_hours = self.get_teacher_current_hours(start_time, end_time, teacher_email)
+        max_hours = self.get_teacher_max_hours(teacher_email)
+
+        if current_hours is not None and max_hours is not None:
+            return current_hours + cart_times < max_hours
+
     def get_available_teacher_emails(self, start_time: datetime, end_time: datetime, teacher_emails: List[str] = None) -> List[str]:
         search_params = {"start_time":
                              {"$gte": start_time.timestamp(), "$lt": end_time.timestamp()}}
@@ -698,6 +713,15 @@ class Database:
                             ['email'])
 
     def append_cart(self, email: str, session_id: str) -> bool:
+        midnight = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = midnight - timedelta(days=midnight.weekday())
+        week_end = week_start + timedelta(days=7)
+
+        teacher_email = self.get_time_by_id(session_id)['teacher_email']
+
+        if not self.check_teacher_availability_for_student(week_start, week_end, teacher_email, email):
+            return False
+        
         old_cart, _ = self.get_cart(email)
         old_cart.add(session_id)
         return self.set_cart(email, old_cart)

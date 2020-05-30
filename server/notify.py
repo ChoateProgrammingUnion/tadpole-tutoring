@@ -3,6 +3,7 @@ import validators
 import config
 from email.message import EmailMessage
 
+
 class Email:
     def __init__(self):
         self.smtp = smtplib.SMTP_SSL('smtp.mail.us-east-1.awsapps.com', port=465)
