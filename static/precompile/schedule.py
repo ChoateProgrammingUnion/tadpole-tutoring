@@ -82,6 +82,7 @@ timeslot_display_template_already_booked = """
         <b>Subjects: </b> {subjects} <br>
         <b>Time: </b>{start_time}, {date_str} <br>
         <b>Duration: </b>1hr <br>
+        <br>
         This tutor has reached their hour limit for the week. Remove other sessions from your <a href="/cart.html">cart</a> to add this one.
     </i>
 </td></tr>"""
