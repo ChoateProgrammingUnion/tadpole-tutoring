@@ -522,7 +522,8 @@ def create_payment_intent_for_donate():
 
     intent = stripe.PaymentIntent.create(
         amount=int(price * 100),
-        currency='usd'
+        currency='usd',
+        receipt_email = 'tadpoletutoring123@gmail.com'
     )
 
     try:
