@@ -529,7 +529,8 @@ def create_payment_intent_for_donate():
 
     intent = stripe.PaymentIntent.create(
         amount=int(price * 100),
-        currency='usd'
+        currency='usd',
+        receipt_email = 'tadpoletutoring123@gmail.com'
     )
 
     try:
@@ -559,13 +560,13 @@ def handle_payment():
         return api.serialize(False)
 
     log_info("Not logged in")
-    return "" \
- \
- \
+    return ""
+
 @app.route('/api/handle-payment-donation')
 def handle_payment_donation():
     intent_id = request.args.get("intentId", None, str)
     name = request.args.get("name", "", str)
+    log_info(str(intent_id) + str(name))
 
     if not intent_id:
         log_info("No intentId passed " + str(request.form))

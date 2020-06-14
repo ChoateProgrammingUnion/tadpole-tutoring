@@ -1,11 +1,13 @@
 {
-    "dev": {
+    "test": {
         "app_function": "app.app",
         "aws_region": "us-east-1",
         "profile_name": "max",
         "project_name": "tadpoletutoring",
         "runtime": "python3.8",
-        "s3_bucket": "tadpoletutoring-zappa-dev"
+        "s3_bucket": "tadpoletutoring-zappa-test",
+        "certificate_arn": "arn:aws:acm:us-east-1:904707318932:certificate/19dc59bc-ef0b-4666-8379-351faf6740ea",
+        "domain": "api-test.tadpoletutoring.org"
     },
     "production": {
         "app_function": "app.app",
