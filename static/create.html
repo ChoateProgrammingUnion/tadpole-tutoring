@@ -35,6 +35,16 @@
     <form action="javascript:void(0);">
         <p>Date: <input autocomplete="off" class="form-textbox" type="date" id="datepicker" name="datepicker"></p>
         <p>Time: <input autocomplete="off" class="form-textbox" type="text" id="time-datepicker" name="time-datepicker"></p>
+        Repeat Option:
+        <select id="repeat-option" class="form-textbox">
+            <option value="none">No Repeat</option>
+            <option value="1">1 Time (Adds a session a week after the initial date)</option>
+            <option value="2">2 Times (Adds 2 sessions, 7 and 14 days after the initial date)</option>
+            <option value="3">3 Times</option>
+            <option value="4">4 Times</option>
+            <option value="5">5 Times</option>
+            <option value="6">6 Times</option>
+        </select>
         <button id="submit-button">Submit</button>
     </form>
 </main>

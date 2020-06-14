@@ -353,6 +353,7 @@ def api_create_time():
     if email := auth.check_login(request):
         date_str = request.args.get('datepicker', "", str) + " " + request.args.get('time-datepicker', "", str)
         timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
+        repeat_option = request.args.get('repeat-option', "none", str)
 
         log_info("Date String: " + date_str)
         log_info("Timezone Offset: " + str(timezone_offset))
@@ -370,6 +371,12 @@ def api_create_time():
 
         db = database.Database()
         db.add_time_for_tutoring(email, d)
+
+        if repeat_option != "none":
+            for i in range(int(repeat_option)):
+                d += timedelta(days=7)
+                db.add_time_for_tutoring(email, d)
+
         return ""
 
     log_info("Not logged in")
