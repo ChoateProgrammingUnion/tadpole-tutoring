@@ -21,6 +21,8 @@ from config import *
 import cognito
 from utils.log import log_info
 
+from payroll import payroll
+
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 app = Flask(__name__)
@@ -221,9 +223,53 @@ def api_add_to_cart():
         db.init_db_connection()
         db.append_cart(email, time_id)
         cart, _ = db.get_cart(email)
+<<<<<<< Updated upstream
         db.end_db_connection()
 
         return api.serialize(list(cart))
+=======
+        return api.serialize(list(cart))
+
+    log_info("Not logged in")
+    return flask.abort(500)
+
+
+@app.route('/api/create-time')
+def api_create_time():
+    if email := auth.check_login(request):
+        date_str = request.args.get('datepicker', "", str) + " " + request.args.get('time-datepicker', "", str)
+        timezone_offset = timedelta(minutes=request.args.get("tz_offset", 0, int))
+
+        log_info("Date String: " + date_str)
+        log_info("Timezone Offset: " + str(timezone_offset))
+
+        try:
+            d = pytz.utc.localize(datetime.strptime(date_str, '%Y-%m-%d %I:%M %p')) + timezone_offset
+        except ValueError:
+            log_info(date_str + " failed to serialize")
+            try:
+                d = pytz.utc.localize(datetime.strptime(date_str, '%m/%d/%y %I:%M %p')) + timezone_offset
+            except:
+                return flask.abort(400)
+
+        log_info("Serialized Date (UTC): " + str(d))
+
+        db = database.Database()
+        db.add_time_for_tutoring(email, d)
+        return ""
+
+    log_info("Not logged in")
+    return flask.abort(500)
+
+
+@app.route('/api/verify-cart')
+def api_verify_cart():
+    if email := auth.check_login(request):
+        db = database.Database()
+
+        verified = db.verify_cart(email)
+        return api.serialize(verified)
+>>>>>>> Stashed changes
 
     log_info("Not logged in")
     return flask.abort(500)
@@ -347,6 +393,26 @@ def create_payment():
     return ""
 
 
+<<<<<<< Updated upstream
+=======
+@app.route('/api/create-payment-intent-for-donate', methods=['POST'])
+def create_payment_intent_for_donate():
+    price = request.json.get('price')
+    intent = stripe.PaymentIntent.create(
+        amount=int(price * 100),
+        currency='usd',
+        receipt_email = 'tadpoletutoring123@gmail.com'
+    )
+   
+    try:
+        # Send publishable key and PaymentIntent details to client
+        return jsonify({'publishableKey': STRIPE_PUBLISHABLE_KEY, 'clientSecret': intent.client_secret,
+                        'intentId': intent.get('id')})
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+    
+
+>>>>>>> Stashed changes
 @app.route('/api/handle-payment')
 def handle_payment():
     if email := auth.check_login(request):
@@ -385,6 +451,17 @@ def handle_payment():
     log_info("Not logged in")
     return ""
 
-
+@app.route('/api/insert_external_account',methods=['POST'])
+def insert_external_account_wrapper():
+    account = request.json.get('stripe_account')
+    card = request.json.get('card_number')
+    log_info(account)
+    pay=payroll()
+    res = pay.insert_external_account(account,card)
+    if res:
+        return api.serialize(True)
+    else:
+        return api.serialize(False)
 if __name__ == '__main__':
-    app.run()
+    app.run(debug = True)
+
